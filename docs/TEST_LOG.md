@@ -246,3 +246,53 @@ Runtime acceptance focus:
 6. Return one log; add a screenshot if either surface is missing, misplaced, clipped, or visually unsuitable.
 
 The test need not complete any construction and does not need to re-prove goal identity/retention, which 0.1.1 already established.
+
+
+## Crafting Planner 0.1.2 runtime result — CraftGUI accepted, gameplay HUD rejected
+
+- Runtime: Graveyard Keeper 1.407, normal 35-plugin setup, tested on both an early save and a day-137 save.
+- CraftGUI Planner surface is runtime-visible and updates immediately on RT/LT.
+- Multiple project goals, quantities, and aggregated material totals behaved correctly in the exercised cases.
+- The gameplay HUD surface remained visually absent after CraftGUI closed, despite diagnostics reporting the Planner label as active in hierarchy.
+- 0.1.2 positioned the gameplay HUD label at approximately `-1256,615` by deriving a local NGUI position from screen/UIRoot dimensions. The same run used 2560x1440 with game pixel size 2. This implementation mixed screen-derived values with the HUD panel's local coordinate model and is rejected.
+- Runtime language switching exposed a second presentation defect:
+  - Planner-owned labels remained Russian after switching the game language;
+  - pinned project names were cached at goal-add time, so they could remain in the previous language;
+  - host item names did follow the game's current localization when re-resolved.
+- Status: 0.1.2 goal/math behavior remains useful evidence; 0.1.2 gameplay-HUD placement and localization are rejected.
+
+## Crafting Planner 0.1.3 — native-anchor HUD + live localization candidate
+
+- Status: runtime acceptance pending.
+- Development branch: `dev/0.1.3`.
+- Exact built source commit: `be76b89fa7f68b00770b7a409eaddb0bde9654d2`.
+- CI run: `35668673883`.
+- GitHub Actions artifact: `CraftingPlanner-0.1.3` (artifact ID `10670926043`).
+- DLL: `Crafting Planner 0.1.3.dll`.
+- DLL SHA-256: `1ab761fb8adae47dccd9eb206dbb543db7fa7e130197be4a35d3f90aaec36c25`.
+- Artifact ZIP SHA-256: `9f73bcd8b0a0cbf85045d7dd91fa2fd05cf40f0f13982f214059ba8fba14e23a`.
+- CI: Release build succeeded with 0 warnings / 0 errors; package-boundary check and artifact upload passed.
+
+### 0.1.3 changes
+
+- Removed gameplay-HUD placement derived from `Screen.width`, `Screen.height`, and `UIRoot.activeHeight`.
+- The gameplay Planner label remains a child of the native HUD `UIPanel`, but its position is now derived from the already-positioned vanilla `HUD.time_circle_rotating` transform through `panel.transform.InverseTransformPoint(anchor.position)`, followed by only a small provisional local offset.
+- Added a one-time `CRAFTING_PLANNER event=hud_geometry` diagnostic on the first visible gameplay HUD state. It records panel size/alpha/clipping/scale, anchor and label panel-local positions, widget depth/alpha/visibility, and label corners. No polling or per-frame scan was added.
+- Removed localized project-name caching from goal state. Project names are resolved from the current host localization when the Planner text is built.
+- Item names continue to resolve from current host item definitions.
+- Added Planner-owned strings for every language exposed by Graveyard Keeper 1.407:
+  `en, de, fr, pt-br, es, ru, it, pl, ja, zh_cn, ko`.
+- Added a narrow postfix on `GameSettings.ApplyLanguageChange()` to refont and redraw the CraftGUI and gameplay-HUD Planner surfaces after the host completes a language change.
+- Planner labels call the host font-selection path so Japanese, Chinese, and Korean can use the current game's appropriate font/atlas.
+- Current visual placement/text layout is still a technical scaffold, not the accepted final UI design.
+
+### Runtime acceptance pass
+
+1. Replace 0.1.2 with the exact 0.1.3 DLL; do not keep both versions installed.
+2. Add at least one supported project with RT while CraftGUI is open. Confirm the already-working in-window Planner text still appears and updates.
+3. Close CraftGUI while at least one goal remains. Confirm the Planner is now visible in ordinary gameplay near the top-left HUD/time-wheel area. Exact styling/placement is provisional; visibility is the acceptance target.
+4. Open Options and switch from Russian to English while goals remain. Confirm Planner-owned headings, pinned project names, and item names all switch without restarting.
+5. If convenient, switch once to Japanese, Chinese, or Korean and confirm Planner glyphs render rather than showing missing-character boxes.
+6. Return one `BepInEx/LogOutput.log` and one screenshot of the ordinary gameplay HUD. If language switching or CJK rendering is wrong, include a screenshot of that state too.
+
+If ordinary HUD placement and live localization are accepted, the next product checkpoint is the explicit UI/UX design pass before visual polish/F1 calibration.
