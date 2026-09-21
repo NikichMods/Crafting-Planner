@@ -1,6 +1,17 @@
 using UnityEngine;
 
-public class UIWidget : MonoBehaviour
+public class UIRect : MonoBehaviour
+{
+    public void SetAnchor(GameObject go)
+    {
+    }
+}
+
+public class UIPanel : UIRect
+{
+}
+
+public class UIWidget : UIRect
 {
     public enum Pivot
     {
@@ -17,11 +28,22 @@ public class UIWidget : MonoBehaviour
 
     public Pivot pivot { get; set; }
     public int width { get; set; }
+    public int height { get; set; }
 }
 
 public class UILabel : UIWidget
 {
+    public enum Overflow
+    {
+        ShrinkContent,
+        ClampContent,
+        ResizeFreely,
+        ResizeHeight
+    }
+
     public string text { get; set; }
+    public bool multiLine { get; set; }
+    public Overflow overflowMethod { get; set; }
 }
 
 public class UIRoot : MonoBehaviour
