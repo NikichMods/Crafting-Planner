@@ -223,3 +223,26 @@ Implementation direction:
 - no new interactive widgets.
 
 This directly answers the user request to see quantity/material changes at the moment RT/LT is pressed.
+
+
+### 0.1.2 handoff
+
+- Status: runtime acceptance pending.
+- Development branch: `dev/0.1.2`.
+- Exact built source commit: `5b27ccdf1642cd2d20b56a54752ad7a12e808f2d`.
+- CI run: `35666120901`.
+- Artifact: `CraftingPlanner-0.1.2` (artifact ID `10669417044`).
+- DLL: `Crafting Planner 0.1.2.dll`.
+- DLL SHA-256: `dee32a5ced4279e46f5f764377798da7cb048976db5533124350747d485c9b7a`.
+- Artifact ZIP SHA-256: `f54ac748c189e0c3d9173331e8b8b24fccc2195cc937e4b663a8baf23ccc1a35`.
+- CI: Release build succeeded with 0 warnings / 0 errors; package-boundary check and upload passed.
+
+Runtime acceptance focus:
+1. Open a supported builder/project UI with no goals. The craft-window Planner surface may stay hidden until the first goal is added.
+2. Focus a repeatable project and press RT once. Planner text should appear **inside the still-open CraftGUI** immediately with quantity x1 and material totals.
+3. Press RT again. The same visible text should update immediately to x2.
+4. Press LT once. It should update immediately back to x1.
+5. Close CraftGUI without removing the goal. The gameplay-HUD Planner surface should then be visible with the same x1 state.
+6. Return one log; add a screenshot if either surface is missing, misplaced, clipped, or visually unsuitable.
+
+The test need not complete any construction and does not need to re-prove goal identity/retention, which 0.1.1 already established.
