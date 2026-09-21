@@ -190,3 +190,36 @@ This pass does not require completing any irreversible build/repair.
 5. Return one log. Add a screenshot only if HUD position/appearance is wrong.
 
 The separate gameplay-stutter investigation belongs to GraveyardKeeperResearch and is not an acceptance condition for Planner unless a controlled test later implicates Planner.
+
+
+## Crafting Planner 0.1.1 runtime result — goal logic accepted, display rejected
+
+- Runtime: Graveyard Keeper 1.407, normal 35-plugin setup.
+- Plugin loaded as 0.1.1 without the 0.1.0 Harmony startup failure.
+- Native HUD clone creation ran successfully: reference `zone description text`, parent `bottom field`.
+- Repeatable builder goal management is confirmed live:
+  - first graveyard flowerbed RT -> quantity 1;
+  - close/reopen builder;
+  - second RT on the same exact project -> quantity 2.
+- Therefore session-local goal identity, quantity retention across GUI reopen, build-context focus, and RT increment are accepted for this case.
+- User still saw no Planner text after closing the craft UI.
+- Interpretation: goal/model behavior is working; 0.1.1 is rejected specifically at the presentation layer.
+- Root cause hypothesis supported by implementation/evidence: the 0.1.1 label stayed under the native `bottom field` parent while retaining screen-root-style positioning. The label object existed, but its local coordinate model did not match the coordinates being assigned.
+- No automatic decrement/completion behavior was involved.
+
+## Crafting Planner 0.1.2 — dual-surface UI candidate
+
+Purpose:
+- make Planner state visible immediately while the player is still in the native project/build CraftGUI;
+- keep the same state visible in the ordinary HUD after the CraftGUI closes;
+- avoid a separate management window or second focus/navigation system.
+
+Implementation direction:
+- display-only CraftGUI overlay created inside the CraftGUI's existing NGUI panel;
+- display-only HUD label created inside the HUD's existing NGUI panel;
+- both surfaces render the same planner text and update from the same goal state;
+- RT/LT goal adjustments refresh both immediately;
+- no polling/per-frame UI scan;
+- no new interactive widgets.
+
+This directly answers the user request to see quantity/material changes at the moment RT/LT is pressed.
