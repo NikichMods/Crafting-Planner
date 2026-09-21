@@ -71,19 +71,22 @@ Therefore planner requirements can derive from `CraftDefinition.needs` for the c
 
 ### First clean support candidate
 
-Support first:
-- normal static crafting recipes with concrete `CraftDefinition.needs`;
-- building recipes with concrete `ObjectCraftDefinition.needs`.
+P0 support boundary after Probe 0.2.0:
+- builder projects supplied as concrete `ObjectCraftDefinition` entries with plain `needs`;
+- representative one-time builder upgrades using the same object-craft model with concrete `needs`;
+- representative repair/clearing world projects supplied as concrete `CraftDefinition` entries with plain `needs` and `change_wgo`.
 
-Initially exclude until separately verified:
+Ordinary workstation production is intentionally not a P0 goal even though its static recipe model is understood.
+
+Continue to exclude until separately approved/verified:
 - mixed alchemy/dynamic ingredient selection;
 - multiquality ingredient-selection cases;
 - survey/research;
-- fixing/world repair special flows;
 - body/autopsy insertion/extraction;
 - resurrection;
 - prayer;
 - refugee/special scripted crafts;
+- scripted world-project shapes that do not match either accepted P0 family;
 - any recipe where the displayed/consumed ingredient set differs materially from plain `needs`.
 
 ## Player inventory vs crafting-access inventory
@@ -187,12 +190,14 @@ Accepted binary/static research identifies `MultiInventory.MoveItemTo` use and p
 
 ## Open runtime gates before production
 
-1. Exact public/narrow pin capture seam for craft menu.
-2. Exact public/narrow pin capture seam for build menu.
-3. Concrete current-storage ownership lifecycle without private-field reflection.
-4. Open-chest action/input placement that does not consume vanilla/Quick Stack/Recipe Pin behavior.
-5. Player bag/toolbelt counting behavior in the exact target runtime.
-6. Multiquality detection/exclusion behavior for the first supported subset.
+1. Final production pin/manage gesture and help presentation, especially gamepad behavior and conflicts. Build-menu mouse focus is runtime-verified; gamepad build focus was not exercised in Probe 0.2.0.
+2. Concrete current-storage ownership lifecycle without private-field reflection.
+3. Final open-chest action/help placement. The native Option2/Y transfer seam already works with Quick Stack/Recipe Pin/Queue Everything installed.
+4. Player bag/toolbelt counting behavior in the exact target runtime if production relies on those edge semantics.
+5. Capacity-limited destination behavior if native-path static evidence is judged insufficient for release acceptance.
+6. Production UI anchor/lifecycle in the native NGUI hierarchy.
+
+The P0 project requirement/capture model for the accepted builder and `change_wgo` world-project families is no longer an open runtime gate.
 
 
 ## Runtime evidence — Research Probe 0.1.0 (2026-09-22)
@@ -288,3 +293,83 @@ World projects may enter several host-owned paths:
 - project-like definitions can additionally carry `one_time_craft`, `change_wgo`, `end_script`, `end_event`, or `craft_after_finish`.
 
 This proves that repair/upgrade/clearing operations cannot safely be assumed to be one uniform recipe category from static inspection alone. Probe 0.2.0 observes representative live interactions before a production inclusion rule is chosen.
+
+
+## Runtime evidence — Research Probe 0.2.0 (2026-09-22)
+
+**Verified runtime** on Graveyard Keeper 1.407 with the user's normal 35-plugin setup.
+
+Returned `LogOutput(1).log` SHA-256:
+`3bf9cb3782b623e40c38ef70189f21de751585d2ea568c0b09ec3c8db9b29fce`
+
+No Crafting Planner Research Probe warning/error/exception was logged.
+
+### Builder projects
+
+The native graveyard builder opened a build-context `CraftGUI` with exact `ObjectCraftDefinition` entries. A flower bed was observed with:
+
+- `needs = stone_plate_1:2, peat:1, flw_poppy:2`;
+- `BuildType.Put`;
+- `out_obj = flowerbed_2x2`;
+- `builder_ids = graveyard_builddesk`.
+
+Mouse focus produced the same exact definition, proving the build-card mouse capture seam in runtime.
+
+The user also selected `graveyard_builddesk:p:grave_empty_place`; the probe recorded `build_selected`, then vanilla entered `CraftBuilding(... type=Put)` / build mode. This confirms that the observed card definition is the same host object used by the native selection path.
+
+### One-time builder upgrade
+
+The home wood builder exposed:
+
+`mf_wood_builddesk::upgrade_player_buildzone`
+
+with:
+
+- `needs = detail_2:10, wooden_plank:8, nails:4`;
+- `one_time_craft = true`;
+- `BuildType.None`;
+- `out_obj = upgrade_player_buildzone`;
+- `end_script = player_buildzone_upgrade`.
+
+The same definition was captured through mouse focus. This is accepted evidence that at least this class of one-time builder upgrade has stable concrete material requirements compatible with the planner model.
+
+The same builder also exposed a normal repeatable placement:
+
+`mf_wood_builddesk:p:mf_box_stuff_place -> flitch:4, nails:4, detail_1:4`
+
+using `BuildType.Put`.
+
+### Repair projects
+
+Representative broken mortuary objects exposed a single ordinary `CraftDefinition` through the interacted object's normal craft GUI:
+
+- `fix_morgue_builddesk -> flitch:2, detail_1:2; change_wgo=morgue_builddesk`;
+- `fix_morgue_throw_in -> stone_plate_1:2, detail_1:4; change_wgo=morgue_throw_in`;
+- `fix_morgue_throw_out -> stone_plate_1:2, detail_1:4; change_wgo=morgue_throw_out`.
+
+These are not `ObjectCraftDefinition` builds. They are ordinary craft definitions whose semantics are world-state replacement/repair, but their planner requirement source is still the canonical `needs` list.
+
+### Blocked-passage clearing
+
+`blockage_V_low` exposed exactly one ordinary craft:
+
+`blockage_V_low_destruction -> spike_1:10, wood_balk_1:1, detail_1:4`
+
+with `change_wgo=0`.
+
+It opened the normal `CraftGUI`, just like the repair cases. This verifies the same P0 requirement shape for at least this blocked-passage/clearing class.
+
+### Accepted semantic inclusion rule
+
+For P0, the evidence now supports two host-native project families without hardcoded recipe-ID tables:
+
+1. **Builder context**: concrete `ObjectCraftDefinition` supplied by the native builder UI, with plain exact `needs`. Repeatable placement and the observed one-time builder upgrade are both valid planner shapes. Internal move/remove pseudo cards are not project goals.
+2. **World change craft context**: a concrete ordinary `CraftDefinition` owned by the interacted world object, with plain exact `needs` and a non-empty `change_wgo`. The observed repair and clearing cases fit this shape.
+
+Do not extend this rule to unrelated special/scripted craft systems merely because they also open a craft-like UI.
+
+### Not proven / not required to close this P0 data-model question
+
+- gamepad build-card focus was not exercised; only mouse focus is runtime-confirmed in Probe 0.2.0;
+- the repair/clearing crafts were opened but not completed, so completion hooks remain a later concern (P1 auto-decrement, not P0);
+- carried-bag and capacity-limited transfer edges remain separate inventory-runtime questions.
