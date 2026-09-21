@@ -109,3 +109,40 @@ Still open:
 - final production pin/manage gesture and UI lifecycle;
 - carried-bag/toolbelt and capacity-limited transfer edges if needed for release acceptance;
 - project completion hooks, which remain P1 rather than P0.
+
+
+## Crafting Planner 0.1.0 — first production candidate
+
+- Status: runtime acceptance pending.
+- Development branch: `dev/0.1.0`.
+- Exact source commit: `619d17261b2f899736cedd31d47b93393209ed3f`.
+- CI run: `35662116041`.
+- GitHub Actions artifact: `CraftingPlanner-0.1.0` (artifact ID `10668240014`).
+- Handed DLL: `Crafting Planner 0.1.0.dll`.
+- DLL SHA-256: `1fbebbe61d5848a215a38ce1b51dcc0e39d9358eb6f5633bac48a7430c2697d1`.
+- Artifact ZIP SHA-256: `2d64f9d314c8025b9b18675a8a73fda1ec97f9282f06c63ff9ab1a5c3a3c0c39`.
+- CI: restore/build/package-boundary/artifact upload passed, 0 warnings / 0 errors.
+- Compile-time `Assembly-CSharp` and `Assembly-CSharp-firstpass` stubs are excluded from the distributed output.
+
+### Candidate behavior
+
+- Session-local multiple project goals.
+- Supported builder/world-change project filtering from already accepted host definitions.
+- Direct-card quantity management: RT add/increment, LT decrement/remove; keyboard + / - equivalent.
+- One-off projects capped at x1; repeatable `BuildType.Put` projects allow quantity >1.
+- Display-only native-NGUI HUD showing goals plus aggregated Required / Have / Missing.
+- Player Have uses player-carried count with bags.
+- Open-chest Y / Option2 executes native bounded Take Needed across all missing materials.
+- No automatic completion decrement, persistence, dependency expansion, or custom management window.
+
+### Runtime acceptance pass
+
+1. Remove the research probe DLL before installing this candidate.
+2. Open a builder with a repeatable supported project. Focus one card with gamepad, press RT three times and LT once; close the UI. Expected planner quantity: x2.
+3. Reopen the builder and focus a one-time upgrade. Press RT twice. Expected quantity remains x1; press LT once to remove it.
+4. Add at least two different goals and close the UI. Verify that both appear and shared materials aggregate.
+5. Open a chest containing at least one currently Missing material and press Y once. Partial transfer is acceptable. Verify that no surplus moves and Have/Missing updates.
+6. Optionally verify mouse + keyboard + / - on a supported focused card.
+7. Return one `BepInEx/LogOutput.log`. A screenshot is needed only if HUD position/readability is wrong.
+
+This pass does not require completing any irreversible build/repair.
