@@ -63,7 +63,7 @@ Do not pull these into the first production scope automatically:
 Before substantive implementation:
 1. inspect current repository/source/history;
 2. read this file;
-3. read `docs/VERIFIED_GAME_DATA.md` and `docs/RESEARCH_REPORT_2026-09-21.md`;
+3. read `docs/PRODUCT_SCOPE.md`, `docs/VERIFIED_GAME_DATA.md`, and `docs/RESEARCH_REPORT_2026-09-21.md`;
 4. inspect `docs/TEST_LOG.md` for accepted runtime evidence;
 5. verify any unfamiliar Graveyard Keeper/Recipe Pin/Quick Stack seam before production relies on it.
 
@@ -164,11 +164,11 @@ A world-level "Take Needed" action without opening the chest is also deferred fr
 
 Prefer one narrow research harness over repeated manual tests when runtime evidence is required.
 
-Initial probe priorities:
-- identify a public/narrow recipe-selection capture seam for craft and build menus;
-- prove player-only count vs interaction/world-zone count;
-- prove storage -> player `MoveItemTo` with Missing/availability/capacity bounds;
-- verify a conflict-safe open-chest input/UI seam.
+Current remaining probe priorities:
+- verify the public/narrow build-project focus seam in the installed runtime;
+- inspect representative repair/upgrade/clearing world projects and identify their real recipe/interaction ownership;
+- verify a semantic inclusion rule for project material requirements without a hardcoded per-ID database;
+- isolate bag and capacity-limited transfer edges only if production correctness still depends on runtime evidence beyond the already verified native path.
 
 Research probes must be nonpersistent where possible and must not ship as production.
 
@@ -183,6 +183,7 @@ Use minimal compile-time reference stubs containing only verified type/member si
 ## Long-lived sources of truth
 
 - `AGENTS.md`
+- `docs/PRODUCT_SCOPE.md`
 - `docs/VERIFIED_GAME_DATA.md`
 - `docs/RESEARCH_REPORT_2026-09-21.md`
 - `docs/TEST_LOG.md`
