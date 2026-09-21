@@ -1,0 +1,67 @@
+name: Build Crafting Planner Research Probe 0.2.0
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/build-world-projects
+    paths:
+      - 'CraftingPlannerResearchProbe.csproj'
+      - 'research-probe/**'
+      - 'references/**'
+      - 'nuget.config'
+      - '.github/workflows/build-research-probe.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crafting-planner-research-build-world-projects-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore CraftingPlannerResearchProbe.csproj --configfile nuget.config
+
+      - name: Build probe
+        run: dotnet build CraftingPlannerResearchProbe.csproj -c Release --no-restore --nologo
+
+      - name: Verify package boundary
+        shell: pwsh
+        run: |
+          $dll = 'bin/Release/CraftingPlannerResearchProbe.dll'
+          if (!(Test-Path $dll)) {
+            throw "Expected DLL not found: $dll"
+          }
+          if (Test-Path 'bin/Release/Assembly-CSharp.dll') {
+            throw 'Compile-time Assembly-CSharp stub leaked into probe output.'
+          }
+
+      - name: Prepare artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          $target = 'artifacts/Crafting Planner Research Probe 0.2.0.dll'
+          Copy-Item 'bin/Release/CraftingPlannerResearchProbe.dll' $target
+          $hash = (Get-FileHash $target -Algorithm SHA256).Hash.ToLowerInvariant()
+          Write-Host "SHA-256: $hash"
+
+      - name: Upload probe
+        uses: actions/upload-artifact@v4
+        with:
+          name: CraftingPlannerResearchProbe-0.2.0
+          path: artifacts/Crafting Planner Research Probe 0.2.0.dll
+          if-no-files-found: error
+          retention-days: 7
