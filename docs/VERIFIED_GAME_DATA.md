@@ -193,3 +193,64 @@ Accepted binary/static research identifies `MultiInventory.MoveItemTo` use and p
 4. Open-chest action/input placement that does not consume vanilla/Quick Stack/Recipe Pin behavior.
 5. Player bag/toolbelt counting behavior in the exact target runtime.
 6. Multiquality detection/exclusion behavior for the first supported subset.
+
+
+## Runtime evidence — Research Probe 0.1.0 (2026-09-22)
+
+**Verified runtime** on Graveyard Keeper 1.407 with the user's normal 35-plugin setup, including Quick Stack 1.0.0, Recipe Pin 0.3.0, Queue Everything 2.2.1, Specialized Storage 1.2.0, and other installed mods.
+
+Returned `LogOutput.log` SHA-256:
+`2154067363657c21b4ce05bb1072420aff049732d33aa27463f7642ff81315e6`
+
+### Craft focus seam
+
+The probe captured five ordinary fixed-ingredient craft definitions through the candidate focus seam:
+- `wood1_2 -> wood:1`
+- `chisel_1_2 -> stick:4, detail_1:3`
+- `armor_lamellar_1_2 -> skin:4, detail_1:6`
+- `lense -> glass_0:2, polishing_paste:1, faith:2`
+- `wooden_plank_3 -> flitch:1`
+
+This proves the candidate craft-focus callback is live in the installed runtime. The probe did not tag whether each focus event originated from mouse versus gamepad, so that finer distinction is not claimed.
+
+### Player Have versus interaction inventory
+
+For `flitch`, the probe observed:
+- player-only Have = 0;
+- interaction/crafting-access count = 18;
+- current chest count = 9.
+
+This is direct runtime evidence that `GetMultiInventoryForInteraction()` is broader than player-carried inventory and must not be used for planner `Have`.
+
+### Current-storage transfer
+
+With `Required=1`, `Have=0`, `Missing=1`, chest count 9, and ample player capacity, native transfer moved exactly one `flitch`:
+- player 0 -> 1;
+- chest 9 -> 8.
+
+Immediately afterward, the same action observed `Missing=0` and requested 0, proving no surplus transfer in that state.
+
+The probe also exercised a chest with zero matching material: `Missing=1`, storage count 0, requested 0, no transfer.
+
+### Open-chest input seam
+
+Both research triggers worked:
+- keyboard F8 research trigger;
+- inherited chest-context `Option2 / Y`.
+
+`Option2 / Y` successfully transferred the needed item while Quick Stack, Recipe Pin, and Queue Everything were installed. This makes open-chest Y a strong production candidate, but final production controls should still be tied to the planner's actual chest UI/help presentation rather than hardcoded globally.
+
+### Not yet proven by this log
+
+- build-menu `BuildItemGUI` focus capture (no `kind=build` diagnostic occurred);
+- one-off world repair/upgrade/clearing project capture and exact ingredient semantics;
+- bag placement/count behavior in a case where a needed item is actually in a carried bag;
+- inventory-full/partially-full capacity edge in runtime (static native-path evidence remains strong).
+
+## Production UI substrate
+
+**Verified static**
+
+The game HUD/UI uses native NGUI-style components including `UIPanel`, `UIWidget`, `UILabel`, `UIButton`, `UI2DSprite`, and `GamepadSelectableButton`. `GUIElements.me.hud` owns the main HUD hierarchy and native windows notify the HUD on open/close.
+
+Therefore a vanilla-style planner HUD is technically feasible without using a generic BepInEx/IMGUI gameplay overlay. Preferred direction is a narrow custom planner object inside the game's UI hierarchy, reusing or cloning verified native visual components where practical. Exact anchor/prefab reuse remains a runtime/UI implementation gate.

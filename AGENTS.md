@@ -16,7 +16,7 @@ This file contains only project-specific additions, verified constraints, and ex
 - Project: **Crafting Planner**
 - Repository: `NikichMods/Crafting-Planner`
 - Game/runtime: **Graveyard Keeper 1.407**, PC, BepInEx/Harmony
-- Purpose: extend the Recipe Pin idea into a vanilla-friendly multi-goal crafting/material planner without remote crafting or automatic logistics.
+- Purpose: replace the Recipe Pin concept with a vanilla-friendly multi-project construction/material planner without remote crafting or automatic logistics.
 
 ## Product boundary
 
@@ -31,25 +31,30 @@ The mod may reduce memory burden and repetitive item transfer. It must not becom
 ### P0
 
 P0 is:
-- multiple pinned crafting/building goals;
-- target quantity per goal;
-- aggregate exact ingredient requirements;
+- multiple pinned **projects**, not arbitrary workstation production recipes;
+- repeatable construction/build goals such as benches or workstations;
+- one-off world projects such as repairs, upgrades, or clearing blocked objects when the game exposes stable concrete material requirements;
+- target quantity for repeatable placeables (for example, three benches); one-off world projects are quantity 1;
+- aggregate exact ingredient requirements across all pinned projects;
 - `Required`, `Have`, and `Missing = max(Required - Have, 0)`;
 - `Have` means items physically carried by the player, including carried bags when native inventory semantics support them;
 - `Take Needed` operates only on the currently open/explicitly interacted storage;
 - take at most `Missing`, at most what storage contains, and at most what the player can actually accept;
 - partial transfer is success;
 - failure/unavailability of one ingredient must not block others;
-- UI refresh after relevant state changes.
+- vanilla-style planner UI and UI refresh after relevant state changes.
+
+Ordinary workstation item production (for example, pinning ten planks, polished stone, or a chisel) is not a P0 planner goal. Such items can appear as required materials for a project, but P0 does not recursively expand or pin their production recipes.
 
 ### Not P0
 
 Do not pull these into the first production scope automatically:
 - auto-decrement after completed craft/build;
-- save persistence;
+- save persistence (explicitly deferred after product review; session-only goals are accepted for P0);
 - Quick Stack reserve protection;
 - dependency expansion/base-material planning;
 - nearby/multi-storage collection;
+- taking project materials from a storage without opening/interacting with its inventory UI;
 - remote crafting;
 - alternative recipe/workstation planning.
 
@@ -97,15 +102,21 @@ Avoid:
 - broad patches to world interaction/input when a narrower UI-context seam exists;
 - reflection/private identifiers unless a verified public/narrow alternative is insufficient.
 
-For P0, no persistent pin state is required. Persistence is a later decision.
+For P0, goals are session-local. The user explicitly accepted this simplification for the first implementation; per-save persistence remains a later upgrade.
+
+For UI, prefer a vanilla-style HUD using the game's native GUI stack or a narrow hybrid that reuses native fonts, sprites, panels, icons, and gamepad conventions. A generic BepInEx/IMGUI debug overlay is acceptable for research only, not the desired production presentation.
 
 ## Verified P0 semantic boundary
 
-Current research supports a clean first implementation around recipes whose ingredient requirements are represented by stable concrete `CraftDefinition.needs` entries.
+Current product scope is project-first rather than workstation-recipe-first.
 
-Do not silently include special/dynamic cases such as mixed alchemy, multiquality-selection recipes, survey/fixing/autopsy/body operations, prayer, resurrection, refugee special crafts, or other flows until their semantics are explicitly verified and recorded.
+Building recipes based on `ObjectCraftDefinition` share the `CraftDefinition.needs` model and are a first-class P0 target, subject to runtime capture/UI verification.
 
-Building recipes based on `ObjectCraftDefinition` share the `CraftDefinition.needs` model and are a first-class P0 candidate, subject to runtime capture/UI verification.
+World repair/upgrade/clearing projects are also a P0 product requirement when their displayed/consumed material set can be verified as stable and concrete. Do not assume every such interaction uses `ObjectCraftDefinition` or plain `needs`; verify the actual host path before production support.
+
+Ordinary workstation production recipes remain useful research evidence for recipe capture and material semantics but are intentionally not P0 planner goals.
+
+Do not silently include dynamic/special systems such as mixed alchemy, multiquality ingredient selection, survey/research, body/autopsy operations, resurrection, prayer, refugee scripted production, or other flows unless separately approved and verified.
 
 ## Inventory semantics
 
@@ -125,11 +136,9 @@ Use native `MultiInventory` capacity/transfer behavior rather than reproducing s
 
 Recipe Pin is a precedent and compatibility target, not a dependency. Do not copy its code/assets or depend on private internals.
 
-A product decision is still open on whether Crafting Planner should:
-- coexist as a separate planner; or
-- be treated as a functional replacement/superset when installed.
+Crafting Planner is the functional replacement/superset for Recipe Pin. Recipe Pin is not a dependency and production UX must not require it.
 
-Until that is decided, avoid taking ownership of Recipe Pin's global/world input gestures.
+Compatibility during development remains useful, but do not design P0 around Recipe Pin's private state or gestures.
 
 ### Quick Stack
 
@@ -138,6 +147,8 @@ P0 must avoid patching Quick Stack's world-interaction ownership path if possibl
 `Take Needed` should live in the open-storage context and move storage -> player, while Quick Stack's primary action is world interaction moving matching player items -> storage.
 
 Reserve/surplus-aware Quick Stack integration is P1 and requires separate evidence.
+
+A world-level "Take Needed" action without opening the chest is also deferred from P0. It may be researched later, but it must not take over Quick Stack's world-interaction surface without an explicit compatibility decision.
 
 ## Git / version / acceptance workflow
 
