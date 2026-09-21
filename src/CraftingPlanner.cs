@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Crafting Planner";
-        public const string PluginVersion = "0.1.1";
+        public const string PluginVersion = "0.1.2";
 
         private Harmony _harmony;
 
@@ -28,6 +28,7 @@ namespace CraftingPlanner
 
         private void OnDestroy()
         {
+            PlannerCraftOverlay.Destroy();
             PlannerHud.Destroy();
             if (_harmony != null)
             {
@@ -74,6 +75,7 @@ namespace CraftingPlanner
             Goals.Clear();
             ClearProjectContext();
             _currentChest = null;
+            PlannerCraftOverlay.Hide();
             PlannerHud.Refresh();
             LogLine("event=session_reset");
         }
@@ -132,6 +134,7 @@ namespace CraftingPlanner
         internal static void Focus(CraftDefinition definition)
         {
             _focusedProject = IsSupportedProject(definition) ? definition : null;
+            PlannerCraftOverlay.Refresh();
         }
 
         internal static void Blur(CraftDefinition definition)
@@ -139,7 +142,13 @@ namespace CraftingPlanner
             if (_focusedProject == definition)
             {
                 _focusedProject = null;
+                PlannerCraftOverlay.Refresh();
             }
+        }
+
+        internal static bool ShouldShowCraftOverlay
+        {
+            get { return _context == ProjectContextKind.Builder || _focusedProject != null; }
         }
 
         internal static bool AdjustFocusedProject(int delta, string trigger)
@@ -211,6 +220,7 @@ namespace CraftingPlanner
                 return false;
             }
 
+            PlannerCraftOverlay.Refresh();
             PlannerHud.Refresh();
             return true;
         }
@@ -484,24 +494,24 @@ namespace CraftingPlanner
             Destroy();
 
             UILabel reference = hud.zone_descr != null ? hud.zone_descr : hud.version_label;
-            if (reference == null)
+            UIPanel panel = hud.panel != null ? hud.panel : hud.GetComponentInParent<UIPanel>();
+            if (reference == null || panel == null)
             {
-                Planner.LogLine("event=hud result=skipped reason=no_reference_label");
+                Planner.LogLine("event=hud result=skipped reason=no_reference_or_panel");
                 return;
             }
 
             _hud = hud;
-            _label = UnityEngine.Object.Instantiate(reference, reference.transform.parent, false);
-            _label.gameObject.name = LabelName;
-            _label.transform.localScale = Vector3.one;
-            _label.pivot = UIWidget.Pivot.TopLeft;
-            _label.width = 620;
+            _label = UnityEngine.Object.Instantiate(reference, panel.transform, false);
+            PrepareLabel(_label, LabelName, panel.gameObject.layer);
             Reposition();
             Refresh();
+
             Planner.LogLine(
                 "event=hud result=created reference=" + reference.gameObject.name +
-                " parent=" + (_label.transform.parent != null ? _label.transform.parent.gameObject.name : "null"));
-
+                " panel=" + panel.gameObject.name +
+                " layer=" + _label.gameObject.layer +
+                " pos=" + FormatVector(_label.transform.localPosition));
         }
 
         internal static void Refresh()
@@ -526,9 +536,15 @@ namespace CraftingPlanner
                 return;
             }
 
-            _label.gameObject.SetActive(true);
             _label.text = BuildText();
             Reposition();
+            _label.gameObject.SetActive(true);
+
+            Planner.LogLine(
+                "event=hud_refresh visible=true goals=" + Planner.GetGoals().Count +
+                " active_self=" + _label.gameObject.activeSelf +
+                " active_hierarchy=" + _label.gameObject.activeInHierarchy +
+                " pos=" + FormatVector(_label.transform.localPosition));
         }
 
         internal static void RefreshIfVisible()
@@ -555,7 +571,7 @@ namespace CraftingPlanner
             _hud = null;
         }
 
-        private static string BuildText()
+        internal static string BuildText()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("Crafting Planner\n");
@@ -598,6 +614,24 @@ namespace CraftingPlanner
             return sb.ToString().TrimEnd();
         }
 
+        internal static void PrepareLabel(UILabel label, string name, int layer)
+        {
+            label.gameObject.name = name;
+            label.gameObject.layer = layer;
+            label.SetAnchor((GameObject)null);
+            label.transform.localScale = Vector3.one;
+            label.pivot = UIWidget.Pivot.TopLeft;
+            label.width = 620;
+            label.height = 300;
+            label.multiLine = true;
+            label.overflowMethod = UILabel.Overflow.ResizeHeight;
+        }
+
+        internal static string FormatVector(Vector3 value)
+        {
+            return value.x.ToString("0.0") + "," + value.y.ToString("0.0") + "," + value.z.ToString("0.0");
+        }
+
         private static void Reposition()
         {
             if (_label == null || _hud == null)
@@ -611,6 +645,130 @@ namespace CraftingPlanner
             float w = h * aspect;
 
             _label.transform.localPosition = new Vector3(-w * 0.5f + 24f, h * 0.5f - 105f, 0f);
+        }
+    }
+
+    internal static class PlannerCraftOverlay
+    {
+        private const string LabelName = "CraftingPlannerCraftOverlay";
+        private static UILabel _label;
+        private static CraftGUI _craftGui;
+        private static UIPanel _panel;
+
+        internal static void Open(CraftGUI craftGui)
+        {
+            if (craftGui == null)
+            {
+                return;
+            }
+
+            if (_label != null && _craftGui == craftGui)
+            {
+                Refresh();
+                return;
+            }
+
+            Destroy();
+
+            UIPanel panel = craftGui.GetComponentInParent<UIPanel>();
+            UILabel reference = FindReferenceLabel(craftGui, panel);
+            if (panel == null || reference == null)
+            {
+                Planner.LogLine("event=craft_overlay result=skipped reason=no_reference_or_panel");
+                return;
+            }
+
+            _craftGui = craftGui;
+            _panel = panel;
+            _label = UnityEngine.Object.Instantiate(reference, panel.transform, false);
+            PlannerHud.PrepareLabel(_label, LabelName, panel.gameObject.layer);
+
+            Vector3 craftOrigin = panel.transform.InverseTransformPoint(craftGui.transform.position);
+            _label.transform.localPosition = craftOrigin + new Vector3(-560f, 300f, 0f);
+            Refresh();
+
+            Planner.LogLine(
+                "event=craft_overlay result=created reference=" + reference.gameObject.name +
+                " panel=" + panel.gameObject.name +
+                " pos=" + PlannerHud.FormatVector(_label.transform.localPosition));
+        }
+
+        internal static void Refresh()
+        {
+            if (_label == null)
+            {
+                if (GUIElements.me != null && GUIElements.me.craft != null && GUIElements.me.craft.gameObject.activeInHierarchy)
+                {
+                    Open(GUIElements.me.craft);
+                }
+
+                if (_label == null)
+                {
+                    return;
+                }
+            }
+
+            bool visible = Planner.HasGoals && Planner.ShouldShowCraftOverlay && _craftGui != null && _craftGui.gameObject.activeInHierarchy;
+            if (!visible)
+            {
+                _label.text = "";
+                _label.gameObject.SetActive(false);
+                return;
+            }
+
+            _label.text = PlannerHud.BuildText();
+            _label.gameObject.SetActive(true);
+
+            Planner.LogLine(
+                "event=craft_overlay_refresh visible=true goals=" + Planner.GetGoals().Count +
+                " active_self=" + _label.gameObject.activeSelf +
+                " active_hierarchy=" + _label.gameObject.activeInHierarchy +
+                " pos=" + PlannerHud.FormatVector(_label.transform.localPosition));
+        }
+
+        internal static void Hide()
+        {
+            if (_label != null)
+            {
+                _label.gameObject.SetActive(false);
+            }
+        }
+
+        internal static void Destroy()
+        {
+            if (_label != null)
+            {
+                UnityEngine.Object.Destroy(_label.gameObject);
+            }
+
+            _label = null;
+            _craftGui = null;
+            _panel = null;
+        }
+
+        private static UILabel FindReferenceLabel(CraftGUI craftGui, UIPanel panel)
+        {
+            if (craftGui == null || panel == null)
+            {
+                return null;
+            }
+
+            UILabel[] labels = craftGui.GetComponentsInChildren<UILabel>(true);
+            foreach (UILabel label in labels)
+            {
+                if (label == null || !label.gameObject.activeInHierarchy)
+                {
+                    continue;
+                }
+
+                UIPanel owner = label.GetComponentInParent<UIPanel>();
+                if (owner == panel)
+                {
+                    return label;
+                }
+            }
+
+            return labels.Length > 0 ? labels[0] : null;
         }
     }
 
@@ -630,6 +788,11 @@ namespace CraftingPlanner
         {
             Planner.OpenBuildContext(build_desk, crafts_inventory);
         }
+
+        private static void Postfix(CraftGUI __instance)
+        {
+            PlannerCraftOverlay.Open(__instance);
+        }
     }
 
     [HarmonyPatch(typeof(CraftGUI), "OpenCraftList", new Type[] { typeof(WorldGameObject) })]
@@ -639,6 +802,11 @@ namespace CraftingPlanner
         {
             Planner.OpenWorldContext(craftery_wgo);
         }
+
+        private static void Postfix(CraftGUI __instance)
+        {
+            PlannerCraftOverlay.Open(__instance);
+        }
     }
 
     [HarmonyPatch(typeof(CraftGUI), "Hide", new Type[] { typeof(bool) })]
@@ -646,6 +814,7 @@ namespace CraftingPlanner
     {
         private static void Postfix()
         {
+            PlannerCraftOverlay.Hide();
             Planner.ClearProjectContext();
         }
     }
