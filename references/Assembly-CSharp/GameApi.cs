@@ -177,7 +177,21 @@ public class HUD : MonoBehaviour
 {
     public UILabel zone_descr;
     public UILabel version_label;
+    public UILabel day_label;
     public UIPanel panel;
+    public Transform time_circle_rotating;
+}
+
+public class GameSettings
+{
+    public void ApplyLanguageChange()
+    {
+    }
+
+    public static string GetCurrentLanguage()
+    {
+        return "en";
+    }
 }
 
 public class GUIElements : MonoBehaviour
