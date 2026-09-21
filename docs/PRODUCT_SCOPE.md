@@ -108,6 +108,8 @@ Goal quantity is managed directly from the currently focused supported project c
 - one-off repairs, clearings, and one-time upgrades are capped at quantity 1;
 - repeatable placeable construction projects may have quantity greater than 1.
 
-The planner HUD is display-only in P0. It does not own navigation, buttons, or a second focus system.
+The planner presentation is display-only in P0. It does not own navigation, buttons, or a second focus system.
+
+Planner state should remain visible while the player is managing goals in the native project/build UI. RT/LT (or later accepted equivalents) should update the displayed goal quantity/material totals immediately, without requiring the player to close the craft window first. After the craft/project UI closes, the same planner state remains available on the ordinary gameplay HUD.
 
 Concrete key/button bindings remain an implementation/compatibility detail. Vanilla CraftGUI X/Y must not be repurposed if doing so overrides their existing behavior. The first 0.1.0 candidate uses LT/RT for direct-card decrement/increment and keeps Y for Take Needed in an open chest.
