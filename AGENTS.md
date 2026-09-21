@@ -110,9 +110,12 @@ For UI, prefer a vanilla-style HUD using the game's native GUI stack or a narrow
 
 Current product scope is project-first rather than workstation-recipe-first.
 
-Building recipes based on `ObjectCraftDefinition` share the `CraftDefinition.needs` model and are a first-class P0 target, subject to runtime capture/UI verification.
+Runtime evidence from Research Probe 0.2.0 accepts two concrete P0 project families:
 
-World repair/upgrade/clearing projects are also a P0 product requirement when their displayed/consumed material set can be verified as stable and concrete. Do not assume every such interaction uses `ObjectCraftDefinition` or plain `needs`; verify the actual host path before production support.
+- **Builder projects**: the native build menu supplies exact `ObjectCraftDefinition` instances through the ordinary `CraftGUI` build context. Runtime evidence covers repeatable placement (`BuildType.Put`) and a one-time builder upgrade (`one_time_craft=true`, `BuildType.None`) with concrete `needs`. Mouse focus and the native build-selection path are live.
+- **World change projects**: representative repairs and a blocked-passage clearing action use ordinary `CraftDefinition` entries with concrete `needs` and a non-empty `change_wgo`, opened through the normal craft GUI from the interacted world object.
+
+These families share the host-owned `CraftDefinition.needs` requirement model, so P0 may aggregate their exact materials without inventing a second recipe database. Do not generalize this acceptance to every scripted/special world interaction; unsupported shapes must fail closed until separately verified.
 
 Ordinary workstation production recipes remain useful research evidence for recipe capture and material semantics but are intentionally not P0 planner goals.
 
@@ -164,11 +167,12 @@ A world-level "Take Needed" action without opening the chest is also deferred fr
 
 Prefer one narrow research harness over repeated manual tests when runtime evidence is required.
 
-Current remaining probe priorities:
-- verify the public/narrow build-project focus seam in the installed runtime;
-- inspect representative repair/upgrade/clearing world projects and identify their real recipe/interaction ownership;
-- verify a semantic inclusion rule for project material requirements without a hardcoded per-ID database;
-- isolate bag and capacity-limited transfer edges only if production correctness still depends on runtime evidence beyond the already verified native path.
+Current remaining runtime priorities:
+- choose and verify the final production pin/manage input gesture, including gamepad focus/compatibility; Probe 0.2.0 explicitly verified mouse focus but did not record a gamepad build-focus event;
+- verify the production planner HUD placement/lifecycle in the native GUI hierarchy;
+- isolate carried-bag/toolbelt and capacity-limited transfer edges only if production correctness still depends on runtime evidence beyond the already verified native inventory path.
+
+The build/world-project requirement model itself is runtime-accepted for the two P0 families documented above.
 
 Research probes must be nonpersistent where possible and must not ship as production.
 
