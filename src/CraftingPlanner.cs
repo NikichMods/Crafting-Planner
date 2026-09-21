@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Crafting Planner";
-        public const string PluginVersion = "0.1.2";
+        public const string PluginVersion = "0.1.3";
 
         private Harmony _harmony;
 
@@ -48,7 +48,6 @@ namespace CraftingPlanner
     {
         internal string Key;
         internal CraftDefinition Definition;
-        internal string DisplayName;
         internal int Quantity;
         internal bool Repeatable;
     }
@@ -171,7 +170,6 @@ namespace CraftingPlanner
                     {
                         Key = key,
                         Definition = definition,
-                        DisplayName = GetProjectName(definition),
                         Quantity = 1,
                         Repeatable = repeatable
                     };
@@ -442,7 +440,7 @@ namespace CraftingPlanner
             return ((int)_context).ToString() + "|" + owner + "|" + definition.id;
         }
 
-        private static string GetProjectName(CraftDefinition definition)
+        internal static string GetProjectName(CraftDefinition definition)
         {
             try
             {
@@ -472,11 +470,116 @@ namespace CraftingPlanner
         }
     }
 
+    internal static class PlannerLocalization
+    {
+        private sealed class TextSet
+        {
+            internal readonly string Projects;
+            internal readonly string Materials;
+
+            internal TextSet(string projects, string materials)
+            {
+                Projects = projects;
+                Materials = materials;
+            }
+        }
+
+        private static readonly Dictionary<string, TextSet> Texts =
+            new Dictionary<string, TextSet>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "en",    new TextSet("Projects", "Materials — Required / Have / Missing") },
+                { "de",    new TextSet("Projekte", "Materialien — Benötigt / Vorhanden / Fehlt") },
+                { "fr",    new TextSet("Projets", "Matériaux — Requis / Possédés / Manquants") },
+                { "pt-br", new TextSet("Projetos", "Materiais — Necessário / Possui / Faltando") },
+                { "es",    new TextSet("Proyectos", "Materiales — Necesario / Tienes / Falta") },
+                { "ru",    new TextSet("Проекты", "Материалы — Нужно / Есть / Не хватает") },
+                { "it",    new TextSet("Progetti", "Materiali — Richiesti / Disponibili / Mancanti") },
+                { "pl",    new TextSet("Projekty", "Materiały — Potrzeba / Masz / Brakuje") },
+                { "ja",    new TextSet("プロジェクト", "材料 — 必要 / 所持 / 不足") },
+                { "zh-cn", new TextSet("项目", "材料 — 需要 / 持有 / 缺少") },
+                { "ko",    new TextSet("프로젝트", "재료 — 필요 / 보유 / 부족") }
+            };
+
+        internal static string Projects
+        {
+            get { return Current.Projects; }
+        }
+
+        internal static string Materials
+        {
+            get { return Current.Materials; }
+        }
+
+        internal static string CurrentLanguage
+        {
+            get
+            {
+                string language = "";
+                try
+                {
+                    language = GameSettings.GetCurrentLanguage();
+                }
+                catch
+                {
+                }
+
+                return Normalize(language);
+            }
+        }
+
+        internal static void ApplyFont(UILabel label)
+        {
+            if (label == null)
+            {
+                return;
+            }
+
+            try
+            {
+                GJL.EnsureLabelHasCorrectFont(label, false);
+            }
+            catch
+            {
+            }
+        }
+
+        internal static void OnLanguageChanged()
+        {
+            PlannerHud.OnLanguageChanged();
+            PlannerCraftOverlay.OnLanguageChanged();
+            Planner.LogLine("event=language_changed language=" + CurrentLanguage);
+        }
+
+        private static TextSet Current
+        {
+            get
+            {
+                TextSet value;
+                return Texts.TryGetValue(CurrentLanguage, out value) ? value : Texts["en"];
+            }
+        }
+
+        private static string Normalize(string language)
+        {
+            if (string.IsNullOrEmpty(language))
+            {
+                return "en";
+            }
+
+            return language.Trim().ToLowerInvariant().Replace('_', '-');
+        }
+    }
+
     internal static class PlannerHud
     {
         private const string LabelName = "CraftingPlannerHUD";
+        private static readonly Vector3 AnchorOffset = new Vector3(-40f, -65f, 0f);
+
         private static UILabel _label;
         private static HUD _hud;
+        private static UIPanel _panel;
+        private static Transform _anchor;
+        private static bool _geometryLogged;
 
         internal static void Ensure(HUD hud)
         {
@@ -493,15 +596,25 @@ namespace CraftingPlanner
 
             Destroy();
 
-            UILabel reference = hud.zone_descr != null ? hud.zone_descr : hud.version_label;
+            UILabel reference = hud.day_label != null
+                ? hud.day_label
+                : (hud.zone_descr != null ? hud.zone_descr : hud.version_label);
             UIPanel panel = hud.panel != null ? hud.panel : hud.GetComponentInParent<UIPanel>();
-            if (reference == null || panel == null)
+            Transform anchor = hud.time_circle_rotating != null
+                ? hud.time_circle_rotating
+                : (reference != null ? reference.transform : null);
+
+            if (reference == null || panel == null || anchor == null)
             {
-                Planner.LogLine("event=hud result=skipped reason=no_reference_or_panel");
+                Planner.LogLine("event=hud result=skipped reason=no_reference_panel_or_anchor");
                 return;
             }
 
             _hud = hud;
+            _panel = panel;
+            _anchor = anchor;
+            _geometryLogged = false;
+
             _label = UnityEngine.Object.Instantiate(reference, panel.transform, false);
             PrepareLabel(_label, LabelName, panel.gameObject.layer);
             Reposition();
@@ -510,6 +623,7 @@ namespace CraftingPlanner
             Planner.LogLine(
                 "event=hud result=created reference=" + reference.gameObject.name +
                 " panel=" + panel.gameObject.name +
+                " anchor=" + anchor.gameObject.name +
                 " layer=" + _label.gameObject.layer +
                 " pos=" + FormatVector(_label.transform.localPosition));
         }
@@ -537,6 +651,7 @@ namespace CraftingPlanner
             }
 
             _label.text = BuildText();
+            PlannerLocalization.ApplyFont(_label);
             Reposition();
             _label.gameObject.SetActive(true);
 
@@ -545,6 +660,12 @@ namespace CraftingPlanner
                 " active_self=" + _label.gameObject.activeSelf +
                 " active_hierarchy=" + _label.gameObject.activeInHierarchy +
                 " pos=" + FormatVector(_label.transform.localPosition));
+
+            if (!_geometryLogged && _label.gameObject.activeInHierarchy)
+            {
+                LogGeometry("first_visible");
+                _geometryLogged = true;
+            }
         }
 
         internal static void RefreshIfVisible()
@@ -560,6 +681,12 @@ namespace CraftingPlanner
             }
         }
 
+        internal static void OnLanguageChanged()
+        {
+            PlannerLocalization.ApplyFont(_label);
+            Refresh();
+        }
+
         internal static void Destroy()
         {
             if (_label != null)
@@ -569,18 +696,22 @@ namespace CraftingPlanner
 
             _label = null;
             _hud = null;
+            _panel = null;
+            _anchor = null;
+            _geometryLogged = false;
         }
 
         internal static string BuildText()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("Crafting Planner\n");
-            sb.Append("Проекты:\n");
+            sb.Append(PlannerLocalization.Projects);
+            sb.Append(":\n");
 
             foreach (ProjectGoal goal in Planner.GetGoals())
             {
                 sb.Append("• ");
-                sb.Append(goal.DisplayName);
+                sb.Append(Planner.GetProjectName(goal.Definition));
                 sb.Append(" ×");
                 sb.Append(goal.Quantity);
                 sb.Append("\n");
@@ -596,7 +727,10 @@ namespace CraftingPlanner
                     StringComparison.CurrentCultureIgnoreCase);
             });
 
-            sb.Append("\nМатериалы — Нужно / Есть / Не хватает:\n");
+            sb.Append("\n");
+            sb.Append(PlannerLocalization.Materials);
+            sb.Append(":\n");
+
             foreach (KeyValuePair<string, int> pair in rows)
             {
                 int have = Planner.GetPlayerHave(pair.Key);
@@ -619,12 +753,16 @@ namespace CraftingPlanner
             label.gameObject.name = name;
             label.gameObject.layer = layer;
             label.SetAnchor((GameObject)null);
+            label.transform.localRotation = Quaternion.identity;
             label.transform.localScale = Vector3.one;
             label.pivot = UIWidget.Pivot.TopLeft;
             label.width = 620;
             label.height = 300;
             label.multiLine = true;
             label.overflowMethod = UILabel.Overflow.ResizeHeight;
+            label.alpha = 1f;
+            label.depth = Math.Max(label.depth, 5000);
+            PlannerLocalization.ApplyFont(label);
         }
 
         internal static string FormatVector(Vector3 value)
@@ -634,17 +772,46 @@ namespace CraftingPlanner
 
         private static void Reposition()
         {
-            if (_label == null || _hud == null)
+            if (_label == null || _panel == null || _anchor == null)
             {
                 return;
             }
 
-            UIRoot root = _hud.GetComponentInParent<UIRoot>();
-            float h = root != null && root.activeHeight > 0 ? root.activeHeight : 720f;
-            float aspect = Screen.height > 0 ? (float)Screen.width / Screen.height : 16f / 9f;
-            float w = h * aspect;
+            Vector3 anchorInPanel = _panel.transform.InverseTransformPoint(_anchor.position);
+            _label.transform.localPosition = anchorInPanel + AnchorOffset;
+        }
 
-            _label.transform.localPosition = new Vector3(-w * 0.5f + 24f, h * 0.5f - 105f, 0f);
+        private static void LogGeometry(string reason)
+        {
+            if (_label == null || _panel == null || _anchor == null)
+            {
+                return;
+            }
+
+            Vector3 anchorInPanel = _panel.transform.InverseTransformPoint(_anchor.position);
+            Vector3[] corners = _label.worldCorners;
+            Vector3 bottomLeft = corners != null && corners.Length > 0
+                ? _panel.transform.InverseTransformPoint(corners[0])
+                : Vector3.zero;
+            Vector3 topRight = corners != null && corners.Length > 2
+                ? _panel.transform.InverseTransformPoint(corners[2])
+                : Vector3.zero;
+
+            Planner.LogLine(
+                "event=hud_geometry reason=" + reason +
+                " language=" + PlannerLocalization.CurrentLanguage +
+                " panel_size=" + _panel.width.ToString("0.0") + "x" + _panel.height.ToString("0.0") +
+                " panel_alpha=" + _panel.alpha.ToString("0.00") +
+                " panel_clip=" + _panel.clipping +
+                " panel_clip_offset=" + FormatVector(new Vector3(_panel.clipOffset.x, _panel.clipOffset.y, 0f)) +
+                " panel_scale=" + FormatVector(_panel.transform.lossyScale) +
+                " anchor=" + FormatVector(anchorInPanel) +
+                " label=" + FormatVector(_label.transform.localPosition) +
+                " label_depth=" + _label.depth +
+                " label_alpha=" + _label.alpha.ToString("0.00") +
+                " label_visible=" + _label.isVisible +
+                " corners_bl=" + FormatVector(bottomLeft) +
+                " corners_tr=" + FormatVector(topRight));
         }
     }
 
@@ -724,6 +891,12 @@ namespace CraftingPlanner
                 " active_self=" + _label.gameObject.activeSelf +
                 " active_hierarchy=" + _label.gameObject.activeInHierarchy +
                 " pos=" + PlannerHud.FormatVector(_label.transform.localPosition));
+        }
+
+        internal static void OnLanguageChanged()
+        {
+            PlannerLocalization.ApplyFont(_label);
+            Refresh();
         }
 
         internal static void Hide()
@@ -904,6 +1077,15 @@ namespace CraftingPlanner
 
             __result = true;
             return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(GameSettings), "ApplyLanguageChange")]
+    internal static class LanguageChangePatch
+    {
+        private static void Postfix()
+        {
+            PlannerLocalization.OnLanguageChanged();
         }
     }
 
