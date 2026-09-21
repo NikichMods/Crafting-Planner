@@ -94,3 +94,20 @@ Research Probe 0.2.0 established that the supported P0 families can use one plan
 - never simulate the repair/build/clearing action itself.
 
 Builder-internal pseudo actions such as remove/move controls are not planner projects. Production filtering should use semantic host data/context rather than a copied list of recipe IDs.
+
+
+## P0 goal management UX
+
+P0 intentionally does **not** use a separate planner-management window.
+
+Goal quantity is managed directly from the currently focused supported project card in the game's existing project/build craft UI:
+
+- add/increment acts on the focused project;
+- decrement acts on the focused project;
+- decrement from quantity 1 removes the goal;
+- one-off repairs, clearings, and one-time upgrades are capped at quantity 1;
+- repeatable placeable construction projects may have quantity greater than 1.
+
+The planner HUD is display-only in P0. It does not own navigation, buttons, or a second focus system.
+
+Concrete key/button bindings remain an implementation/compatibility detail. Vanilla CraftGUI X/Y must not be repurposed if doing so overrides their existing behavior. The first 0.1.0 candidate uses LT/RT for direct-card decrement/increment and keeps Y for Take Needed in an open chest.
