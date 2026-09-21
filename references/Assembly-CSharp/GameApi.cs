@@ -177,12 +177,14 @@ public class HUD : MonoBehaviour
 {
     public UILabel zone_descr;
     public UILabel version_label;
+    public UIPanel panel;
 }
 
 public class GUIElements : MonoBehaviour
 {
     public static GUIElements me { get { return null; } }
     public HUD hud;
+    public CraftGUI craft;
 }
 
 public static class TooltipsManager
