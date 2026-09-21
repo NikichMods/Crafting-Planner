@@ -14,10 +14,13 @@ The mod reduces memory burden and repetitive inventory transfer without becoming
 
 ## P0 goals
 
-Supported product categories to implement after their host paths are verified:
+Runtime-verified P0 project categories:
 
-- repeatable construction/build projects, such as several benches or workstations;
-- one-off world projects such as repairs, upgrades, or clearing blocked objects, when the game exposes stable concrete requirements.
+- repeatable construction/build projects exposed by a native builder as `ObjectCraftDefinition` with concrete `needs`;
+- one-time builder upgrades exposed in the same build UI with concrete `needs`;
+- world repair/clearing projects exposed from the interacted object as a concrete `CraftDefinition` with `needs` and a world-state change (`change_wgo`).
+
+Other scripted/special project shapes are not implicitly supported merely because they look like projects to the player; add them only after their real host data path is verified.
 
 Ordinary workstation production is not a P0 goal. Examples intentionally excluded as standalone pins:
 - make 10 planks;
@@ -78,3 +81,16 @@ A generic BepInEx/IMGUI text/debug overlay is suitable for research only, not th
 - world-level Take Needed without opening storage;
 - remote crafting;
 - alternative recipe/workstation planning.
+
+
+## Accepted project requirement model
+
+Research Probe 0.2.0 established that the supported P0 families can use one planner-side requirement model without reproducing execution logic:
+
+- resolve the exact host craft/object-craft definition;
+- read its exact `needs`;
+- store only minimal goal identity + planner quantity;
+- derive aggregated `Required` on demand;
+- never simulate the repair/build/clearing action itself.
+
+Builder-internal pseudo actions such as remove/move controls are not planner projects. Production filtering should use semantic host data/context rather than a copied list of recipe IDs.
