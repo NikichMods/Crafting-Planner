@@ -1,0 +1,70 @@
+name: Build Crafting Planner 0.1.0
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev/0.1.0
+    paths:
+      - 'CraftingPlanner.csproj'
+      - 'src/**'
+      - 'references/**'
+      - 'nuget.config'
+      - '.github/workflows/build.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crafting-planner-0.1.0-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore CraftingPlanner.csproj --configfile nuget.config
+
+      - name: Build
+        run: dotnet build CraftingPlanner.csproj -c Release --no-restore --nologo
+
+      - name: Verify package boundary
+        shell: pwsh
+        run: |
+          $dll = 'bin/Release/CraftingPlanner.dll'
+          if (!(Test-Path $dll)) {
+            throw "Expected DLL not found: $dll"
+          }
+          if (Test-Path 'bin/Release/Assembly-CSharp.dll') {
+            throw 'Compile-time Assembly-CSharp stub leaked into output.'
+          }
+          if (Test-Path 'bin/Release/Assembly-CSharp-firstpass.dll') {
+            throw 'Compile-time Assembly-CSharp-firstpass stub leaked into output.'
+          }
+
+      - name: Prepare artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          $target = 'artifacts/Crafting Planner 0.1.0.dll'
+          Copy-Item 'bin/Release/CraftingPlanner.dll' $target
+          $hash = (Get-FileHash $target -Algorithm SHA256).Hash.ToLowerInvariant()
+          Write-Host "SHA-256: $hash"
+
+      - name: Upload candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: CraftingPlanner-0.1.0
+          path: artifacts/Crafting Planner 0.1.0.dll
+          if-no-files-found: error
+          retention-days: 14
