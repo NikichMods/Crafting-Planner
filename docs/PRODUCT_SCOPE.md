@@ -113,3 +113,40 @@ The planner presentation is display-only in P0. It does not own navigation, butt
 Planner state should remain visible while the player is managing goals in the native project/build UI. RT/LT (or later accepted equivalents) should update the displayed goal quantity/material totals immediately, without requiring the player to close the craft window first. After the craft/project UI closes, the same planner state remains available on the ordinary gameplay HUD.
 
 Concrete key/button bindings remain an implementation/compatibility detail. Vanilla CraftGUI X/Y must not be repurposed if doing so overrides their existing behavior. The first 0.1.0 candidate uses LT/RT for direct-card decrement/increment and keeps Y for Take Needed in an open chest.
+
+
+## Localization requirement
+
+Crafting Planner must support every language exposed by Graveyard Keeper 1.407.
+
+Current host language set:
+- `en`
+- `de`
+- `fr`
+- `pt-br`
+- `es`
+- `ru`
+- `it`
+- `pl`
+- `ja`
+- `zh_cn`
+- `ko`
+
+Rules:
+- host-owned project and item names must be resolved from the game for the current language rather than cached as localized planner state;
+- Crafting Planner-owned labels must have translations for every host language above, with English fallback only for unknown/unsupported external locale codes;
+- changing the game language at runtime must refresh Planner text and the correct host font/atlas without restarting the game;
+- localization must remain a small presentation layer and must not duplicate the game's item/project localization database.
+
+## UI design checkpoint
+
+The current text-only Planner output is a technical presentation scaffold, not the intended final visual design.
+
+After the following are runtime-accepted:
+1. planner display inside the native project/build UI;
+2. planner display in ordinary gameplay HUD;
+3. live language switching;
+
+stop before visual polish and explicitly run a UI/UX design pass with the user.
+
+That design pass should decide the visual hierarchy, backing panel, icons/text balance, Required/Have/Missing presentation, compactness, and final placement. Only after the native anchor/coordinate model is verified should temporary F1 live-calibration controls be considered for fine tuning such as position, width, font scale, spacing, backing opacity, or similar presentation-only values.
