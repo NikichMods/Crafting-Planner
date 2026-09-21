@@ -146,3 +146,47 @@ Still open:
 7. Return one `BepInEx/LogOutput.log`. A screenshot is needed only if HUD position/readability is wrong.
 
 This pass does not require completing any irreversible build/repair.
+
+
+## Crafting Planner 0.1.0 runtime correction
+
+- Returned log: `LogOutput(2).log`, SHA-256 `5aad3ec6875f08a0c4a923e3ebc5b2ccacb9dbf4200a0da3271f6d64ed79cb5b`.
+- 0.1.0 startup attempted to patch a non-declared `CraftGUI.Update` method and Harmony `PatchAll` threw. The intended keyboard + / - hook was therefore invalid.
+- The returned log nevertheless directly verifies the already-applied gamepad goal-management patches:
+  - world repair `fix_morgue_builddesk`: RT add x1, LT remove;
+  - world repair `fix_morgue_throw_out`: RT add x1, LT remove;
+  - builder project `graveyard_builddesk:p:flowerbed_2x2`: RT add x1, LT remove.
+- The user reported not seeing the planner HUD, but the logged goal sequences returned quantity to zero before CraftGUI closed, so those sequences do not test visible non-empty HUD state.
+- Later runtime emitted an NGUI warning that widgets should not be moved outside the `UIPanel` hierarchy that manages them. 0.1.0 cloned the reference label directly under the HUD root; 0.1.1 corrects that parenting.
+- Status: 0.1.0 rejected; do not promote.
+
+## Crafting Planner 0.1.1 — corrected runtime candidate
+
+- Runtime acceptance pending.
+- Development branch: `dev/0.1.1`.
+- Exact built source commit: `3236ef83af04a67ad620f4d1f9587450f83ed93a`.
+- CI run: `35664503282`.
+- Artifact ID: `10668039306`.
+- Artifact: `CraftingPlanner-0.1.1`.
+- DLL: `Crafting Planner 0.1.1.dll`.
+- DLL SHA-256: `1c66e15d50ebec526221259ee361f23b192dd93eee47d843f2b2140c033bcc7e`.
+- Artifact ZIP SHA-256: `3d7454ee0da62d5dba036a6f5a9977f2e05d58af0af82111d24b08313bffbbb9`.
+- CI: Release build succeeded with 0 warnings / 0 errors; package-boundary check and artifact upload passed.
+
+### 0.1.1 changes
+
+- Removed the unverified `CraftGUI.Update` keyboard patch entirely rather than broadening to a high-frequency `BaseGUI.Update` hook.
+- Retained runtime-verified gamepad RT/LT direct-card management.
+- Cloned the HUD label under the native reference label's existing parent instead of reparenting directly to the HUD root.
+- Added one-time HUD creation diagnostics for native reference/parent identity.
+- Keyboard direct-card management is temporarily deferred until a narrow verified input seam exists.
+
+### Runtime check
+
+1. Replace 0.1.0 with 0.1.1.
+2. Open a supported project card and press RT once. **Do not press LT.**
+3. Close the craft/build UI. Verify whether the planner HUD is visible and readable.
+4. Reopen the same project and use RT/LT to verify quantity changes.
+5. Return one log. Add a screenshot only if HUD position/appearance is wrong.
+
+The separate gameplay-stutter investigation belongs to GraveyardKeeperResearch and is not an acceptance condition for Planner unless a controlled test later implicates Planner.
