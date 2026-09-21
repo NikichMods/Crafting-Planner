@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Crafting Planner";
-        public const string PluginVersion = "0.1.0";
+        public const string PluginVersion = "0.1.1";
 
         private Harmony _harmony;
 
@@ -491,14 +491,17 @@ namespace CraftingPlanner
             }
 
             _hud = hud;
-            _label = UnityEngine.Object.Instantiate(reference, hud.transform, false);
+            _label = UnityEngine.Object.Instantiate(reference, reference.transform.parent, false);
             _label.gameObject.name = LabelName;
             _label.transform.localScale = Vector3.one;
             _label.pivot = UIWidget.Pivot.TopLeft;
             _label.width = 620;
             Reposition();
             Refresh();
-            Planner.LogLine("event=hud result=created");
+            Planner.LogLine(
+                "event=hud result=created reference=" + reference.gameObject.name +
+                " parent=" + (_label.transform.parent != null ? _label.transform.parent.gameObject.name : "null"));
+
         }
 
         internal static void Refresh()
@@ -732,32 +735,6 @@ namespace CraftingPlanner
 
             __result = true;
             return false;
-        }
-    }
-
-    [HarmonyPatch(typeof(CraftGUI), "Update")]
-    internal static class CraftKeyboardPatch
-    {
-        private static void Postfix(CraftGUI __instance)
-        {
-            if (__instance == null || BaseGUI.opened_windows == null || BaseGUI.opened_windows.Count == 0)
-            {
-                return;
-            }
-
-            if (BaseGUI.opened_windows[BaseGUI.opened_windows.Count - 1] != __instance)
-            {
-                return;
-            }
-
-            if (Input.GetKeyDown(KeyCode.Equals) || Input.GetKeyDown(KeyCode.KeypadPlus))
-            {
-                Planner.AdjustFocusedProject(1, "keyboard_plus");
-            }
-            else if (Input.GetKeyDown(KeyCode.Minus) || Input.GetKeyDown(KeyCode.KeypadMinus))
-            {
-                Planner.AdjustFocusedProject(-1, "keyboard_minus");
-            }
         }
     }
 
