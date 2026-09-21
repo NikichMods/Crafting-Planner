@@ -254,3 +254,37 @@ Both research triggers worked:
 The game HUD/UI uses native NGUI-style components including `UIPanel`, `UIWidget`, `UILabel`, `UIButton`, `UI2DSprite`, and `GamepadSelectableButton`. `GUIElements.me.hud` owns the main HUD hierarchy and native windows notify the HUD on open/close.
 
 Therefore a vanilla-style planner HUD is technically feasible without using a generic BepInEx/IMGUI gameplay overlay. Preferred direction is a narrow custom planner object inside the game's UI hierarchy, reusing or cloning verified native visual components where practical. Exact anchor/prefab reuse remains a runtime/UI implementation gate.
+
+
+## Construction UI ownership — static verification 2026-09-22
+
+**Verified static**
+
+Normal construction desks do not use a separate `BuildsGUI` list as the primary path observed by the player. `MainGame.OpenBuildObjectGUI(build_desk)` builds a `CraftsInventory` from visible `ObjectCraftDefinition` entries whose `builder_ids` contain the current builder object, then calls:
+
+`CraftGUI.OpenAsBuild(build_desk, craftsInventory)`
+
+`CraftGUI.OpenAsBuild` sets build-specific state, disables craft-amount buttons, and opens the ordinary `CraftGUI` with that object-craft inventory.
+
+Therefore the production/research capture boundary for normal construction should distinguish `CraftGUI` **build context** rather than assuming that `CraftItemGUI` implies ordinary workstation production.
+
+**Verified static input detail**
+
+`CraftItemGUI.OnMouseOvered()` is the mouse-hover callback. `CraftItemGUI.OnOver()` is the gamepad-focus callback and returns immediately when the GUI is not in gamepad mode. Probe 0.1.0 only instrumented `OnOver`, so its successful focus evidence must not be treated as proof of mouse capture. Probe 0.2.0 instruments both callbacks separately.
+
+## One-off world-project discovery — static basis for Probe 0.2.0
+
+**Verified static, semantic boundary not yet accepted**
+
+World projects may enter several host-owned paths:
+
+- `WorldGameObject.Interact(...)` dispatches by `ObjectDefinition.InteractionType`;
+- `Builder` opens `MainGame.OpenBuildObjectGUI`;
+- `Craft` can run a valid interaction script first and otherwise delegate to `CraftComponent.Interact`;
+- `RunScript` executes the object's valid interaction script;
+- `CraftComponent.Interact` opens the native craft GUI when the object has interactable crafts;
+- `CraftComponent.FillCraftsList()` resolves object crafts from `GameBalance.me.GetCraftsForObject(wgo.obj_id)`;
+- `WorldGameObject.TryStartCraft(craftName)` resolves a concrete `CraftDefinition` and invokes native craft start;
+- project-like definitions can additionally carry `one_time_craft`, `change_wgo`, `end_script`, `end_event`, or `craft_after_finish`.
+
+This proves that repair/upgrade/clearing operations cannot safely be assumed to be one uniform recipe category from static inspection alone. Probe 0.2.0 observes representative live interactions before a production inclusion rule is chosen.
