@@ -50,3 +50,30 @@ Still open:
 - a capacity-limited destination was not exercised.
 
 Product consequence: ordinary workstation recipe capture is technically viable but no longer a P0 product goal. The next runtime evidence should focus on build/world-project seams rather than more normal crafting recipes.
+
+
+## Crafting Planner Research Probe 0.2.0 — awaiting runtime evidence
+
+- Purpose: verify the actual construction/build-menu context and identify the host-owned paths used by representative one-off world projects such as repairs, upgrades, and clearing actions.
+- Research branch: `research/build-world-projects`.
+- Exact source commit: `f11c6b3c9e20443431aaf3eb25339c78e5e711e6`.
+- CI run: `35658461574`.
+- GitHub Actions artifact: `CraftingPlannerResearchProbe-0.2.0` (artifact ID `10664933815`).
+- DLL: `Crafting Planner Research Probe 0.2.0.dll`.
+- DLL SHA-256: `4225666d7b67c8af0e49dab037a18505459c4ca59cb9523815c790274ca405e4`.
+- Artifact ZIP SHA-256: `2e70c333896da19a0f70add0caa624865371c48fe31374bb5e95f82beda3dde5`.
+- Build status: restore, compile, package-boundary verification, and artifact upload passed with 0 warnings / 0 errors.
+- Runtime status: pending user-installed Graveyard Keeper 1.407 evidence.
+- Save safety: the probe itself is observational. It does not transfer inventory, add planner state, start projects on its own, or mutate world state. Ordinary vanilla actions the user chooses to complete can still change the save normally.
+
+### Probe 0.2.0 runtime check
+
+1. Remove Probe 0.1.0 if it is still installed; install Probe 0.2.0.
+2. Open an ordinary construction/building desk and move the mouse across several build cards. If convenient, focus several cards with gamepad too. No construction needs to be completed.
+3. Interact normally with at least two still-available one-off world projects if convenient: ideally one repair/upgrade and one blocked-passage/rubble/clearing action.
+4. Do not finish an irreversible project solely for the probe. If a test action does change the world, avoid saving unless that gameplay change is wanted.
+5. Return one `BepInEx/LogOutput.log`.
+
+Expected diagnostic prefix: `CRAFTING_PLANNER_PROBE`.
+
+The probe records build-menu definitions/focus plus world-object interaction, script/craft ownership, target craft lists, `TryStartCraft`, and relevant `CraftComponent.Craft` starts. It does not manufacture the project result being investigated.
