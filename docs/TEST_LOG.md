@@ -63,7 +63,9 @@ Product consequence: ordinary workstation recipe capture is technically viable b
 - DLL SHA-256: `4225666d7b67c8af0e49dab037a18505459c4ca59cb9523815c790274ca405e4`.
 - Artifact ZIP SHA-256: `2e70c333896da19a0f70add0caa624865371c48fe31374bb5e95f82beda3dde5`.
 - Build status: restore, compile, package-boundary verification, and artifact upload passed with 0 warnings / 0 errors.
-- Runtime status: pending user-installed Graveyard Keeper 1.407 evidence.
+- Runtime status: executed successfully by the user on Graveyard Keeper 1.407 with the normal 35-plugin setup.
+- Returned `LogOutput(1).log` SHA-256: `3bf9cb3782b623e40c38ef70189f21de751585d2ea568c0b09ec3c8db9b29fce`.
+- No Crafting Planner Research Probe warning/error/exception was logged.
 - Save safety: the probe itself is observational. It does not transfer inventory, add planner state, start projects on its own, or mutate world state. Ordinary vanilla actions the user chooses to complete can still change the save normally.
 
 ### Probe 0.2.0 runtime check
@@ -77,3 +79,33 @@ Product consequence: ordinary workstation recipe capture is technically viable b
 Expected diagnostic prefix: `CRAFTING_PLANNER_PROBE`.
 
 The probe records build-menu definitions/focus plus world-object interaction, script/craft ownership, target craft lists, `TryStartCraft`, and relevant `CraftComponent.Craft` starts. It does not manufacture the project result being investigated.
+
+
+### Runtime result — 2026-09-22
+
+Accepted findings:
+
+- Build context is runtime-distinguishable and uses exact `ObjectCraftDefinition` entries in `CraftGUI`.
+- Mouse focus is live for build cards. The probe captured real build definitions, including their exact `needs`.
+- The graveyard builder exposed `flowerbed_2x2` with `stone_plate_1:2, peat:1, flw_poppy:2`.
+- The user selected a grave placement; the probe captured `build_selected`, followed by vanilla `CraftBuilding(... type=Put)` and build-mode entry.
+- The home wood builder exposed both:
+  - repeatable `mf_box_stuff_place -> flitch:4, nails:4, detail_1:4`;
+  - one-time `upgrade_player_buildzone -> detail_2:10, wooden_plank:8, nails:4`, `one_time=true`, `BuildType.None`, `end_script=player_buildzone_upgrade`.
+- Repairs of the mortuary build desk and corpse chute endpoints used ordinary `CraftDefinition` entries with concrete `needs` and `change_wgo`.
+- `blockage_V_low` used an ordinary `CraftDefinition` with `spike_1:10, wood_balk_1:1, detail_1:4` and `change_wgo=0`.
+- Repair/clearing screens used the normal `CraftGUI`, but their definitions are world-change projects rather than ordinary production goals.
+
+Acceptance consequence:
+
+The P0 project-material model is now runtime-accepted for:
+1. native builder `ObjectCraftDefinition` projects with plain `needs` (repeatable placement plus the observed one-time builder upgrade);
+2. interacted-world-object `CraftDefinition` projects with plain `needs` + `change_wgo` (observed repairs and blocked-passage clearing).
+
+No additional repair/clearing probe pass is required before production work on the planner data model.
+
+Still open:
+- gamepad build-card focus/input was not exercised in this log;
+- final production pin/manage gesture and UI lifecycle;
+- carried-bag/toolbelt and capacity-limited transfer edges if needed for release acceptance;
+- project completion hooks, which remain P1 rather than P0.
