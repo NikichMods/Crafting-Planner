@@ -48,6 +48,7 @@ public class UIWidget : UIRect
     public float alpha { get; set; }
     public int depth { get; set; }
     public bool isVisible { get { return true; } }
+    public Vector3[] localCorners { get { return new Vector3[4]; } }
     public Vector3[] worldCorners { get { return new Vector3[4]; } }
 }
 

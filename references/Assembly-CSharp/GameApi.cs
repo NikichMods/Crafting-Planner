@@ -175,6 +175,7 @@ public class ChestGUI : BaseGUI
 
 public class HUD : MonoBehaviour
 {
+    public UILabel zone_name;
     public UILabel zone_descr;
     public UILabel version_label;
     public UILabel day_label;
