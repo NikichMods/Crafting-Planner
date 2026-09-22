@@ -167,10 +167,12 @@ A world-level "Take Needed" action without opening the chest is also deferred fr
 
 Prefer one narrow research harness over repeated manual tests when runtime evidence is required.
 
-Current remaining runtime priorities:
+Current remaining runtime/product priorities:
+- complete the explicit UI/UX design pass: CraftGUI and ordinary HUD surfaces must share one visual/layout specification, occupy the same apparent screen position, use native item icons, and remain compact/readable;
 - choose and verify the final production pin/manage input gesture, including gamepad focus/compatibility; Probe 0.2.0 explicitly verified mouse focus but did not record a gamepad build-focus event;
-- verify the production planner HUD placement/lifecycle in the native GUI hierarchy;
 - isolate carried-bag/toolbelt and capacity-limited transfer edges only if production correctness still depends on runtime evidence beyond the already verified native inventory path.
+
+The ordinary gameplay HUD anchor/lifecycle and live-localization gate are accepted from the 0.1.4 runtime pass.
 
 The build/world-project requirement model itself is runtime-accepted for the two P0 families documented above.
 
