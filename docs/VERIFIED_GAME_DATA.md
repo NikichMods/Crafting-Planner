@@ -373,3 +373,30 @@ Do not extend this rule to unrelated special/scripted craft systems merely becau
 - gamepad build-card focus was not exercised; only mouse focus is runtime-confirmed in Probe 0.2.0;
 - the repair/clearing crafts were opened but not completed, so completion hooks remain a later concern (P1 auto-decrement, not P0);
 - carried-bag and capacity-limited transfer edges remain separate inventory-runtime questions.
+
+
+## Native resolution / NGUI scaling lifecycle — static verification 2026-09-22
+
+**Verified static**
+
+Graveyard Keeper owns GUI resolution changes through `MainGame.OnScreenSizeChanged(int w, int h)`.
+
+That path:
+
+- resolves the current screen dimensions;
+- applies the game's configured pixel size to the world camera;
+- updates `MainGame.ui_root.manualHeight = screenHeight / gui_pixel_zoom`;
+- calls `GUIElements.RecalcScreenResolution(w, h)`;
+- then lets the existing NGUI hierarchy recalculate its layout.
+
+The target runtime currently uses `gui_pixel_zoom = 2`.
+
+NGUI's `UIRoot` also exposes its own scaling model (`scalingStyle`, `activeHeight`, `pixelSizeAdjustment`) and anchored rectangles/widgets.
+
+**Architecture consequence**
+
+Crafting Planner must not treat the user's current 2560x1440 resolution or a manually derived `Screen.width/Screen.height` offset as the canonical HUD coordinate system.
+
+The production HUD should attach to a verified native NGUI ownership/anchor context and allow the game's own resolution/layout lifecycle to reposition/scale it across resolutions and aspect ratios. Small user-facing offsets may later be configurable for visual preference, but those offsets must be relative to the accepted native anchor/layout model rather than compensating for an unknown coordinate system.
+
+Runtime verification of the exact HUD anchor/ownership model is assigned to HUD Rendering Probe 0.3.0.
