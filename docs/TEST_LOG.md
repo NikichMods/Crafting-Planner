@@ -276,3 +276,15 @@ The test need not complete any construction and does not need to re-prove goal i
 The probe records actual projected screen rectangles, anchors, panel depth/clipping/alpha, widget depth/alpha/geometry, UIRoot scaling/manualHeight/pixel adjustment, and two temporary native-label control placements.
 
 Production acceptance must prefer the native model demonstrated by this test rather than coordinates fitted only to the user's 2560x1440 setup.
+
+
+### HUD Rendering Probe 0.3.0 runtime result
+
+- Returned log: `LogOutput(4).log`.
+- Log SHA-256: `8bcff4bbbda0623186eb67c52e85031f5d5f2de7f65e51610049f8436f1c8aad`.
+- User screenshot: only **HUD PROBE A - sibling** was visible in ordinary gameplay.
+- 0.1.2 Planner HUD was active/drawable but its projected rectangle was wholly outside the viewport.
+- Probe A, kept in the native `HUD.zone_name` parent context, rendered on-screen.
+- Probe B, moved directly under the HUD panel, was off-screen.
+- The 1600x1200 transition was followed by an external borderless/window resize back toward the desktop-sized window; Probe A still tracked the visible native HUD context.
+- Accepted conclusion: use the native `HUD.zone_name` parent coordinate context; do not compensate with screen/root-derived positioning or Borderless-specific polling.
