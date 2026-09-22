@@ -318,10 +318,30 @@ If ordinary HUD placement and live localization are accepted, the next product c
 
 ## Crafting Planner 0.1.4 — verified-native-parent HUD candidate
 
-- Status: build/runtime handoff pending.
+- Status: runtime acceptance pending.
 - Development branch: `dev/0.1.4`.
+- Exact built source commit: `ad836eae5556858feb09f9cbf4d8eefead78931f`.
+- CI run: `35754275461`.
+- GitHub Actions artifact: `CraftingPlanner-0.1.4` (artifact ID `10707298538`).
+- DLL: `Crafting Planner 0.1.4.dll`.
+- DLL SHA-256: `b8ac438d19399963d51b9d7c1fd8fe0349d229566c70f80a1e80764d72f5f2d9`.
+- Artifact ZIP SHA-256: `a270a47b9ba6d9d914dd55d29770f1a30cdc66edc80f558d64bad661e0921d62`.
+- CI: Release build succeeded with 0 warnings / 0 errors; package-boundary verification and artifact upload passed.
+- The immediately preceding CI run `35754054842` failed before artifact creation because the minimal compile-time stubs lacked already-verified public members `HUD.zone_name` and `UIWidget.localCorners`; the stubs were corrected in the exact built source above.
 - Inherits the 0.1.3 live-localization work.
 - Gameplay Planner HUD is cloned from `HUD.zone_name` and kept under the exact same native parent that rendered Probe A.
 - Planner position is relative to the native zone-name label's bottom-right corner with a small fixed NGUI-local gap. The label uses a TopRight pivot so its wider content grows leftward into the viewport.
 - Removed the production dependency on root/screen-derived HUD coordinates and on the 0.1.3 `time_circle_rotating` panel-coordinate conversion.
 - No per-frame update, resolution polling, or Borderless-specific compatibility hook.
+
+
+### 0.1.4 focused runtime check
+
+1. Remove the HUD Rendering Probe DLL and replace any older Crafting Planner DLL with the exact 0.1.4 candidate.
+2. Load a save, add one supported project with RT, and close CraftGUI while the goal remains.
+3. Confirm the ordinary gameplay Planner HUD is visible and remains attached to the native upper-right zone-info context.
+4. Switch the game once from Russian to English while the goal remains; confirm Planner headings/project/item names redraw in the new language.
+5. Change the game resolution to 1600x1200 once with the user's normal Borderless Gaming setup still active, return to gameplay, and confirm the Planner remains visible/attached. Restore the preferred resolution afterward.
+6. Return one `BepInEx/LogOutput.log` and one ordinary-gameplay screenshot.
+
+This pass does not need to re-prove goal math, aggregation, or CraftGUI RT/LT behavior already accepted from earlier candidates.
