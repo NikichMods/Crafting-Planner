@@ -415,3 +415,28 @@ For the ordinary gameplay Planner HUD, use the verified `HUD.zone_name` parent c
 Do not use `Screen.width`, `Screen.height`, `UIRoot.activeHeight`, or one-time root-panel coordinate conversion as the canonical placement mechanism.
 
 Do not add Borderless Gaming-specific polling or resolution hooks merely to compensate for external window resizing; inheriting the native HUD parent transform is the narrower compatibility mechanism.
+
+
+## Planner UI continuity and native item icons — verification 2026-09-22
+
+**Verified runtime / static**
+
+Crafting Planner 0.1.4 is visible in the ordinary gameplay HUD when attached to the verified `HUD.zone_name` parent context. Live language changes redraw the Planner correctly in the exercised runtime languages.
+
+The native project/build `CraftGUI` hides the ordinary HUD when opened and shows it again when closed. Therefore production should not keep a Planner child under the hidden HUD alive by overriding vanilla HUD lifecycle merely to preserve continuity.
+
+Accepted architecture direction:
+
+- keep the ordinary Planner surface in the verified HUD context;
+- keep the project/build Planner surface in the native CraftGUI context;
+- make both surfaces use the same visual/layout specification and the same planner state;
+- place them at the same apparent screen location so the transition is visually seamless;
+- do not create a second navigation/focus system merely for the Planner display.
+
+For material icons, the game already owns the canonical icon path. Native item UI resolves an `ItemDefinition` icon name with `ItemDefinition.GetIcon()` and loads the sprite through `EasySpritesCollection.GetSprite(...)` into a `UI2DSprite` (for example, `BaseItemCellGUI`). Crafting Planner should reuse that path rather than maintain an icon database.
+
+**1600x1200 + external borderless behavior**
+
+The 0.1.4 runtime pass applied the game's native 1600x1200 windowed resolution and `OnScreenSizeChanged(1600,1200)`. Immediately afterward the runtime detected external window-size changes through approximately 1616x1239 back to 2560x1440. The user screenshot showed the vanilla HUD itself globally displaced/scaled in that state, not a Planner-only failure.
+
+The Planner remained attached to its native HUD context throughout. Do not add Planner-specific Borderless Gaming polling, screen-size compensation, or alternate coordinate math to repair a host/global UI state. Such compensation would reintroduce the coordinate-system duplication that Probe 0.3.0 rejected.
