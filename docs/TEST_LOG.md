@@ -246,3 +246,33 @@ Runtime acceptance focus:
 6. Return one log; add a screenshot if either surface is missing, misplaced, clipped, or visually unsuitable.
 
 The test need not complete any construction and does not need to re-prove goal identity/retention, which 0.1.1 already established.
+
+
+## HUD Rendering Probe 0.3.0 — handoff
+
+- Purpose: identify the exact NGUI render/layout cause of the invisible ordinary gameplay Planner HUD and verify a resolution/aspect-ratio-safe ownership/anchor model.
+- Research branch: `research/hud-rendering`.
+- Exact source commit: `9ef55362c6056bee1e0f1405e44909205ff0c333`.
+- CI run: `35734658767`.
+- Artifact: `CraftingPlanner-HUD-Rendering-Probe-0.3.0` (artifact ID `10697300032`).
+- DLL: `Crafting Planner HUD Rendering Probe 0.3.0.dll`.
+- DLL SHA-256: `3d9c14e690d040acf91223560377bfd902538d69b10e3d00f7bad215bb89dbe7`.
+- Artifact ZIP SHA-256: `f719ea1489314cd209fb0dce0a9317614407f39d07511f419de1d4432cad500e`.
+- CI: Release build succeeded with 0 warnings / 0 errors; both compile-time game/NGUI stub assemblies are excluded from the artifact.
+- Runtime status: pending.
+
+### Questions answered by this probe
+
+1. Why can `CraftingPlannerHUD` be active in the HUD hierarchy yet not render on screen?
+2. Which concrete render-state difference exists between it and visible vanilla HUD labels?
+3. Which ownership/anchor model survives a real 16:9 -> 4:3 -> 16:9 resolution transition without Crafting Planner performing its own screen-size offset calculation?
+
+### Runtime matrix
+
+- Baseline: user's normal 2560x1440.
+- Alternate aspect ratio: 1600x1200.
+- Restore: 2560x1440.
+
+The probe records actual projected screen rectangles, anchors, panel depth/clipping/alpha, widget depth/alpha/geometry, UIRoot scaling/manualHeight/pixel adjustment, and two temporary native-label control placements.
+
+Production acceptance must prefer the native model demonstrated by this test rather than coordinates fitted only to the user's 2560x1440 setup.
