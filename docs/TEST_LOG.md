@@ -345,3 +345,33 @@ If ordinary HUD placement and live localization are accepted, the next product c
 6. Return one `BepInEx/LogOutput.log` and one ordinary-gameplay screenshot.
 
 This pass does not need to re-prove goal math, aggregation, or CraftGUI RT/LT behavior already accepted from earlier candidates.
+
+
+## Crafting Planner 0.1.4 runtime result — HUD substrate accepted, final UI deferred
+
+- Returned log: `LogOutput(5).log`.
+- Log SHA-256: `3a19a6ca530b2de670509db5cfea4c250d0256795cad00e29a5000374229ae1d`.
+- Runtime: Graveyard Keeper 1.407 with the user's normal 35-plugin setup.
+- Ordinary gameplay Planner HUD is visible at 2560x1440.
+- Native project/build CraftGUI Planner surface remains visible and goal/material state remains consistent.
+- User exercised live language switching and reported correct Planner localization; the log records redraws across multiple runtime languages including Korean, Simplified Chinese, Japanese, Polish, Italian, and Russian.
+- The verified ordinary-HUD surface remained in the native `zone_name` parent context.
+- The 1600x1200 test is not treated as a Planner-specific layout failure:
+  - the game applied 1600x1200 and ran `OnScreenSizeChanged(1600,1200)`;
+  - an external borderless/window resize then changed the actual window through ~1616x1239 back to 2560x1440;
+  - the screenshot shows the vanilla HUD itself globally displaced/scaled in that mixed state;
+  - Planner continued to follow the same native HUD context.
+- Accepted technical conclusion: 0.1.4 closes the ordinary gameplay HUD anchor/lifecycle and live-localization gate. No Borderless-specific compensation is warranted.
+
+### UX acceptance status
+
+0.1.4 is **not** the final presentation candidate.
+
+User feedback accepted for the next UI pass:
+- project/build and ordinary gameplay Planner surfaces must look identical;
+- both must occupy the same apparent screen position so closing/opening CraftGUI feels like the same Planner card remains in place;
+- materials should use native item icons as the primary representation;
+- presentation should be as concise, clean, and immediately readable as possible;
+- current large text-only headings/material-name rows are a technical scaffold only.
+
+The next candidate should therefore be a UI-design implementation, not another coordinate-debug build.
