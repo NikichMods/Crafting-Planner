@@ -399,4 +399,19 @@ Crafting Planner must not treat the user's current 2560x1440 resolution or a man
 
 The production HUD should attach to a verified native NGUI ownership/anchor context and allow the game's own resolution/layout lifecycle to reposition/scale it across resolutions and aspect ratios. Small user-facing offsets may later be configurable for visual preference, but those offsets must be relative to the accepted native anchor/layout model rather than compensating for an unknown coordinate system.
 
-Runtime verification of the exact HUD anchor/ownership model is assigned to HUD Rendering Probe 0.3.0.
+HUD Rendering Probe 0.3.0 completed the runtime verification.
+
+**Verified runtime**
+
+- A Planner label placed directly in the HUD panel with screen/root-derived coordinates could be fully active and drawable while its projected rectangle remained entirely outside the viewport.
+- A control label cloned from the live `HUD.zone_name` label and kept under that label's existing native parent rendered on-screen.
+- A second control moved directly under the HUD panel did not.
+- The same native-parent control remained correctly attached to the visible HUD after a 1600x1200 resolution change followed by an external borderless/window resize back toward the desktop-sized window.
+
+**Accepted HUD layout rule**
+
+For the ordinary gameplay Planner HUD, use the verified `HUD.zone_name` parent coordinate context. Position Planner content only by a small local offset from that native label/context.
+
+Do not use `Screen.width`, `Screen.height`, `UIRoot.activeHeight`, or one-time root-panel coordinate conversion as the canonical placement mechanism.
+
+Do not add Borderless Gaming-specific polling or resolution hooks merely to compensate for external window resizing; inheriting the native HUD parent transform is the narrower compatibility mechanism.
