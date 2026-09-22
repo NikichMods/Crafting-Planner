@@ -142,6 +142,19 @@ Rules:
 
 The current text-only Planner output is a technical presentation scaffold, not the intended final visual design.
 
+Accepted UX direction from the 0.1.4 runtime pass:
+
+- the Planner must appear in the **same apparent screen position, size, hierarchy, and visual style** while the native project/build UI is open and after it closes;
+- switching between the CraftGUI surface and the ordinary gameplay HUD should look like one persistent Planner card, not two different interfaces jumping between positions;
+- both host-native surfaces should share one layout/rendering specification and the same planner state;
+- the material presentation should be icon-led, using the game's own item icons rather than spelling out every item name as the primary visual;
+- text should be minimal and information-dense; the title and section labels must not dominate the panel;
+- Required / Have / Missing must remain unambiguous, but they may be encoded compactly with counts, state color/checks, and spacing rather than three long repeated labels per material;
+- prefer a small readable backing/panel only when it materially improves contrast; avoid a large opaque management window;
+- visual density should scale by content, with overflow handled deliberately rather than letting the panel grow across the playfield.
+
+The 0.1.4 ordinary-HUD anchor mechanism is accepted as a technical placement substrate. The current CraftGUI-vs-HUD visual mismatch is not accepted as final UX.
+
 After the following are runtime-accepted:
 1. planner display inside the native project/build UI;
 2. planner display in ordinary gameplay HUD;
