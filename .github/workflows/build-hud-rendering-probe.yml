@@ -1,0 +1,70 @@
+name: Build Crafting Planner HUD Rendering Probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/hud-rendering
+    paths:
+      - 'CraftingPlannerHudRenderingProbe.csproj'
+      - 'research-hud-rendering/**'
+      - 'references/**'
+      - 'nuget.config'
+      - '.github/workflows/build-hud-rendering-probe.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crafting-planner-hud-rendering-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore CraftingPlannerHudRenderingProbe.csproj --configfile nuget.config
+
+      - name: Build probe
+        run: dotnet build CraftingPlannerHudRenderingProbe.csproj -c Release --no-restore --nologo
+
+      - name: Verify package boundary
+        shell: pwsh
+        run: |
+          $dll = 'bin/HudProbe/CraftingPlannerHudRenderingProbe.dll'
+          if (!(Test-Path $dll)) {
+            throw "Expected DLL not found: $dll"
+          }
+          if (Test-Path 'bin/HudProbe/Assembly-CSharp.dll') {
+            throw 'Compile-time Assembly-CSharp stub leaked into probe output.'
+          }
+          if (Test-Path 'bin/HudProbe/Assembly-CSharp-firstpass.dll') {
+            throw 'Compile-time Assembly-CSharp-firstpass stub leaked into probe output.'
+          }
+
+      - name: Prepare artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          $target = 'artifacts/Crafting Planner HUD Rendering Probe 0.3.0.dll'
+          Copy-Item 'bin/HudProbe/CraftingPlannerHudRenderingProbe.dll' $target
+          $hash = (Get-FileHash $target -Algorithm SHA256).Hash.ToLowerInvariant()
+          Write-Host "SHA-256: $hash"
+
+      - name: Upload probe
+        uses: actions/upload-artifact@v4
+        with:
+          name: CraftingPlanner-HUD-Rendering-Probe-0.3.0
+          path: artifacts/Crafting Planner HUD Rendering Probe 0.3.0.dll
+          if-no-files-found: error
+          retention-days: 7

@@ -136,6 +136,8 @@ public class MainGame : MonoBehaviour
 {
     public static MainGame me;
     public WorldGameObject player;
+    public UIRoot ui_root;
+    public int gui_pixel_zoom = 2;
 }
 
 public class BaseGUI : MonoBehaviour
@@ -175,6 +177,7 @@ public class ChestGUI : BaseGUI
 
 public class HUD : MonoBehaviour
 {
+    public UILabel day_label;
     public UILabel zone_descr;
     public UILabel version_label;
     public UIPanel panel;
