@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Crafting Planner";
-        public const string PluginVersion = "0.1.3";
+        public const string PluginVersion = "0.1.4";
 
         private Harmony _harmony;
 
@@ -573,12 +573,13 @@ namespace CraftingPlanner
     internal static class PlannerHud
     {
         private const string LabelName = "CraftingPlannerHUD";
-        private static readonly Vector3 AnchorOffset = new Vector3(-40f, -65f, 0f);
+        private const float GapBelowZoneName = 12f;
 
         private static UILabel _label;
         private static HUD _hud;
+        private static UILabel _reference;
+        private static Transform _parent;
         private static UIPanel _panel;
-        private static Transform _anchor;
         private static bool _geometryLogged;
 
         internal static void Ensure(HUD hud)
@@ -596,34 +597,37 @@ namespace CraftingPlanner
 
             Destroy();
 
-            UILabel reference = hud.day_label != null
-                ? hud.day_label
-                : (hud.zone_descr != null ? hud.zone_descr : hud.version_label);
-            UIPanel panel = hud.panel != null ? hud.panel : hud.GetComponentInParent<UIPanel>();
-            Transform anchor = hud.time_circle_rotating != null
-                ? hud.time_circle_rotating
-                : (reference != null ? reference.transform : null);
-
-            if (reference == null || panel == null || anchor == null)
+            UILabel reference = hud.zone_name;
+            if (reference == null || reference.transform.parent == null)
             {
-                Planner.LogLine("event=hud result=skipped reason=no_reference_panel_or_anchor");
+                Planner.LogLine("event=hud result=skipped reason=no_zone_name_reference");
+                return;
+            }
+
+            Transform parent = reference.transform.parent;
+            UIPanel panel = reference.GetComponentInParent<UIPanel>();
+            if (panel == null)
+            {
+                Planner.LogLine("event=hud result=skipped reason=no_zone_name_panel");
                 return;
             }
 
             _hud = hud;
+            _reference = reference;
+            _parent = parent;
             _panel = panel;
-            _anchor = anchor;
             _geometryLogged = false;
 
-            _label = UnityEngine.Object.Instantiate(reference, panel.transform, false);
-            PrepareLabel(_label, LabelName, panel.gameObject.layer);
+            _label = UnityEngine.Object.Instantiate(reference, parent, false);
+            PrepareLabel(_label, LabelName, reference.gameObject.layer);
+            _label.pivot = UIWidget.Pivot.TopRight;
             Reposition();
             Refresh();
 
             Planner.LogLine(
                 "event=hud result=created reference=" + reference.gameObject.name +
+                " parent=" + parent.gameObject.name +
                 " panel=" + panel.gameObject.name +
-                " anchor=" + anchor.gameObject.name +
                 " layer=" + _label.gameObject.layer +
                 " pos=" + FormatVector(_label.transform.localPosition));
         }
@@ -696,8 +700,9 @@ namespace CraftingPlanner
 
             _label = null;
             _hud = null;
+            _reference = null;
+            _parent = null;
             _panel = null;
-            _anchor = null;
             _geometryLogged = false;
         }
 
@@ -772,46 +777,62 @@ namespace CraftingPlanner
 
         private static void Reposition()
         {
-            if (_label == null || _panel == null || _anchor == null)
+            if (_label == null || _reference == null || _parent == null)
             {
                 return;
             }
 
-            Vector3 anchorInPanel = _panel.transform.InverseTransformPoint(_anchor.position);
-            _label.transform.localPosition = anchorInPanel + AnchorOffset;
+            Vector3[] corners = _reference.localCorners;
+            if (corners == null || corners.Length < 4)
+            {
+                return;
+            }
+
+            Vector3 bottomRightWorld = _reference.transform.TransformPoint(corners[3]);
+            Vector3 bottomRightInParent = _parent.InverseTransformPoint(bottomRightWorld);
+
+            _label.transform.localPosition = new Vector3(
+                bottomRightInParent.x,
+                bottomRightInParent.y - GapBelowZoneName,
+                bottomRightInParent.z);
         }
 
         private static void LogGeometry(string reason)
         {
-            if (_label == null || _panel == null || _anchor == null)
+            if (_label == null || _reference == null || _parent == null || _panel == null)
             {
                 return;
             }
 
-            Vector3 anchorInPanel = _panel.transform.InverseTransformPoint(_anchor.position);
-            Vector3[] corners = _label.worldCorners;
-            Vector3 bottomLeft = corners != null && corners.Length > 0
-                ? _panel.transform.InverseTransformPoint(corners[0])
+            Vector3[] referenceCorners = _reference.worldCorners;
+            Vector3[] labelCorners = _label.worldCorners;
+
+            Vector3 referenceBottomRight = referenceCorners != null && referenceCorners.Length > 3
+                ? _parent.InverseTransformPoint(referenceCorners[3])
                 : Vector3.zero;
-            Vector3 topRight = corners != null && corners.Length > 2
-                ? _panel.transform.InverseTransformPoint(corners[2])
+            Vector3 labelBottomLeft = labelCorners != null && labelCorners.Length > 0
+                ? _parent.InverseTransformPoint(labelCorners[0])
+                : Vector3.zero;
+            Vector3 labelTopRight = labelCorners != null && labelCorners.Length > 2
+                ? _parent.InverseTransformPoint(labelCorners[2])
                 : Vector3.zero;
 
             Planner.LogLine(
                 "event=hud_geometry reason=" + reason +
                 " language=" + PlannerLocalization.CurrentLanguage +
-                " panel_size=" + _panel.width.ToString("0.0") + "x" + _panel.height.ToString("0.0") +
+                " reference=" + _reference.gameObject.name +
+                " parent=" + _parent.gameObject.name +
+                " panel=" + _panel.gameObject.name +
                 " panel_alpha=" + _panel.alpha.ToString("0.00") +
                 " panel_clip=" + _panel.clipping +
-                " panel_clip_offset=" + FormatVector(new Vector3(_panel.clipOffset.x, _panel.clipOffset.y, 0f)) +
-                " panel_scale=" + FormatVector(_panel.transform.lossyScale) +
-                " anchor=" + FormatVector(anchorInPanel) +
+                " parent_scale=" + FormatVector(_parent.lossyScale) +
+                " reference_br=" + FormatVector(referenceBottomRight) +
                 " label=" + FormatVector(_label.transform.localPosition) +
                 " label_depth=" + _label.depth +
                 " label_alpha=" + _label.alpha.ToString("0.00") +
                 " label_visible=" + _label.isVisible +
-                " corners_bl=" + FormatVector(bottomLeft) +
-                " corners_tr=" + FormatVector(topRight));
+                " corners_bl=" + FormatVector(labelBottomLeft) +
+                " corners_tr=" + FormatVector(labelTopRight));
         }
     }
 

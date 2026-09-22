@@ -1,10 +1,10 @@
-name: Build Crafting Planner 0.1.3
+name: Build Crafting Planner 0.1.4
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - dev/0.1.3
+      - dev/0.1.4
     paths:
       - 'CraftingPlanner.csproj'
       - 'src/**'
@@ -16,7 +16,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: crafting-planner-0.1.3-${{ github.ref }}
+  group: crafting-planner-0.1.4-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -56,7 +56,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path artifacts | Out-Null
-          $target = 'artifacts/Crafting Planner 0.1.3.dll'
+          $target = 'artifacts/Crafting Planner 0.1.4.dll'
           Copy-Item 'bin/Release/CraftingPlanner.dll' $target
           $hash = (Get-FileHash $target -Algorithm SHA256).Hash.ToLowerInvariant()
           Write-Host "SHA-256: $hash"
@@ -64,7 +64,7 @@ jobs:
       - name: Upload candidate
         uses: actions/upload-artifact@v4
         with:
-          name: CraftingPlanner-0.1.3
-          path: artifacts/Crafting Planner 0.1.3.dll
+          name: CraftingPlanner-0.1.4
+          path: artifacts/Crafting Planner 0.1.4.dll
           if-no-files-found: error
           retention-days: 14

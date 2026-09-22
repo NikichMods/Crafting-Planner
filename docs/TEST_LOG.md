@@ -296,3 +296,32 @@ The test need not complete any construction and does not need to re-prove goal i
 6. Return one `BepInEx/LogOutput.log` and one screenshot of the ordinary gameplay HUD. If language switching or CJK rendering is wrong, include a screenshot of that state too.
 
 If ordinary HUD placement and live localization are accepted, the next product checkpoint is the explicit UI/UX design pass before visual polish/F1 calibration.
+
+
+## HUD Rendering Probe 0.3.0 — runtime result
+
+- Returned runtime log: `LogOutput(4).log`.
+- Log SHA-256: `8bcff4bbbda0623186eb67c52e85031f5d5f2de7f65e51610049f8436f1c8aad`.
+- User screenshot showed only **HUD PROBE A - sibling** in ordinary gameplay; Probe B and the 0.1.2 Planner HUD were not visible.
+- The log proves the 0.1.2 Planner HUD was not blocked by alpha/depth/NGUI geometry generation. After CraftGUI closed it was active, visible, and had vertices, but its projected screen rectangle was entirely outside the 2560x1440 viewport.
+- Probe A, cloned under the same native parent as the visible `HUD.zone_name` label, remained on-screen.
+- Probe B, moved directly under the HUD panel using converted coordinates, remained off-screen.
+- The game's 1600x1200 transition was exercised. An external borderless/window manager then resized the actual window through approximately 1616x1239 back to 2560x1440 while the game's internal NGUI manual height still reflected the 1600x1200 transition. Probe A still followed the visible native HUD context.
+- Accepted conclusion: production HUD placement must live in the verified `HUD.zone_name` parent coordinate context and must not derive canonical placement from `Screen.width`, `Screen.height`, `UIRoot.activeHeight`, or a one-time root-panel coordinate conversion.
+- No special Borderless Gaming polling/integration is justified: following the native HUD parent is the narrower and more robust mechanism.
+
+## Crafting Planner 0.1.3 — superseded before runtime acceptance
+
+- 0.1.3 remains immutable at its recorded source/artifact identity.
+- Its direct-HUD-panel + `time_circle_rotating` anchor approach is no longer the preferred candidate after HUD Rendering Probe 0.3.0 directly demonstrated a stronger host-native model.
+- 0.1.3 is therefore superseded without promotion; do not rebuild or overwrite it.
+
+## Crafting Planner 0.1.4 — verified-native-parent HUD candidate
+
+- Status: build/runtime handoff pending.
+- Development branch: `dev/0.1.4`.
+- Inherits the 0.1.3 live-localization work.
+- Gameplay Planner HUD is cloned from `HUD.zone_name` and kept under the exact same native parent that rendered Probe A.
+- Planner position is relative to the native zone-name label's bottom-right corner with a small fixed NGUI-local gap. The label uses a TopRight pivot so its wider content grows leftward into the viewport.
+- Removed the production dependency on root/screen-derived HUD coordinates and on the 0.1.3 `time_circle_rotating` panel-coordinate conversion.
+- No per-frame update, resolution polling, or Borderless-specific compatibility hook.
