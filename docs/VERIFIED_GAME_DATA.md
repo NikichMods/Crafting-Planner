@@ -421,6 +421,10 @@ Do not add Borderless Gaming-specific polling or resolution hooks merely to comp
 
 ## Planner UI continuity and native item icons — verification 2026-09-22
 
+### World-project icon spot-check — static 2026-10-15
+
+Using the same pinned 1.407 `resources.assets` game_data (MonoBehaviour150254), reconstructed with the already documented UnityPy/TypeTreeGenerator toolchain, verified canonical `CraftDefinition.icon` values: `fix_morgue_builddesk`, `fix_morgue_throw_in`, `fix_morgue_throw_out` all use `i_b_hammer`; `blockage_V_low_destruction` uses `i_b_mining`. Matching native Sprites exist and are 32x32 blue construction pictograms. Thus these accepted representative world-project families have native artwork, but different repairs share a pictogram: project names remain meaningful. This is a four-definition static spot-check, not artwork/runtime acceptance for every scripted quest. Private data dump/art stays under ignored `.local/`; no host payload entered Git.
+
 **Verified runtime / static**
 
 Crafting Planner 0.1.4 is visible in the ordinary gameplay HUD when attached to the verified `HUD.zone_name` parent context. Live language changes redraw the Planner correctly in the exercised runtime languages.

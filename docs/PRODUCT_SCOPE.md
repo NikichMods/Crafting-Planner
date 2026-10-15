@@ -208,3 +208,13 @@ Still a mockup-only pass, explicitly requested by the user. Keep zero Missing vi
 Per-project green readiness is deferred: shared resources can make individual projects look simultaneously affordable without enough stock for their combined quantity. Do not introduce allocation/reservation semantics for a presentation effect. Aggregate Missing is the unambiguous resource signal. Existing all-rows and deferred-persistence decisions remain unchanged.
 
 Reference-review recommendations, not new accepted mechanics: stable material-row order as counts change, and concise storage-local Take Needed feedback (moved/absent/full/partial). Keep editing entry visible in inventory, including for an empty plan.
+
+### Dense design / hints / native world icons — 2026-10-15
+
+The user selected the denser compact variant and requests slightly stronger green/red status colours. Stable row order is accepted. Proposed minimal ordering is ordinal canonical item ID, independent of localization and counts; a complete copied item/index database is not required. Exact semantic priorities such as nails-before-boards remain optional and unadopted. This deliberately replaces localized-name ordering only once implemented and verified.
+
+User requests an immediate discoverable editing route from HUD without implying builder/world-project management was removed. Proposed short HUD hint: “Изменить план — в инвентаре”; active supported build/repair/clearing menus show their actual focus-adjustment hints instead. Visibility/wording remains part of the mockup review. World-project icons must be host-authored, preserve names when icons are shared, and fall back to text rather than omit a project if artwork is absent.
+
+Compare a centre-weighted backing fading smoothly to transparency at all edges against the same backing with small native corner ornaments. Hard rectangular edges are rejected; neither a heavy frame nor entirely absent backing is required. Four-corner treatment is exploratory, not the final accepted design. Keep the native header and chosen density unchanged between comparisons.
+
+Chest result meaning: the proposed feedback is after executing Take Needed in the currently open chest, adjacent to its stable Y/F action label, with actual moved item icons/counts or a concise no-op reason. A pre-action guaranteed transfer manifest is not adopted; native shared capacity/sequential transfer semantics would need separate verified forecasting. The private mockup demonstrates partial/no-stock/no-space results, not real runtime transfers.
