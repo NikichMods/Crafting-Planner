@@ -15,3 +15,5 @@ Current research:
 - `docs/RESEARCH_REPORT_2026-09-21.md`
 - `docs/VERIFIED_GAME_DATA.md`
 - `docs/TEST_LOG.md`
+
+Development and recovery: `docs/DEVELOPMENT.md` (current prototype, local compilation, evidence and UI design checkpoint).

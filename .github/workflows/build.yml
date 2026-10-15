@@ -1,10 +1,10 @@
-name: Build Crafting Planner 0.1.4
+name: Verify Crafting Planner development
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - dev/0.1.4
+      - dev/codex-migration
     paths:
       - 'CraftingPlanner.csproj'
       - 'src/**'
@@ -16,7 +16,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: crafting-planner-0.1.4-${{ github.ref }}
+  group: crafting-planner-verification-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -51,20 +51,3 @@ jobs:
           if (Test-Path 'bin/Release/Assembly-CSharp-firstpass.dll') {
             throw 'Compile-time Assembly-CSharp-firstpass stub leaked into output.'
           }
-
-      - name: Prepare artifact
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
-          $target = 'artifacts/Crafting Planner 0.1.4.dll'
-          Copy-Item 'bin/Release/CraftingPlanner.dll' $target
-          $hash = (Get-FileHash $target -Algorithm SHA256).Hash.ToLowerInvariant()
-          Write-Host "SHA-256: $hash"
-
-      - name: Upload candidate
-        uses: actions/upload-artifact@v4
-        with:
-          name: CraftingPlanner-0.1.4
-          path: artifacts/Crafting Planner 0.1.4.dll
-          if-no-files-found: error
-          retention-days: 14

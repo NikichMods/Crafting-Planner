@@ -94,3 +94,72 @@ Research Probe 0.2.0 established that the supported P0 families can use one plan
 - never simulate the repair/build/clearing action itself.
 
 Builder-internal pseudo actions such as remove/move controls are not planner projects. Production filtering should use semantic host data/context rather than a copied list of recipe IDs.
+
+
+## P0 goal management UX
+
+P0 intentionally does **not** use a separate planner-management window.
+
+Goal quantity is managed directly from the currently focused supported project card in the game's existing project/build craft UI:
+
+- add/increment acts on the focused project;
+- decrement acts on the focused project;
+- decrement from quantity 1 removes the goal;
+- one-off repairs, clearings, and one-time upgrades are capped at quantity 1;
+- repeatable placeable construction projects may have quantity greater than 1.
+
+The planner presentation is display-only in P0. It does not own navigation, buttons, or a second focus system.
+
+Planner state should remain visible while the player is managing goals in the native project/build UI. RT/LT (or later accepted equivalents) should update the displayed goal quantity/material totals immediately, without requiring the player to close the craft window first. After the craft/project UI closes, the same planner state remains available on the ordinary gameplay HUD.
+
+Concrete key/button bindings remain an implementation/compatibility detail. Vanilla CraftGUI X/Y must not be repurposed if doing so overrides their existing behavior. The first 0.1.0 candidate uses LT/RT for direct-card decrement/increment and keeps Y for Take Needed in an open chest.
+
+
+## Localization requirement
+
+Crafting Planner must support every language exposed by Graveyard Keeper 1.407.
+
+Current host language set:
+- `en`
+- `de`
+- `fr`
+- `pt-br`
+- `es`
+- `ru`
+- `it`
+- `pl`
+- `ja`
+- `zh_cn`
+- `ko`
+
+Rules:
+- host-owned project and item names must be resolved from the game for the current language rather than cached as localized planner state;
+- Crafting Planner-owned labels must have translations for every host language above, with English fallback only for unknown/unsupported external locale codes;
+- changing the game language at runtime must refresh Planner text and the correct host font/atlas without restarting the game;
+- localization must remain a small presentation layer and must not duplicate the game's item/project localization database.
+
+## UI design checkpoint
+
+The current text-only Planner output is a technical presentation scaffold, not the intended final visual design.
+
+Accepted UX direction from the 0.1.4 runtime pass:
+
+- the Planner must appear in the **same apparent screen position, size, hierarchy, and visual style** while the native project/build UI is open and after it closes;
+- switching between the CraftGUI surface and the ordinary gameplay HUD should look like one persistent Planner card, not two different interfaces jumping between positions;
+- both host-native surfaces should share one layout/rendering specification and the same planner state;
+- the material presentation should be icon-led, using the game's own item icons rather than spelling out every item name as the primary visual;
+- text should be minimal and information-dense; the title and section labels must not dominate the panel;
+- Required / Have / Missing must remain unambiguous, but they may be encoded compactly with counts, state color/checks, and spacing rather than three long repeated labels per material;
+- prefer a small readable backing/panel only when it materially improves contrast; avoid a large opaque management window;
+- visual density should scale by content, with overflow handled deliberately rather than letting the panel grow across the playfield.
+
+The 0.1.4 ordinary-HUD anchor mechanism is accepted as a technical placement substrate. The current CraftGUI-vs-HUD visual mismatch is not accepted as final UX.
+
+After the following are runtime-accepted:
+1. planner display inside the native project/build UI;
+2. planner display in ordinary gameplay HUD;
+3. live language switching;
+
+stop before visual polish and explicitly run a UI/UX design pass with the user.
+
+That design pass should decide the visual hierarchy, backing panel, icons/text balance, Required/Have/Missing presentation, compactness, and final placement. Only after the native anchor/coordinate model is verified should temporary F1 live-calibration controls be considered for fine tuning such as position, width, font scale, spacing, backing opacity, or similar presentation-only values.
