@@ -433,6 +433,8 @@ Exact 1.407 `GamePadButton` enum includes face buttons, bumpers, triggers, direc
 
 External compatibility reference: [Recipe Pin author description/changelog](https://www.nexusmods.com/graveyardkeeper/mods/154), inspected 2026-10-16, documents hold-Y HUD management only while no normal work interaction is available. Its 0.2.0 changelog records hold-X pinning to preserve short-X/Queue Everything and a fix for QuickStack broken by Recipe Manage integration. The description still says press-X; retain this internal documentation inconsistency rather than claiming exact current runtime behavior from prose. These are author claims, not acceptance of our input path or permission to copy implementation/assets.
 
+Exact 1.407 `CraftGUI.OnPressedLeft/Right` already owns horizontal input: it decreases/increases a focused queue item while `_gamepad_in_queue_area`; otherwise it calls `CraftItemGUI.OnAmountMinus/Plus` when the focused item's `amount_buttons` exists and is active; otherwise it delegates to `BaseGUI.OnPressedLeft/Right`, which calls native navigation. Up/down also checks `ProcessIngredientStep` before base navigation. Therefore generic horizontal replacement is unsafe; a plan handler must prove its supported focus/context and preserve native active amount/queue/navigation consumers. Private inspected IL: `.local/directional-plan-input.txt`. This is static evidence, not installed directional-input acceptance.
+
 **Verified runtime / static**
 
 Crafting Planner 0.1.4 is visible in the ordinary gameplay HUD when attached to the verified `HUD.zone_name` parent context. Live language changes redraw the Planner correctly in the exercised runtime languages.

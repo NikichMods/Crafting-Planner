@@ -244,3 +244,13 @@ User prefers direct quantity arrows beside each goal for mouse, without a separa
 Provide full-context build and repair/clearing mockups with a visible focused-project add/remove action, retaining ordinary native actions. A private three-context comparison demonstrates shared goals, direct arrow editing and a candidate controller focus/exit flow. Its menu chrome/font/layout and physical button artwork are illustrative, not verified native rendering. The current 0.1.6 source still has LT/RT focused-project hooks and mouse hover focus, but no mouse quantity/add controls or complete keyboard management shortcut.
 
 For gamepad, the user proposes a stick click (RS/LS) as a possible direct HUD entry, with a short visible hint, avoiding a global Work/Y conflict. Investigate this before choosing a default. The mockup allows RS, LS and hold-Y labels for comparison only; no physical binding is accepted or claimed to work. Inventory management remains the accepted simpler fallback, not a requirement to reject a viable direct route.
+
+### Per-row management and backing refinement — 2026-10-16
+
+User adopted always-visible, muted mouse quantity arrows with hover emphasis, zero title-to-body gap, and the short gamepad editing-entry hint below materials. The illustrative RS glyph is visually accepted; the actual physical binding remains unverified. No permanent explanatory sentence or decorative corners.
+
+Replace the oval shadow experiment with a softly feathered rounded rectangle supporting every goal/material row, including the topmost goal. Preserve 40% backing density as the current baseline; exact roundness/feather still needs visual acceptance. The private mockup exposes both shape controls.
+
+Correct the earlier mockup's click-to-select assumption: the native main project row retains its build/execute action. Proposed mouse management is a distinct grey Plan column with per-row quantity arrows, separate from native production/amount buttons; no click-selection prerequisite or keyboard/gamepad mixing. This is the preferred review candidate, not acceptance of a final native insertion/layout mechanism.
+
+User prefers gamepad up/down to choose a row and left/right to adjust plan quantity, with B to leave HUD editing, replacing the LT/RT mockup scheme. In supported project menus retain native focused-project navigation and show a short horizontal-direction hint. Only adopt interception where native quantity/queue/navigation ownership is proven safe; ordinary production, active native amount controls, queue areas and unrelated UI keep vanilla input. Current 0.1.6 LT/RT implementation remains historical until a verified later candidate replaces it.
