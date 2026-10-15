@@ -425,6 +425,14 @@ Do not add Borderless Gaming-specific polling or resolution hooks merely to comp
 
 Using the same pinned 1.407 `resources.assets` game_data (MonoBehaviour150254), reconstructed with the already documented UnityPy/TypeTreeGenerator toolchain, verified canonical `CraftDefinition.icon` values: `fix_morgue_builddesk`, `fix_morgue_throw_in`, `fix_morgue_throw_out` all use `i_b_hammer`; `blockage_V_low_destruction` uses `i_b_mining`. Matching native Sprites exist and are 32x32 blue construction pictograms. Thus these accepted representative world-project families have native artwork, but different repairs share a pictogram: project names remain meaningful. This is a four-definition static spot-check, not artwork/runtime acceptance for every scripted quest. Private data dump/art stays under ignored `.local/`; no host payload entered Git.
 
+### Direct-edit input review — static 2026-10-16
+
+Current 0.1.6 project source has mouse hover focus (`CraftItemGUI.OnMouseOvered/OnMouseOuted`) and native focused-project LT/RT adjustment (`BaseGUI.OnPressedPrevSubTab/OnPressedNextSubTab`). Mouse hovering alone does not add a goal. The only current owned mouse click action is chest Take Needed; HUD/project quantity arrows, a mouse add-to-plan action and inventory editing are not implemented.
+
+Exact 1.407 `GamePadButton` enum includes face buttons, bumpers, triggers, directional inputs, Back and Start, but no stick-click LS/RS members. `GamePadController` owns separate movement sticks and reads semantic buttons through `_rewired_bindings` / `Rewired.Player`; no ready stick-click semantic route is established by this inspection. This does not prove hardware clicks unavailable or globally conflict-free. Rewired maps/raw supported controller paths and native glyph availability still need verification before choosing a stick-click binding. Private inspection output: `.local/stick-binding-review.txt`, `.local/stick-controller-il.txt`.
+
+External compatibility reference: [Recipe Pin author description/changelog](https://www.nexusmods.com/graveyardkeeper/mods/154), inspected 2026-10-16, documents hold-Y HUD management only while no normal work interaction is available. Its 0.2.0 changelog records hold-X pinning to preserve short-X/Queue Everything and a fix for QuickStack broken by Recipe Manage integration. The description still says press-X; retain this internal documentation inconsistency rather than claiming exact current runtime behavior from prose. These are author claims, not acceptance of our input path or permission to copy implementation/assets.
+
 **Verified runtime / static**
 
 Crafting Planner 0.1.4 is visible in the ordinary gameplay HUD when attached to the verified `HUD.zone_name` parent context. Live language changes redraw the Planner correctly in the exercised runtime languages.
