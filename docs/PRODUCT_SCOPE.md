@@ -98,6 +98,8 @@ Builder-internal pseudo actions such as remove/move controls are not planner pro
 
 ## P0 goal management UX
 
+Gamepad support is mandatory for P0 (explicitly reaffirmed by the user on 2026-10-15). All planner actions must be usable without a mouse: focused-project quantity changes and current-storage Take Needed. Provide context-appropriate button hints, preserve native menu focus/navigation, and keep ordinary HUD display from capturing input. The existing LT/RT and open-chest Y mappings are the prototype baseline, not blanket evidence of final input compatibility or support for every controller's glyphs. Final bindings, glyph presentation and compatibility need verification on the supported gamepad path.
+
 P0 intentionally does **not** use a separate planner-management window.
 
 Goal quantity is managed directly from the currently focused supported project card in the game's existing project/build craft UI:
@@ -163,3 +165,11 @@ After the following are runtime-accepted:
 stop before visual polish and explicitly run a UI/UX design pass with the user.
 
 That design pass should decide the visual hierarchy, backing panel, icons/text balance, Required/Have/Missing presentation, compactness, and final placement. Only after the native anchor/coordinate model is verified should temporary F1 live-calibration controls be considered for fine tuning such as position, width, font scale, spacing, backing opacity, or similar presentation-only values.
+
+### Current visual proposal — awaiting user choice, 2026-10-15
+
+The proposed card has a small title, short goal rows with quantities, and icon-led aggregated material status. Two exploratory layouts were shown: aligned material rows with one shared Have / Required / Missing header (recommended for numerical clarity), and a two-column material tile layout with Have/Required plus Missing or a completion check. Neither layout is adopted yet.
+
+The card's content, size and apparent position stay identical across build-menu and ordinary-HUD contexts. Input hints belong to the active host menu rather than enlarging or moving the card. Goal management keeps the native focused project; the ordinary HUD has no separate focus/navigation. The interactive sketch uses substitute symbols and illustrative counts, not extracted game sprites or evidence of real controller input. Production must reuse native item icons and the host presentation stack.
+
+Final placement, visual density, controller hints and overflow for many goals/materials remain design questions. The four-material sketch does not establish an overflow solution or authorize hiding missing requirements. No production UI change is authorized by showing this proposal.
