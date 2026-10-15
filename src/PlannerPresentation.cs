@@ -199,7 +199,7 @@ namespace CraftingPlanner
             button.color = new Color(.2f, .2f, .18f, .04f); button.gameObject.SetActive(true);
             BoxCollider2D collider = button.GetComponent<BoxCollider2D>();
             collider.size = new Vector2(button.width, height); collider.offset = new Vector2(button.width * .5f, -height * .5f);
-            UILabel glyph = Center(delta < 0 ? "‹" : "›", x, y, button.width, height);
+            UILabel glyph = Center(delta < 0 ? "<" : ">", x, y, button.width, height);
             Color muted = new Color(.70f, .70f, .65f, Style.TextOpacity); glyph.color = muted;
             UIEventListener listener = UIEventListener.Get(button.gameObject);
             listener.onHover = delegate(GameObject go, bool over)
@@ -279,7 +279,9 @@ namespace CraftingPlanner
                 _footer.text = ""; // Storage action and feedback live beside the native chest controls.
             }
             else if (view == PlannerView.Hud && LazyInput.gamepad_active && PlannerEditing.Available)
-                _footer.text = PlannerEditing.Active ? "↑↓   ←→   " + GameKeyTip.Get(GameKey.Back, PlannerLocalization.FinishEditing, true, true, false, false) : GameKeyTip.RightStick(true, true, false, PlannerLocalization.EditPlan).ToString();
+                _footer.text = PlannerEditing.Active ? GameKeyTip.Get(GameKey.Up, "", true, true, false, false) + GameKeyTip.Get(GameKey.Down, "", true, true, false, false) +
+                    "   " + GameKeyTip.Get(GameKey.Left, "", true, true, false, false) + GameKeyTip.Get(GameKey.Right, "", true, true, false, false) +
+                    "   " + GameKeyTip.Get(GameKey.Back, PlannerLocalization.FinishEditing, true, true, false, false) : GameKeyTip.RightStick(true, true, false, PlannerLocalization.EditPlan).ToString();
             else _footer.text = "";
             _footer.gameObject.SetActive(!string.IsNullOrEmpty(_footer.text));
         }

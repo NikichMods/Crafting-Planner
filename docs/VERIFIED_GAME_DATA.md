@@ -437,6 +437,8 @@ Exact 1.407 `CraftGUI.OnPressedLeft/Right` already owns horizontal input: it dec
 
 Further exact 1.407 static inspection identifies a physical stick-click route: Assembly-CSharp-firstpass defines Rewired.IGamepadTemplate; the installed Rewired_Core Controller.GetTemplate<T>() resolves it, with rightStick.press.justPressed available through core template interfaces. GamePadController uses ReInput.players.GetPlayer(0), so the same player's last active connected joystick is the bounded device owner. No hardcoded raw button index is needed. Native GameKeyTip.RightStick(true,true,false,text) formats the host `(RS)` symbol; GetIcon special-cases MapCursor (41). This establishes host query/signature/artwork paths, not successful input delivery on the user's controller. Private evidence: .local/rewired-template-api.txt, rewired-template-input.txt, native-stick-tips.txt and native-tip-icons.txt.
 
+Native UIFont151314 (the zone-name label's verified bitmap font) has 305 BMFont saved glyphs and 156 symbol entries. The actual glyph table contains ASCII `<` (60) and `>` (62), but not `‹`/`›` (8249/8250) or Unicode directional arrows (8592–8595). Browser appearance cannot establish their native availability. Use verified ASCII counter arrows and native GameKeyTip direction/RS symbols rather than those Unicode glyphs; runtime language/font acceptance remains required. Private read-only inspection: .local/check-ui-glyphs.py.
+
 **Verified runtime / static**
 
 Crafting Planner 0.1.4 is visible in the ordinary gameplay HUD when attached to the verified `HUD.zone_name` parent context. Live language changes redraw the Planner correctly in the exercised runtime languages.

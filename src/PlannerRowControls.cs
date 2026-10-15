@@ -65,7 +65,7 @@ namespace CraftingPlanner
             arrow.width = PlannerLayout.ArrowWidth; arrow.height = 26; arrow.depth = _row.selection_frame.depth + 2;
             arrow.transform.localPosition = new Vector3(x, -10, 0); arrow.color = new Color(.35f, .35f, .35f, .22f);
             BoxCollider2D collider = arrow.gameObject.AddComponent<BoxCollider2D>(); collider.size = new Vector2(arrow.width, arrow.height);
-            UILabel glyph = Text(delta < 0 ? "‹" : "›", arrow.transform, 0, 0, arrow.width, arrow.height);
+            UILabel glyph = Text(delta < 0 ? "<" : ">", arrow.transform, 0, 0, arrow.width, arrow.height);
             UIEventListener events = UIEventListener.Get(arrow.gameObject);
             events.onHover = delegate(GameObject go, bool over) { glyph.color = over ? new Color(1, .94f, .72f) : new Color(.75f, .74f, .68f); };
             events.onClick = delegate(GameObject go)
