@@ -40,7 +40,7 @@ Run the UI/UX design pass required by `PRODUCT_SCOPE.md` with the user before ch
 
 Do not repeat the accepted HUD-anchor experiment or add Borderless-specific compensation. Final input/help presentation and any remaining carried-bag/capacity edge evidence should follow the chosen UI, rather than silently expand scope. Keyboard management is not accepted merely because an early candidate proposed it.
 
-The repository setup does not register a local project in the desktop app. Add this checkout as a local project through the app before sustained work; opening the folder and granting access is separate from cloning it. Web-only decisions or assets absent from Git remain unknown and must be supplied if they change this recovered baseline.
+The user confirmed on 2026-10-15 that this checkout was added as the local app project and this chat moved into it. The active workspace is now the repository root. Web-only decisions or assets absent from Git remain unknown and must be supplied if they change this recovered baseline.
 
 ## Migration verification — 2026-10-15
 
@@ -48,5 +48,5 @@ The repository setup does not register a local project in the desktop app. Add t
 - Runtime source, signature references, project file and NuGet configuration match `dev/0.1.4` exactly (`git diff --quiet` verified).
 - Whitespace validation passed; generated outputs are ignored.
 - Local SDK available: 6.0.406. Restore of the reference projects succeeded, but the main restore timed out downloading BepInEx.BaseLib/Core 5.4.21 from the configured BepInEx feed and was stopped. Local compilation is not verified; no installable artifact was handed out.
-- Hosted SDK 8 verification was launched for the exact integration commit: https://github.com/NikichMods/Crafting-Planner/actions/runs/38782751823 . At this checkpoint it had reached Restore; a launched run is not a passed build.
-- Remaining operational setup: add the checkout as a local app project. The repository is ready for the agreed UI design discussion while compilation verification remains open.
+- Hosted SDK 8 verification was launched for the exact integration commit: https://github.com/NikichMods/Crafting-Planner/actions/runs/38782751823 . Completed successfully on 2026-10-15 at 18:06 UTC: dependency restore, Release compilation (0 compiler warnings / 0 errors), and compile-reference package-boundary checks passed. No numbered artifact was uploaded. The runner emitted action-runtime deprecation warnings, separate from compiler diagnostics.
+- Local app-project setup is complete (user-confirmed). Hosted compilation verification is closed; local dependency restoration remains unverified. The next product step is the agreed UI design discussion, not a new runtime-acceptance claim.
