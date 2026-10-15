@@ -49,7 +49,7 @@ Ordinary workstation item production (for example, pinning ten planks, polished 
 ### Not P0
 
 Do not pull these into the first production scope automatically:
-- auto-decrement after completed craft/build;
+- auto-decrement after completed craft/build was originally deferred; the 2026-10-15 user review now requires it as follow-up work (absent from 0.1.6); completion timing must be verified under `docs/PRODUCT_SCOPE.md`;
 - save persistence (explicitly deferred after product review; session-only goals are accepted for P0);
 - Quick Stack reserve protection;
 - dependency expansion/base-material planning;

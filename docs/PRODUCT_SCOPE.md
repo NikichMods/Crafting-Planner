@@ -74,7 +74,6 @@ A generic BepInEx/IMGUI text/debug overlay is suitable for research only, not th
 ## Deferred
 
 - per-save persistence;
-- automatic project decrement after confirmed completion;
 - Quick Stack reserve/surplus integration;
 - dependency expansion/intermediate raw-material planning;
 - multiple/nearby storage collection;
@@ -100,7 +99,7 @@ Builder-internal pseudo actions such as remove/move controls are not planner pro
 
 Gamepad support is mandatory for P0 (explicitly reaffirmed by the user on 2026-10-15). All planner actions must be usable without a mouse: focused-project quantity changes and current-storage Take Needed. Provide context-appropriate button hints, preserve native menu focus/navigation, and keep ordinary HUD display from capturing input. The existing LT/RT and open-chest Y mappings are the prototype baseline, not blanket evidence of final input compatibility or support for every controller's glyphs. Final bindings, glyph presentation and compatibility need verification on the supported gamepad path.
 
-P0 intentionally does **not** use a separate planner-management window.
+The 0.1.6 baseline intentionally does **not** use a separate planner-management window. The user has since requested remote plan management; see the current follow-up scope below. Its entry gesture is not yet adopted.
 
 Goal quantity is managed directly from the currently focused supported project card in the game's existing project/build craft UI:
 
@@ -110,7 +109,7 @@ Goal quantity is managed directly from the currently focused supported project c
 - one-off repairs, clearings, and one-time upgrades are capped at quantity 1;
 - repeatable placeable construction projects may have quantity greater than 1.
 
-The planner presentation is display-only in P0. It does not own navigation, buttons, or a second focus system.
+In the 0.1.6 baseline, the goal-list presentation is display-only. The follow-up requests deliberate editing outside the builder; ordinary gameplay must still not capture focus unintentionally.
 
 Planner state should remain visible while the player is managing goals in the native project/build UI. RT/LT (or later accepted equivalents) should update the displayed goal quantity/material totals immediately, without requiring the player to close the craft window first. After the craft/project UI closes, the same planner state remains available on the ordinary gameplay HUD.
 
@@ -193,3 +192,11 @@ The user confirmed the mouse storage action works but rejected its location/affo
 Center the construction-plan title on a native decorative header, keep it visually separate from the location title, add canonical construction icons, and align project/material icons by the same sizing/spacing rules. Center each numeric column beneath its heading. Dense rectangular backing, excess night-time brightness and long wrapped names remain rejected presentation properties.
 
 Text reduction is still a design choice: the user proposed an almost icon-only card, without adopting a final amount of text. Compare full names, project names only, and almost icon-only content before committing to that change. Preserve the explicit meaning of Have / Required / Missing unless an equally understandable replacement is agreed. Thin local text contrast and a softly fading body are candidate approaches, not accepted runtime results. Do not add time-of-day polling or a theme subsystem merely to compensate for an unaccepted palette.
+
+### Adopted compact layout and reopened management/completion scope — 2026-10-15
+
+The user selected the short design: project names with canonical construction icons; material icons and numeric columns; centered native title; restrained text with thin outline/soft shadow. Reduce column spacing and use **Required / Have / Missing**, corresponding to Missing=max(Required-Have,0). This supersedes the preceding open text-density choice; visual/runtime acceptance is still pending.
+
+Automatic removal/decrement of a fulfilled pinned project is now required follow-up work, superseding its prior deferral. It is absent from 0.1.6. The user explicitly selected **successful placement/material commitment**, rather than waiting for final physical construction, for repeatable placeables: native materials are already spent at placement. Only decrement after a verified successful native operation for that exact project, never on menu selection, cancellation or inventory changes alone. Remove at zero and recompute derived aggregate requirements; native game code alone spends actual materials. Do not add an in-progress project tracker. One-time upgrade/repair/clearing success still needs its own verified native operation boundary.
+
+The user also requests convenient quantity changes/removal away from a builder, for mouse and gamepad. Mouse minus/quantity/plus and an explicit native focus mode are design candidates. Long Y from gameplay, LT/RT versus horizontal adjustment, entry/exit and apply/cancel semantics are exploratory, not settled mappings. Prioritize native navigation and exclusive input ownership; do not intercept Quick Stack/world Work merely to emulate another mod. A native inventory entry is a lower-conflict candidate that preserves access from anywhere. Immediate edits with B=close avoid a second draft/apply state; this remains the design recommendation, not a shipped feature.

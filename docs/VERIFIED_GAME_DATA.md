@@ -143,6 +143,8 @@ Normal craft completion flows through `CraftComponent.FinishCurrentCraft()` -> `
 
 This is evidence that P1 auto-decrement is feasible, but it is not yet a safe universal P0 seam because special recipes/build flows can differ.
 
+**Placement-stage clarification, static 2026-10-15:** exact 1.407 `BuildModeLogics.DoPlace()` first checks `can_be_built` and `CanBuild(_cd)`, then calls its native `MultiInventory.RemoveItems(_cd.needs, ...)` before stopping the floating preview and optionally replacing the placed object with its `_place` definition. Later it marks the placed object `just_built=true`. Thus the repeatable placement material commitment precedes physical construction work; ordinary craft-completion callbacks are not a universal boundary for this planner requirement. The method has early returns and discards RemoveItems' return value: a generic postfix or an inventory-removal event alone is not sufficient success evidence. Actual successful placement identity, cancellation/no-material rejection and exactly-once decrement require narrow runtime verification. Private inspection is `.local/build-spend-stage.txt` on the pinned assembly identities; current 0.1.6 contains no decrement hook. The user accepted placement-time decrement in PRODUCT_SCOPE.md; repairs/upgrades/clearing remain separate success paths.
+
 ## Input bindings
 
 **Verified static**
