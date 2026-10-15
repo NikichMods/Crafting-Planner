@@ -59,6 +59,7 @@ namespace CraftingPlanner
                 PlannerCard.ApplyNativeFont(_label, native);
                 _label.overflowMethod = UILabel.Overflow.ResizeFreely;
                 _label.text = GameKeyTip.Get(LazyInput.gamepad_active ? GameKey.Option2 : GameKey.Work, PlannerLocalization.TakeNeeded, true, false, false, false);
+                if (string.IsNullOrEmpty(_label.text)) _label.text = PlannerLocalization.TakeNeeded;
                 int width = Math.Max(100, (int)Math.Ceiling(_label.printedSize.x) + 20);
                 int height = Math.Max(28, (int)Math.Ceiling(_label.printedSize.y) + 8);
                 _label.overflowMethod = UILabel.Overflow.ClampContent;
@@ -104,7 +105,7 @@ namespace CraftingPlanner
             if (_notice != TransferNotice.None)
             {
                 if (_moved.Count > 0) y += 25;
-                Text(PlannerLocalization.TransferMessage(_notice), _button.transform, native, 0, y, 324, red);
+                Text(PlannerLocalization.TransferMessage(_notice), _button.transform, native, 0, y, 324, _notice == TransferNotice.Complete ? green : red);
             }
         }
         internal static void Show(List<KeyValuePair<string, int>> moved, TransferNotice notice) { _moved = moved; _notice = notice; Refresh(); }

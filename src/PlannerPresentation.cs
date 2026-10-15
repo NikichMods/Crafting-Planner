@@ -80,6 +80,7 @@ namespace CraftingPlanner
             if (view == PlannerView.Hidden || (!Planner.HasGoals && view != PlannerView.Build)) { Hide(); return; }
             Style.Clamp();
             _labelCursor = 0; _iconCursor = 0; _arrowCursor = 0;
+            foreach (UITexture arrow in _arrows) UIEventListener.Get(arrow.gameObject).onHover = null;
             int pad = (int)Style.Padding, line = (int)Math.Max(Style.Row, Style.Font + 4);
             var rows = Planner.AggregateRequirements().Select(p => new MaterialRow(p.Key, p.Value, Planner.GetPlayerHave(p.Key))).ToList();
             rows.Sort((a, b) => string.Compare(a.Id, b.Id, StringComparison.Ordinal));
@@ -210,6 +211,7 @@ namespace CraftingPlanner
             {
                 if (!PlannerCalibration.IsOpen && PlannerPresentation.GetView() != PlannerView.Hidden) Planner.AdjustPinned(goal, delta, "mouse_plan_arrow");
             };
+            listener.onHover(button.gameObject, UICamera.hoveredObject == button.gameObject);
         }
         internal bool BlocksWorldClick()
         {
@@ -277,7 +279,7 @@ namespace CraftingPlanner
                 _footer.text = ""; // Storage action and feedback live beside the native chest controls.
             }
             else if (view == PlannerView.Hud && LazyInput.gamepad_active && PlannerEditing.Available)
-                _footer.text = PlannerEditing.Active ? "↑↓   ←→   " + GameKeyTip.Get(GameKey.Back, PlannerLocalization.FinishEditing, true, true, false, false) : "RS  " + PlannerLocalization.EditPlan;
+                _footer.text = PlannerEditing.Active ? "↑↓   ←→   " + GameKeyTip.Get(GameKey.Back, PlannerLocalization.FinishEditing, true, true, false, false) : GameKeyTip.RightStick(true, true, false, PlannerLocalization.EditPlan).ToString();
             else _footer.text = "";
             _footer.gameObject.SetActive(!string.IsNullOrEmpty(_footer.text));
         }

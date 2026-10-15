@@ -32,7 +32,7 @@ namespace CraftingPlanner
         }
         private static bool Eligible(CraftItemGUI row)
         {
-            return Planner.IsSupportedProject(row.current_craft) && row.selection_frame != null && row.ingredients_table != null &&
+            return Planner.IsSupportedProject(row.current_craft) && row.selection_frame != null && row.ingredients_table != null && row.label_name != null &&
                 (row.amount_buttons == null || !row.amount_buttons.activeSelf);
         }
         internal void Restore()

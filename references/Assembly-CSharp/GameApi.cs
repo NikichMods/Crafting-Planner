@@ -234,6 +234,7 @@ public class GamepadNavigationItem : MonoBehaviour { }
 public class GamepadNavigationController { public GamepadNavigationItem focused_item { get { return null; } } }
 public class GameKeyTip
 {
+    public static GameKeyTip RightStick(bool active, bool gamepadOnly, bool translate, string text) { return null; }
     public static string Get(GameKey key, string text, bool active, bool gamepadOnly, bool translate, bool previousNewline) { return text; }
 }
 public class ButtonTipsStr : MonoBehaviour { public UILabel label; }

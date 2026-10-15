@@ -104,6 +104,7 @@ public class UIEventListener : MonoBehaviour
 }
 public class UICamera : MonoBehaviour
 {
+    public static GameObject hoveredObject { get { return null; } }
     public bool useMouse;
     public bool useTouch;
     public bool useKeyboard;
