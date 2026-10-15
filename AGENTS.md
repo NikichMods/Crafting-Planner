@@ -213,4 +213,4 @@ Project-specific mechanics, product/UX decisions, release state, and build accep
 
 ## Local development recovery
 
-Read `docs/DEVELOPMENT.md` for the active candidate and build/evidence pointers. `docs/UI_IMPLEMENTATION.md` records the readiness gates and native renderer/anchor/input choices. The accepted mockup is implemented in the installed `dev/0.1.8` UI candidate; native runtime/visual acceptance is still pending. Gamepad support and all 11 host languages are required. Per-save goal persistence remains deferred; automatic successful-placement decrement is separate required follow-up under `docs/PRODUCT_SCOPE.md`.
+Read `docs/DEVELOPMENT.md` for the active candidate and build/evidence pointers. `docs/UI_IMPLEMENTATION.md` records the readiness gates and native renderer/anchor/input choices. The accepted mockup is implemented in the installed `dev/0.1.9` UI candidate; native runtime/visual acceptance is still pending. Gamepad support and all 11 host languages are required. Per-save goal persistence remains deferred; automatic successful-placement decrement is separate required follow-up under `docs/PRODUCT_SCOPE.md`.

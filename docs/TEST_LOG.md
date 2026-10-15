@@ -1,5 +1,12 @@
 # Test Log
 
+## 0.1.9 installed UI candidate — 2026-10-16
+
+- Current immutable test candidate: source `932a7ae0897d48e20a54ed977c0cfae91d4d5d6d`, branch `dev/0.1.9`, successful CI [38826114338](https://github.com/NikichMods/Crafting-Planner/actions/runs/38826114338), artifact `12015505450`. DLL `CraftingPlanner-0.1.9.dll`, version `0.1.9.0`, SHA-256 `5ca022e46edae854e6841594a189a407fbcbf6aab2001275a573958de2a4f590`; downloaded ZIP independently matches `b5b0687c512d14825a259203d0a4031138b7f1766e17ae2c17996f57b6079576`.
+- Contains the full 0.1.8 native UI integration described below, plus normalization of the stored HUD selection index before navigation after a row is removed. The regression test covers removing the selected last row and then wrapping Down to the first surviving row. Build, identity, shape/selection/state/localization tests and reference-exclusion checks pass in clean CI. Current source compiles against installed native references; the exact CI artifact passes pure policy/localization checks with installed dependencies.
+- Installed exact CI bytes with the game closed; digest matches the manifest. Previous 0.1.8 and its log are preserved outside plugins; receipt `.local/evidence/pre-0.1.9/installation.json`. 0.1.7 and 0.1.8 were intermediate unaccepted installations, not overwritten numbered artifacts. No new game session, loader result or user visual/input acceptance is claimed.
+- Next is the same focused runtime pass listed under 0.1.8: native menu Plan controls vs main-row build action, HUD mouse/device switching/RS/directions/B, post-exit ordinary controls, chest Y/F/mouse/actual feedback, shared geometry and unrelated-window hiding. F1 format=2 export remains available. Automatic placement decrement, per-save persistence and a separate inventory management view remain absent; follow the scope distinctions below.
+
 ## 0.1.8 native UI integration candidate — 2026-10-16
 
 - Exact source `9a394f917011ebcac99463b349da35bbb62291dc`, branch `dev/0.1.8`; CI [38825543383](https://github.com/NikichMods/Crafting-Planner/actions/runs/38825543383), artifact `12014159309`. All build, identity, policy/state/localization and reference-exclusion checks passed. Numbered DLL `CraftingPlanner-0.1.8.dll`, assembly/file version `0.1.8.0`, SHA-256 `3fd0b6a8e2867e764891e599cee98958e0683e64c3aeecca965695e30c2d4f2f`. CI ZIP SHA-256 `0cdc0e6d58a3edddbb2025708751da2f8e55b369f9bbf13992aa5bb196b1d8d1` independently matched before extraction.
