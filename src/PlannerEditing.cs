@@ -12,7 +12,8 @@ namespace CraftingPlanner
         private static int _selected, _exitFrame = -1, _processedFrame = -1;
         private static bool _failed;
         internal static bool Active { get; private set; }
-        internal static bool Available { get { return _template != null; } }
+        private static bool _allowed;
+        internal static bool Available { get { return _allowed && _template != null; } }
         internal static ProjectGoal Selected
         {
             get { var goals = Planner.GetGoals(); return goals.Count == 0 ? null : goals[Math.Max(0, Math.Min(_selected, goals.Count - 1))]; }
@@ -21,7 +22,14 @@ namespace CraftingPlanner
         {
             return MainGame.me != null && MainGame.me.player != null && MainGame.me.player.components != null && ReferenceEquals(character, MainGame.me.player.components.character);
         }
-        internal static void Reset() { Active = false; _selected = 0; _exitFrame = -1; _processedFrame = -1; _controller = null; _template = null; _failed = false; }
+        internal static void Reset() { Active = false; _allowed = false; _selected = 0; _exitFrame = -1; _processedFrame = -1; _controller = null; _template = null; _failed = false; }
+        internal static void Process(bool nativeBlocked)
+        {
+            bool allowed = !nativeBlocked && LazyInput.gamepad_active && PlannerPresentation.GetView() == PlannerView.Hud && Planner.HasGoals && !PlannerCalibration.IsOpen;
+            bool changed = allowed != _allowed; _allowed = allowed;
+            if (!allowed) Leave(); else Tick();
+            if (changed) PlannerPresentation.Refresh();
+        }
         private static void Leave()
         {
             if (!Active) return;
@@ -87,17 +95,15 @@ namespace CraftingPlanner
             return true; // At zero, still consume the planner direction rather than navigate elsewhere.
         }
     }
-    [HarmonyPatch(typeof(BaseCharacterComponent), "UpdatePlayer")]
-    internal static class PlannerHudInputPatch
-    {
-        private static void Prefix(BaseCharacterComponent __instance) { if (PlannerEditing.IsPlayer(__instance)) PlannerEditing.Tick(); }
-    }
     [HarmonyPatch(typeof(BaseCharacterComponent), "PlayerControlIsDisabled")]
     internal static class PlannerWorldInputGuard
     {
         private static void Postfix(BaseCharacterComponent __instance, ref bool __result)
         {
-            if (!__result && PlannerEditing.IsPlayer(__instance) && PlannerEditing.BlocksWorldInput) __result = true;
+            if (!PlannerEditing.IsPlayer(__instance)) return;
+            bool nativeBlocked = __result;
+            PlannerEditing.Process(nativeBlocked);
+            if (!nativeBlocked && PlannerEditing.BlocksWorldInput) __result = true;
         }
     }
 }
