@@ -168,7 +168,7 @@ A world-level "Take Needed" action without opening the chest is also deferred fr
 Prefer one narrow research harness over repeated manual tests when runtime evidence is required.
 
 Current remaining runtime/product priorities:
-- complete the explicit UI/UX design pass: CraftGUI and ordinary HUD surfaces must share one visual/layout specification, occupy the same apparent screen position, use native item icons, and remain compact/readable;
+- implement and visually verify the adopted row-card design: identical CraftGUI/HUD layout, native item icons, no heavy frame, and a translucent backing fading from top-right toward bottom-left; the design pass was completed on 2026-10-15, while in-game visual acceptance remains open;
 - choose and verify the final production pin/manage input gesture, including gamepad focus/compatibility; Probe 0.2.0 explicitly verified mouse focus but did not record a gamepad build-focus event;
 - isolate carried-bag/toolbelt and capacity-limited transfer edges only if production correctness still depends on runtime evidence beyond the already verified native inventory path.
 
@@ -213,4 +213,4 @@ Project-specific mechanics, product/UX decisions, release state, and build accep
 
 ## Local development recovery
 
-Read `docs/DEVELOPMENT.md` for the current integration baseline, build commands, artifact distinction, and next UI/UX checkpoint. Runtime source on the migration branch remains the tested 0.1.4 prototype; setup maintenance is not stable acceptance.
+Read `docs/DEVELOPMENT.md` for the active candidate and build/evidence pointers. `docs/UI_IMPLEMENTATION.md` records the readiness gates and native renderer/anchor choices. The adopted row-card design is under implementation on `dev/0.1.5`; it has not been accepted as stable. Gamepad support and all 11 host languages are required. Per-save goal persistence is a desired follow-up, outside the current UI pass.

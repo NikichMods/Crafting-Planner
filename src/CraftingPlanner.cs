@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Crafting Planner";
-        public const string PluginVersion = "0.1.4";
+        public const string PluginVersion = "0.1.5";
 
         private Harmony _harmony;
 
@@ -23,11 +23,18 @@ namespace CraftingPlanner
             Planner.Log = Logger;
             _harmony = new Harmony(PluginGuid);
             _harmony.PatchAll();
+            LazyInput.on_input_changed += PlannerInputHints.OnInputChanged;
+            BaseGUI.on_window_opened += PlannerInputHints.OnWindowChanged;
+            BaseGUI.on_window_closed += PlannerInputHints.OnWindowChanged;
             Logger.LogInfo("CRAFTING_PLANNER event=loaded version=" + PluginVersion);
         }
 
         private void OnDestroy()
         {
+            LazyInput.on_input_changed -= PlannerInputHints.OnInputChanged;
+            BaseGUI.on_window_opened -= PlannerInputHints.OnWindowChanged;
+            BaseGUI.on_window_closed -= PlannerInputHints.OnWindowChanged;
+            PlannerInputHints.Destroy();
             PlannerCraftOverlay.Destroy();
             PlannerHud.Destroy();
             if (_harmony != null)
@@ -63,6 +70,11 @@ namespace CraftingPlanner
         private static WorldGameObject _contextOwner;
         private static CraftDefinition _focusedProject;
         private static WorldGameObject _currentChest;
+
+        internal static bool CanAdjustFocusedProject
+        {
+            get { return _focusedProject != null && IsSupportedProject(_focusedProject); }
+        }
 
         internal static bool HasGoals
         {
@@ -472,43 +484,25 @@ namespace CraftingPlanner
 
     internal static class PlannerLocalization
     {
-        private sealed class TextSet
+        private static readonly Dictionary<string, string[]> Texts = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
         {
-            internal readonly string Projects;
-            internal readonly string Materials;
-
-            internal TextSet(string projects, string materials)
-            {
-                Projects = projects;
-                Materials = materials;
-            }
-        }
-
-        private static readonly Dictionary<string, TextSet> Texts =
-            new Dictionary<string, TextSet>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "en",    new TextSet("Projects", "Materials — Required / Have / Missing") },
-                { "de",    new TextSet("Projekte", "Materialien — Benötigt / Vorhanden / Fehlt") },
-                { "fr",    new TextSet("Projets", "Matériaux — Requis / Possédés / Manquants") },
-                { "pt-br", new TextSet("Projetos", "Materiais — Necessário / Possui / Faltando") },
-                { "es",    new TextSet("Proyectos", "Materiales — Necesario / Tienes / Falta") },
-                { "ru",    new TextSet("Проекты", "Материалы — Нужно / Есть / Не хватает") },
-                { "it",    new TextSet("Progetti", "Materiali — Richiesti / Disponibili / Mancanti") },
-                { "pl",    new TextSet("Projekty", "Materiały — Potrzeba / Masz / Brakuje") },
-                { "ja",    new TextSet("プロジェクト", "材料 — 必要 / 所持 / 不足") },
-                { "zh-cn", new TextSet("项目", "材料 — 需要 / 持有 / 缺少") },
-                { "ko",    new TextSet("프로젝트", "재료 — 필요 / 보유 / 부족") }
-            };
-
-        internal static string Projects
-        {
-            get { return Current.Projects; }
-        }
-
-        internal static string Materials
-        {
-            get { return Current.Materials; }
-        }
+            { "en", new[] { "Plan", "Have", "Need", "Missing", "Take needed" } },
+            { "de", new[] { "Plan", "Da", "Bedarf", "Fehlt", "Benötigtes nehmen" } },
+            { "fr", new[] { "Plan", "En sac", "Requis", "Manque", "Prendre le nécessaire" } },
+            { "pt-br", new[] { "Plano", "Tenho", "Preciso", "Falta", "Pegar o necessário" } },
+            { "es", new[] { "Plan", "Tengo", "Necesito", "Falta", "Tomar lo necesario" } },
+            { "ru", new[] { "План", "Есть", "Нужно", "Добрать", "Взять недостающее" } },
+            { "it", new[] { "Piano", "Ho", "Serve", "Manca", "Prendi il necessario" } },
+            { "pl", new[] { "Plan", "Mam", "Potrzeba", "Brakuje", "Weź potrzebne" } },
+            { "ja", new[] { "計画", "所持", "必要", "不足", "不足分を取る" } },
+            { "zh-cn", new[] { "计划", "持有", "需要", "缺少", "拿取所需材料" } },
+            { "ko", new[] { "계획", "보유", "필요", "부족", "필요한 재료 가져오기" } }
+        };
+        internal static string Plan { get { return Current[0]; } }
+        internal static string Have { get { return Current[1]; } }
+        internal static string Required { get { return Current[2]; } }
+        internal static string Missing { get { return Current[3]; } }
+        internal static string TakeNeeded { get { return Current[4]; } }
 
         internal static string CurrentLanguage
         {
@@ -547,14 +541,15 @@ namespace CraftingPlanner
         {
             PlannerHud.OnLanguageChanged();
             PlannerCraftOverlay.OnLanguageChanged();
+            PlannerInputHints.Refresh();
             Planner.LogLine("event=language_changed language=" + CurrentLanguage);
         }
 
-        private static TextSet Current
+        private static string[] Current
         {
             get
             {
-                TextSet value;
+                string[] value;
                 return Texts.TryGetValue(CurrentLanguage, out value) ? value : Texts["en"];
             }
         }
@@ -567,402 +562,6 @@ namespace CraftingPlanner
             }
 
             return language.Trim().ToLowerInvariant().Replace('_', '-');
-        }
-    }
-
-    internal static class PlannerHud
-    {
-        private const string LabelName = "CraftingPlannerHUD";
-        private const float GapBelowZoneName = 12f;
-
-        private static UILabel _label;
-        private static HUD _hud;
-        private static UILabel _reference;
-        private static Transform _parent;
-        private static UIPanel _panel;
-        private static bool _geometryLogged;
-
-        internal static void Ensure(HUD hud)
-        {
-            if (hud == null)
-            {
-                return;
-            }
-
-            if (_label != null && _hud == hud)
-            {
-                Reposition();
-                return;
-            }
-
-            Destroy();
-
-            UILabel reference = hud.zone_name;
-            if (reference == null || reference.transform.parent == null)
-            {
-                Planner.LogLine("event=hud result=skipped reason=no_zone_name_reference");
-                return;
-            }
-
-            Transform parent = reference.transform.parent;
-            UIPanel panel = reference.GetComponentInParent<UIPanel>();
-            if (panel == null)
-            {
-                Planner.LogLine("event=hud result=skipped reason=no_zone_name_panel");
-                return;
-            }
-
-            _hud = hud;
-            _reference = reference;
-            _parent = parent;
-            _panel = panel;
-            _geometryLogged = false;
-
-            _label = UnityEngine.Object.Instantiate(reference, parent, false);
-            PrepareLabel(_label, LabelName, reference.gameObject.layer);
-            _label.pivot = UIWidget.Pivot.TopRight;
-            Reposition();
-            Refresh();
-
-            Planner.LogLine(
-                "event=hud result=created reference=" + reference.gameObject.name +
-                " parent=" + parent.gameObject.name +
-                " panel=" + panel.gameObject.name +
-                " layer=" + _label.gameObject.layer +
-                " pos=" + FormatVector(_label.transform.localPosition));
-        }
-
-        internal static void Refresh()
-        {
-            if (_label == null)
-            {
-                if (GUIElements.me != null && GUIElements.me.hud != null)
-                {
-                    Ensure(GUIElements.me.hud);
-                }
-
-                if (_label == null)
-                {
-                    return;
-                }
-            }
-
-            if (!Planner.HasGoals)
-            {
-                _label.text = "";
-                _label.gameObject.SetActive(false);
-                return;
-            }
-
-            _label.text = BuildText();
-            PlannerLocalization.ApplyFont(_label);
-            Reposition();
-            _label.gameObject.SetActive(true);
-
-            Planner.LogLine(
-                "event=hud_refresh visible=true goals=" + Planner.GetGoals().Count +
-                " active_self=" + _label.gameObject.activeSelf +
-                " active_hierarchy=" + _label.gameObject.activeInHierarchy +
-                " pos=" + FormatVector(_label.transform.localPosition));
-
-            if (!_geometryLogged && _label.gameObject.activeInHierarchy)
-            {
-                LogGeometry("first_visible");
-                _geometryLogged = true;
-            }
-        }
-
-        internal static void RefreshIfVisible()
-        {
-            if (!Planner.HasGoals || GUIElements.me == null || GUIElements.me.hud == null)
-            {
-                return;
-            }
-
-            if (GUIElements.me.hud.gameObject.activeInHierarchy)
-            {
-                Refresh();
-            }
-        }
-
-        internal static void OnLanguageChanged()
-        {
-            PlannerLocalization.ApplyFont(_label);
-            Refresh();
-        }
-
-        internal static void Destroy()
-        {
-            if (_label != null)
-            {
-                UnityEngine.Object.Destroy(_label.gameObject);
-            }
-
-            _label = null;
-            _hud = null;
-            _reference = null;
-            _parent = null;
-            _panel = null;
-            _geometryLogged = false;
-        }
-
-        internal static string BuildText()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("Crafting Planner\n");
-            sb.Append(PlannerLocalization.Projects);
-            sb.Append(":\n");
-
-            foreach (ProjectGoal goal in Planner.GetGoals())
-            {
-                sb.Append("• ");
-                sb.Append(Planner.GetProjectName(goal.Definition));
-                sb.Append(" ×");
-                sb.Append(goal.Quantity);
-                sb.Append("\n");
-            }
-
-            Dictionary<string, int> required = Planner.AggregateRequirements();
-            List<KeyValuePair<string, int>> rows = required.ToList();
-            rows.Sort(delegate(KeyValuePair<string, int> a, KeyValuePair<string, int> b)
-            {
-                return string.Compare(
-                    Planner.GetItemName(a.Key),
-                    Planner.GetItemName(b.Key),
-                    StringComparison.CurrentCultureIgnoreCase);
-            });
-
-            sb.Append("\n");
-            sb.Append(PlannerLocalization.Materials);
-            sb.Append(":\n");
-
-            foreach (KeyValuePair<string, int> pair in rows)
-            {
-                int have = Planner.GetPlayerHave(pair.Key);
-                int missing = Math.Max(pair.Value - have, 0);
-                sb.Append(Planner.GetItemName(pair.Key));
-                sb.Append(": ");
-                sb.Append(pair.Value);
-                sb.Append(" / ");
-                sb.Append(have);
-                sb.Append(" / ");
-                sb.Append(missing);
-                sb.Append("\n");
-            }
-
-            return sb.ToString().TrimEnd();
-        }
-
-        internal static void PrepareLabel(UILabel label, string name, int layer)
-        {
-            label.gameObject.name = name;
-            label.gameObject.layer = layer;
-            label.SetAnchor((GameObject)null);
-            label.transform.localRotation = Quaternion.identity;
-            label.transform.localScale = Vector3.one;
-            label.pivot = UIWidget.Pivot.TopLeft;
-            label.width = 620;
-            label.height = 300;
-            label.multiLine = true;
-            label.overflowMethod = UILabel.Overflow.ResizeHeight;
-            label.alpha = 1f;
-            label.depth = Math.Max(label.depth, 5000);
-            PlannerLocalization.ApplyFont(label);
-        }
-
-        internal static string FormatVector(Vector3 value)
-        {
-            return value.x.ToString("0.0") + "," + value.y.ToString("0.0") + "," + value.z.ToString("0.0");
-        }
-
-        private static void Reposition()
-        {
-            if (_label == null || _reference == null || _parent == null)
-            {
-                return;
-            }
-
-            Vector3[] corners = _reference.localCorners;
-            if (corners == null || corners.Length < 4)
-            {
-                return;
-            }
-
-            Vector3 bottomRightWorld = _reference.transform.TransformPoint(corners[3]);
-            Vector3 bottomRightInParent = _parent.InverseTransformPoint(bottomRightWorld);
-
-            _label.transform.localPosition = new Vector3(
-                bottomRightInParent.x,
-                bottomRightInParent.y - GapBelowZoneName,
-                bottomRightInParent.z);
-        }
-
-        private static void LogGeometry(string reason)
-        {
-            if (_label == null || _reference == null || _parent == null || _panel == null)
-            {
-                return;
-            }
-
-            Vector3[] referenceCorners = _reference.worldCorners;
-            Vector3[] labelCorners = _label.worldCorners;
-
-            Vector3 referenceBottomRight = referenceCorners != null && referenceCorners.Length > 3
-                ? _parent.InverseTransformPoint(referenceCorners[3])
-                : Vector3.zero;
-            Vector3 labelBottomLeft = labelCorners != null && labelCorners.Length > 0
-                ? _parent.InverseTransformPoint(labelCorners[0])
-                : Vector3.zero;
-            Vector3 labelTopRight = labelCorners != null && labelCorners.Length > 2
-                ? _parent.InverseTransformPoint(labelCorners[2])
-                : Vector3.zero;
-
-            Planner.LogLine(
-                "event=hud_geometry reason=" + reason +
-                " language=" + PlannerLocalization.CurrentLanguage +
-                " reference=" + _reference.gameObject.name +
-                " parent=" + _parent.gameObject.name +
-                " panel=" + _panel.gameObject.name +
-                " panel_alpha=" + _panel.alpha.ToString("0.00") +
-                " panel_clip=" + _panel.clipping +
-                " parent_scale=" + FormatVector(_parent.lossyScale) +
-                " reference_br=" + FormatVector(referenceBottomRight) +
-                " label=" + FormatVector(_label.transform.localPosition) +
-                " label_depth=" + _label.depth +
-                " label_alpha=" + _label.alpha.ToString("0.00") +
-                " label_visible=" + _label.isVisible +
-                " corners_bl=" + FormatVector(labelBottomLeft) +
-                " corners_tr=" + FormatVector(labelTopRight));
-        }
-    }
-
-    internal static class PlannerCraftOverlay
-    {
-        private const string LabelName = "CraftingPlannerCraftOverlay";
-        private static UILabel _label;
-        private static CraftGUI _craftGui;
-        private static UIPanel _panel;
-
-        internal static void Open(CraftGUI craftGui)
-        {
-            if (craftGui == null)
-            {
-                return;
-            }
-
-            if (_label != null && _craftGui == craftGui)
-            {
-                Refresh();
-                return;
-            }
-
-            Destroy();
-
-            UIPanel panel = craftGui.GetComponentInParent<UIPanel>();
-            UILabel reference = FindReferenceLabel(craftGui, panel);
-            if (panel == null || reference == null)
-            {
-                Planner.LogLine("event=craft_overlay result=skipped reason=no_reference_or_panel");
-                return;
-            }
-
-            _craftGui = craftGui;
-            _panel = panel;
-            _label = UnityEngine.Object.Instantiate(reference, panel.transform, false);
-            PlannerHud.PrepareLabel(_label, LabelName, panel.gameObject.layer);
-
-            Vector3 craftOrigin = panel.transform.InverseTransformPoint(craftGui.transform.position);
-            _label.transform.localPosition = craftOrigin + new Vector3(-560f, 300f, 0f);
-            Refresh();
-
-            Planner.LogLine(
-                "event=craft_overlay result=created reference=" + reference.gameObject.name +
-                " panel=" + panel.gameObject.name +
-                " pos=" + PlannerHud.FormatVector(_label.transform.localPosition));
-        }
-
-        internal static void Refresh()
-        {
-            if (_label == null)
-            {
-                if (GUIElements.me != null && GUIElements.me.craft != null && GUIElements.me.craft.gameObject.activeInHierarchy)
-                {
-                    Open(GUIElements.me.craft);
-                }
-
-                if (_label == null)
-                {
-                    return;
-                }
-            }
-
-            bool visible = Planner.HasGoals && Planner.ShouldShowCraftOverlay && _craftGui != null && _craftGui.gameObject.activeInHierarchy;
-            if (!visible)
-            {
-                _label.text = "";
-                _label.gameObject.SetActive(false);
-                return;
-            }
-
-            _label.text = PlannerHud.BuildText();
-            _label.gameObject.SetActive(true);
-
-            Planner.LogLine(
-                "event=craft_overlay_refresh visible=true goals=" + Planner.GetGoals().Count +
-                " active_self=" + _label.gameObject.activeSelf +
-                " active_hierarchy=" + _label.gameObject.activeInHierarchy +
-                " pos=" + PlannerHud.FormatVector(_label.transform.localPosition));
-        }
-
-        internal static void OnLanguageChanged()
-        {
-            PlannerLocalization.ApplyFont(_label);
-            Refresh();
-        }
-
-        internal static void Hide()
-        {
-            if (_label != null)
-            {
-                _label.gameObject.SetActive(false);
-            }
-        }
-
-        internal static void Destroy()
-        {
-            if (_label != null)
-            {
-                UnityEngine.Object.Destroy(_label.gameObject);
-            }
-
-            _label = null;
-            _craftGui = null;
-            _panel = null;
-        }
-
-        private static UILabel FindReferenceLabel(CraftGUI craftGui, UIPanel panel)
-        {
-            if (craftGui == null || panel == null)
-            {
-                return null;
-            }
-
-            UILabel[] labels = craftGui.GetComponentsInChildren<UILabel>(true);
-            foreach (UILabel label in labels)
-            {
-                if (label == null || !label.gameObject.activeInHierarchy)
-                {
-                    continue;
-                }
-
-                UIPanel owner = label.GetComponentInParent<UIPanel>();
-                if (owner == panel)
-                {
-                    return label;
-                }
-            }
-
-            return labels.Length > 0 ? labels[0] : null;
         }
     }
 
@@ -1165,6 +764,7 @@ namespace CraftingPlanner
         private static void Postfix(WorldGameObject chest_obj)
         {
             Planner.OpenChest(chest_obj);
+            PlannerInputHints.Refresh();
         }
     }
 
@@ -1174,6 +774,7 @@ namespace CraftingPlanner
         private static void Prefix()
         {
             Planner.CloseChest();
+            PlannerInputHints.HideChest();
         }
     }
 

@@ -2,7 +2,7 @@
 
 ## Current working state
 
-Continue on `dev/codex-migration`, prepared from `dev/0.1.4` (`877cb0b`) and the newer documentation/licensing baseline `main` (`f2921a8`). Both histories are preserved. Runtime source is unchanged from the 0.1.4 line. This integration is setup maintenance, not acceptance or a stable release.
+Continue on `dev/0.1.5`, based on the synchronized migration branch. The migration preserved both `dev/0.1.4` (`877cb0b`) and the newer documentation/licensing baseline `main` (`f2921a8`). The current candidate implements the user-approved lightweight row card; its visual/runtime acceptance is pending. See `UI_IMPLEMENTATION.md` and the latest `TEST_LOG.md` entry.
 
 The latest tested candidate remains the exact 0.1.4 artifact recorded in `TEST_LOG.md`, built from `ad836eae5556858feb09f9cbf4d8eefead78931f` with SHA-256 `b8ac438d19399963d51b9d7c1fd8fe0349d229566c70f80a1e80764d72f5f2d9`. A new local or CI verification build is not that immutable artifact and must not be installed or handed out under its identity.
 
@@ -27,16 +27,18 @@ dotnet build CraftingPlanner.csproj -c Release --no-restore --nologo
 
 Verification output is `bin/Release/CraftingPlanner.dll`. Confirm it exists and that neither `Assembly-CSharp.dll` nor `Assembly-CSharp-firstpass.dll` appears in that output directory. These are signature-only compile references, never distributable game assemblies.
 
-The migration workflow compiles and checks this boundary without uploading a numbered candidate. A future actual candidate needs a new version, exact committed source identity, version consistency verification, immutable artifact record and the project's runtime acceptance gate. No new runtime behavior is authorized by compilation alone.
+The development workflow now verifies exact source/version identity, compiles, tests project-owned gradient/localization policy, checks reference exclusion and packages a numbered candidate with a hash manifest. `Plugin.PluginVersion` owns the semantic version and derives both assembly/file versions. Candidate 0.1.5 must remain distinct from the earlier immutable 0.1.4 artifact. No runtime or visual acceptance follows from compilation alone.
 
-## Next product checkpoint
+## Current implementation / next acceptance checkpoint
 
-Run the UI/UX design pass required by `PRODUCT_SCOPE.md` with the user before changing presentation:
+The user selected aligned rows and authorized the UI implementation:
 
 - one compact visual specification and apparent screen position across CraftGUI and ordinary HUD;
 - native item icons and clear compact Required / Have / Missing counts;
 - hierarchy, backing, placement and content overflow;
 - retain display-only P0 with direct focused-card quantity management.
+
+Use native renderer/anchor/font paths documented in `UI_IMPLEMENTATION.md`. All rows are visible for the first candidate (explicit user choice); actual long-plan height will inform a later overflow decision. Verify the candidate in-game for appearance, menu/HUD continuity and gamepad hints, starting with Russian. Preserve all 11 locales and defer final long-label/CJK visual/translation review until layout stabilizes. Per-save persistence is explicitly desired later, not implemented here.
 
 Do not repeat the accepted HUD-anchor experiment or add Borderless-specific compensation. Final input/help presentation and any remaining carried-bag/capacity edge evidence should follow the chosen UI, rather than silently expand scope. Keyboard management is not accepted merely because an early candidate proposed it.
 

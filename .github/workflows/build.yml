@@ -1,14 +1,15 @@
-name: Verify Crafting Planner development
+name: Build Crafting Planner candidate
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - dev/codex-migration
+      - 'dev/**'
     paths:
       - 'CraftingPlanner.csproj'
       - 'src/**'
       - 'references/**'
+      - 'tests/**'
       - 'nuget.config'
       - '.github/workflows/build.yml'
 
@@ -38,6 +39,26 @@ jobs:
       - name: Build
         run: dotnet build CraftingPlanner.csproj -c Release --no-restore --nologo
 
+      - name: Check candidate source and version identity
+        shell: pwsh
+        run: |
+          if ((git rev-parse HEAD).Trim() -ne $env:GITHUB_SHA) { throw 'Unexpected source checkout' }
+          $match = [regex]::Match((Get-Content src/CraftingPlanner.cs -Raw), 'public const string PluginVersion = "(\d+\.\d+\.\d+)";')
+          if (!$match.Success) { throw 'Missing canonical plugin version' }
+          $version = $match.Groups[1].Value
+          $dll = (Resolve-Path 'bin/Release/CraftingPlanner.dll').Path
+          if ([Reflection.AssemblyName]::GetAssemblyName($dll).Version.ToString() -ne "$version.0") { throw 'Assembly version mismatch' }
+          if ([Diagnostics.FileVersionInfo]::GetVersionInfo($dll).FileVersion -ne "$version.0") { throw 'File version mismatch' }
+          "CANDIDATE_VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Test gradient policy and localization coverage
+        shell: pwsh
+        run: |
+          & "$env:WINDIR/Microsoft.NET/Framework64/v4.0.30319/csc.exe" /nologo /out:CardTests.exe tests/CardTests.cs
+          if ($LASTEXITCODE -ne 0) { throw 'Test compilation failed' }
+          & ./CardTests.exe bin/Release/CraftingPlanner.dll bin/Release references/Assembly-CSharp/bin/Release/net472 references/Assembly-CSharp-firstpass/bin/Release/net472 "$env:USERPROFILE/.nuget/packages/unity3d.sdk/2020.3.13.1/lib"
+          if ($LASTEXITCODE -ne 0) { throw 'Card policy checks failed' }
+
       - name: Verify package boundary
         shell: pwsh
         run: |
@@ -51,3 +72,27 @@ jobs:
           if (Test-Path 'bin/Release/Assembly-CSharp-firstpass.dll') {
             throw 'Compile-time Assembly-CSharp-firstpass stub leaked into output.'
           }
+
+      - name: Package numbered candidate
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts | Out-Null
+          $target = "artifacts/CraftingPlanner-$env:CANDIDATE_VERSION.dll"
+          Copy-Item bin/Release/CraftingPlanner.dll $target
+          $identity = [ordered]@{
+            version = $env:CANDIDATE_VERSION
+            source = $env:GITHUB_SHA
+            run = $env:GITHUB_RUN_ID
+            artifact = (Split-Path $target -Leaf)
+            sha256 = (Get-FileHash $target -Algorithm SHA256).Hash.ToLowerInvariant()
+            status = 'candidate-not-runtime-accepted'
+          }
+          $identity | ConvertTo-Json | Set-Content artifacts/build-identity.json -Encoding utf8
+
+      - name: Upload candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: CraftingPlanner-${{ env.CANDIDATE_VERSION }}
+          path: artifacts/*
+          if-no-files-found: error
+          retention-days: 14

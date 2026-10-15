@@ -21,6 +21,7 @@ public class GameBalance : GameBalanceBase
 
 public class ItemDefinition : BalanceBaseObject
 {
+    public string GetIcon() { return id; }
     public string GetItemName(bool localized = true)
     {
         return id;
@@ -140,15 +141,22 @@ public class MainGame : MonoBehaviour
 
 public class BaseGUI : MonoBehaviour
 {
+    public delegate void OnAnyWindowStateChanged(BaseGUI gui);
+    public static event OnAnyWindowStateChanged on_window_opened { add { } remove { } }
+    public static event OnAnyWindowStateChanged on_window_closed { add { } remove { } }
+    public bool is_shown_and_top { get { return false; } }
+    public ButtonTipsStr button_tips { get { return null; } }
     public static List<BaseGUI> opened_windows = new List<BaseGUI>();
 }
 
 public class CraftGUI : BaseGUI
 {
+    public CraftItemGUI craft_item_prefab;
 }
 
 public class CraftItemGUI : MonoBehaviour
 {
+    public BaseItemCellGUI item_gui;
     public CraftDefinition current_craft { get { return null; } }
 }
 
@@ -200,6 +208,25 @@ public class GUIElements : MonoBehaviour
     public static GUIElements me { get { return null; } }
     public HUD hud;
     public CraftGUI craft;
+    public ChestGUI chest;
+}
+
+public class BaseItemCellGUI : MonoBehaviour { public BaseItemCellElements x1; }
+public class BaseItemCellElements { public UI2DSprite icon; }
+public class EasySpritesCollection : ScriptableObject
+{
+    public static Sprite GetSprite(string name, bool noError, string collection) { return null; }
+}
+public enum GameKey { Option2 = 23, PrevSubTab = 28, NextSubTub = 29 }
+public class GameKeyTip
+{
+    public static string Get(GameKey key, string text, bool active, bool gamepadOnly, bool translate, bool previousNewline) { return text; }
+}
+public class ButtonTipsStr : MonoBehaviour { public UILabel label; }
+public class LazyInput : MonoBehaviour
+{
+    public static bool gamepad_active { get { return false; } }
+    public static event System.Action on_input_changed { add { } remove { } }
 }
 
 public static class TooltipsManager

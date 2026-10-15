@@ -9,6 +9,7 @@
     <DebugType>none</DebugType>
     <Deterministic>true</Deterministic>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\\Release\\</OutputPath>
   </PropertyGroup>

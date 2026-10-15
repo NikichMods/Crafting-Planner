@@ -375,3 +375,23 @@ User feedback accepted for the next UI pass:
 - current large text-only headings/material-name rows are a technical scaffold only.
 
 The next candidate should therefore be a UI-design implementation, not another coordinate-debug build.
+
+## Crafting Planner 0.1.5 — lightweight row-card candidate
+
+- Branch: `dev/0.1.5`; exact source/CI/artifact identity will be recorded after the clean build gate, before installation/handoff.
+- Replaces the two text-only implementations with one owned renderer/layout. Native item sprites retain the native renderer's shader/tint. The backing is a borderless alpha gradient, strongest top-right and transparent bottom-left; icons/text retain independent opacity.
+- Both native surfaces anchor to the same HUD.zone_name geometry using NGUI anchors, preserving vanilla HUD hiding and existing project focus.
+- Existing RT/LT goal management and open-chest Y collection are retained. Separate hints use native platform key symbols and current top-window context; they do not replace vanilla tips or capture input.
+- All 11 locale dictionaries include the new compact labels. Actual live label fonts are refreshed from host templates rather than retaining a previous locale's applied font. Translation quality and all-language visual acceptance remain open.
+- Per-save persistence remains deferred. No save or world-completion behavior changes. All goals/material rows are shown for this candidate by explicit user choice.
+- Local compile against exact installed 1.407 game/BepInEx references passed; compiled-candidate gradient direction/bounds and 11-language schema/locale-normalization checks passed. This does not establish NGUI rendering, glyph quality, real gamepad operation or final appearance.
+
+### Focused runtime pass
+
+1. Open a supported builder using the gamepad. Focus a project, add it with RT, add again and decrement with LT. Confirm the native focus stays usable and the added button hints are readable without replacing existing menu hints.
+2. Leave at least one goal pinned. Compare the card before/after closing the menu: same position, width, row order/counts, native icons and light frameless backing. Assess opacity and readability; a pair of screenshots is useful for this visual property.
+3. Open a storage with a missing material. Confirm the contextual collection hint and Y action; no surplus should move. No need to complete an irreversible construction/repair.
+4. Open/close an unrelated menu once; the card should obey its native surface visibility and should not intercept gameplay/menu input.
+5. If convenient, switch Russian -> English -> Russian. A later final localization pass must cover long labels and CJK as well; this focused pass does not replace it.
+
+After the pass, collect the accessible local BepInEx log directly and match the loaded/installed version and hash. Runtime/visual acceptance is pending until user observations arrive.

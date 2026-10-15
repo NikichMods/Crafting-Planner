@@ -58,7 +58,7 @@ A world-level action that takes materials without opening the storage is not P0.
 
 ## Persistence
 
-P0 goals are session-local. Per-save persistence is a later upgrade if the implementation cost/risk is justified.
+P0 goals are session-local. Per-save persistence is an explicit desired follow-up (reaffirmed 2026-10-15): the same save must recover its own pinned goals and quantities after exiting and restarting the game. It remains outside the current UI implementation; do not implement one global cross-save goal list or infer permission to change save data in this pass.
 
 ## UI
 
@@ -166,10 +166,14 @@ stop before visual polish and explicitly run a UI/UX design pass with the user.
 
 That design pass should decide the visual hierarchy, backing panel, icons/text balance, Required/Have/Missing presentation, compactness, and final placement. Only after the native anchor/coordinate model is verified should temporary F1 live-calibration controls be considered for fine tuning such as position, width, font scale, spacing, backing opacity, or similar presentation-only values.
 
-### Current visual proposal — awaiting user choice, 2026-10-15
+### Adopted card direction — 2026-10-15
 
-The proposed card has a small title, short goal rows with quantities, and icon-led aggregated material status. Two exploratory layouts were shown: aligned material rows with one shared Have / Required / Missing header (recommended for numerical clarity), and a two-column material tile layout with Have/Required plus Missing or a completion check. Neither layout is adopted yet.
+The user selected aligned material rows with one shared Have / Required / Missing header. Keep a small title, short goal rows with quantities and native item icons. The alternative tile layout is not selected.
 
-The card's content, size and apparent position stay identical across build-menu and ordinary-HUD contexts. Input hints belong to the active host menu rather than enlarging or moving the card. Goal management keeps the native focused project; the ordinary HUD has no separate focus/navigation. The interactive sketch uses substitute symbols and illustrative counts, not extracted game sprites or evidence of real controller input. Production must reuse native item icons and the host presentation stack.
+The card must feel visually light: no thick border, heavy frame, or opaque window. Use a subtle translucent backing, strongest at the top-right and fading toward near-transparency at the bottom-left; exact opacity and spacing require in-game visual acceptance. Keep text and icons readable independently of backing opacity.
 
-Final placement, visual density, controller hints and overflow for many goals/materials remain design questions. The four-material sketch does not establish an overflow solution or authorize hiding missing requirements. No production UI change is authorized by showing this proposal.
+The card's content, size and apparent position stay identical across build-menu and ordinary-HUD contexts. Input hints belong to the active host menu rather than enlarging or moving the card. Goal management keeps the native focused project; the ordinary HUD has no separate focus/navigation. The interactive sketch used substitute symbols and illustrative counts, not extracted game sprites or evidence of real controller input. Production must reuse native item icons and the host presentation stack, including native icon shader/tint rather than copying only sprite images.
+
+The user authorized implementing this direction with gamepad support. For the first candidate the user explicitly chose to show all rows; evaluate actual long-plan height in-game before deciding on clipping, paging or another overflow mechanism. No missing requirements may be silently hidden. Fine placement, visual density and controller hints remain subject to runtime verification.
+
+Russian is the current visual-review language. All 11 built-in host languages remain required: preserve live host names/font switching and put new labels through the shared localization layer immediately. Final translation/long-label/CJK review may occur once layout stabilizes; a Russian visual pass is not acceptance for all languages.
