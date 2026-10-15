@@ -37,7 +37,7 @@ jobs:
         run: dotnet restore CraftingPlanner.csproj --configfile nuget.config
 
       - name: Build
-        run: dotnet build CraftingPlanner.csproj -c Release --no-restore --nologo
+        run: dotnet build CraftingPlanner.csproj -c Release --no-restore --nologo -p:PlannerCalibration=true
 
       - name: Check candidate source and version identity
         shell: pwsh
@@ -87,6 +87,7 @@ jobs:
             artifact = (Split-Path $target -Leaf)
             sha256 = (Get-FileHash $target -Algorithm SHA256).Hash.ToLowerInvariant()
             status = 'candidate-not-runtime-accepted'
+            calibration = $true
           }
           $identity | ConvertTo-Json | Set-Content artifacts/build-identity.json -Encoding utf8
 

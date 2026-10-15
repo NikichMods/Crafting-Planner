@@ -23,6 +23,7 @@ public class UIRect : MonoBehaviour
 
 public class UIPanel : UIRect
 {
+    public int depth { get; set; }
     public float width { get { return 0f; } }
     public float height { get { return 0f; } }
     public float alpha { get; set; }
@@ -32,6 +33,7 @@ public class UIPanel : UIRect
 
 public class UIWidget : UIRect
 {
+    public void MarkAsChanged() { }
     public delegate void OnPostFillCallback(UIWidget widget, int start, System.Collections.Generic.List<Vector3> vertices, System.Collections.Generic.List<Vector2> uvs, System.Collections.Generic.List<Color> colors);
     public OnPostFillCallback onPostFill;
     public Color color { get; set; }
@@ -60,6 +62,7 @@ public class UIWidget : UIRect
 
 public class UILabel : UIWidget
 {
+    public Vector2 printedSize { get { return Vector2.zero; } }
     public enum Effect { None = 0, Shadow = 1, Outline = 2, Outline8 = 3 }
     public enum Overflow
     {
@@ -87,6 +90,20 @@ public class UILabel : UIWidget
 }
 
 public class UIFont : MonoBehaviour { }
+public class UIEventListener : MonoBehaviour
+{
+    public delegate void VoidDelegate(GameObject go);
+    public VoidDelegate onClick;
+    public static UIEventListener Get(GameObject go) { return null; }
+}
+public class UICamera : MonoBehaviour
+{
+    public bool useMouse;
+    public bool useTouch;
+    public bool useKeyboard;
+    public bool useController;
+    public static UICamera FindCameraForLayer(int layer) { return null; }
+}
 public static class NGUIText
 {
     public enum Alignment { Automatic = 0, Left = 1, Center = 2, Right = 3, Justified = 4 }

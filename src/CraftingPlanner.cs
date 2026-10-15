@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Crafting Planner";
-        public const string PluginVersion = "0.1.5";
+        public const string PluginVersion = "0.1.6";
 
         private Harmony _harmony;
 
@@ -31,6 +31,7 @@ namespace CraftingPlanner
 
         private void OnDestroy()
         {
+            PlannerCalibration.Close();
             LazyInput.on_input_changed -= PlannerInputHints.OnInputChanged;
             BaseGUI.on_window_opened -= PlannerInputHints.OnWindowChanged;
             BaseGUI.on_window_closed -= PlannerInputHints.OnWindowChanged;
@@ -42,6 +43,9 @@ namespace CraftingPlanner
                 _harmony.UnpatchSelf();
             }
         }
+
+        private void Update() { PlannerCalibration.Update(); }
+        private void OnGUI() { PlannerCalibration.Draw(); }
     }
 
     internal enum ProjectContextKind
@@ -83,6 +87,7 @@ namespace CraftingPlanner
 
         internal static void ResetSession()
         {
+            PlannerCalibration.Close();
             Goals.Clear();
             ClearProjectContext();
             _currentChest = null;
@@ -486,23 +491,26 @@ namespace CraftingPlanner
     {
         private static readonly Dictionary<string, string[]> Texts = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
         {
-            { "en", new[] { "Plan", "Have", "Need", "Missing", "Take needed" } },
-            { "de", new[] { "Plan", "Da", "Bedarf", "Fehlt", "Benötigtes nehmen" } },
-            { "fr", new[] { "Plan", "En sac", "Requis", "Manque", "Prendre le nécessaire" } },
-            { "pt-br", new[] { "Plano", "Tenho", "Preciso", "Falta", "Pegar o necessário" } },
-            { "es", new[] { "Plan", "Tengo", "Necesito", "Falta", "Tomar lo necesario" } },
-            { "ru", new[] { "План", "Есть", "Нужно", "Добрать", "Взять недостающее" } },
-            { "it", new[] { "Piano", "Ho", "Serve", "Manca", "Prendi il necessario" } },
-            { "pl", new[] { "Plan", "Mam", "Potrzeba", "Brakuje", "Weź potrzebne" } },
-            { "ja", new[] { "計画", "所持", "必要", "不足", "不足分を取る" } },
-            { "zh-cn", new[] { "计划", "持有", "需要", "缺少", "拿取所需材料" } },
-            { "ko", new[] { "계획", "보유", "필요", "부족", "필요한 재료 가져오기" } }
+            { "en", new[] { "Plan", "Have", "Need", "Missing", "Take needed", "Remove one", "Add one", "Only missing materials from this chest; limited by carrying capacity." } },
+            { "de", new[] { "Plan", "Da", "Bedarf", "Fehlt", "Benötigtes nehmen", "Eins entfernen", "Eins hinzufügen", "Nur Fehlendes aus dieser Truhe, soweit Platz ist." } },
+            { "fr", new[] { "Plan", "En sac", "Requis", "Manque", "Prendre le nécessaire", "Retirer 1", "Ajouter 1", "Matériaux manquants de ce coffre, selon la place disponible." } },
+            { "pt-br", new[] { "Plano", "Tenho", "Preciso", "Falta", "Pegar o necessário", "Remover 1", "Adicionar 1", "Somente o que falta deste baú, conforme o espaço disponível." } },
+            { "es", new[] { "Plan", "Tengo", "Necesito", "Falta", "Tomar lo necesario", "Quitar 1", "Añadir 1", "Solo lo que falta de este cofre, según el espacio disponible." } },
+            { "ru", new[] { "План строительства", "Есть", "Нужно", "Добрать", "Взять недостающее", "Убрать 1", "Добавить 1", "Только недостающее из этого сундука, насколько хватит места." } },
+            { "it", new[] { "Piano", "Ho", "Serve", "Manca", "Prendi il necessario", "Rimuovi 1", "Aggiungi 1", "Solo i materiali mancanti da questo baule, spazio permettendo." } },
+            { "pl", new[] { "Plan", "Mam", "Potrzeba", "Brakuje", "Weź potrzebne", "Usuń 1", "Dodaj 1", "Tylko brakujące materiały z tej skrzyni, w granicach pojemności." } },
+            { "ja", new[] { "計画", "所持", "必要", "不足", "不足分を取る", "1つ減らす", "1つ追加", "この箱から不足分だけ、持てる範囲で取ります。" } },
+            { "zh-cn", new[] { "计划", "持有", "需要", "缺少", "拿取所需材料", "减少1个", "添加1个", "仅从此箱子拿取缺少的材料，以背包容量为限。" } },
+            { "ko", new[] { "계획", "보유", "필요", "부족", "필요한 재료 가져오기", "1개 제거", "1개 추가", "이 상자에서 부족한 재료만 가방 공간만큼 가져옵니다." } }
         };
         internal static string Plan { get { return Current[0]; } }
         internal static string Have { get { return Current[1]; } }
         internal static string Required { get { return Current[2]; } }
         internal static string Missing { get { return Current[3]; } }
         internal static string TakeNeeded { get { return Current[4]; } }
+        internal static string RemoveGoal { get { return Current[5]; } }
+        internal static string AddGoal { get { return Current[6]; } }
+        internal static string CollectHelp { get { return Current[7]; } }
 
         internal static string CurrentLanguage
         {
@@ -771,7 +779,7 @@ namespace CraftingPlanner
     [HarmonyPatch(typeof(ChestGUI), "Hide")]
     internal static class ChestHidePatch
     {
-        private static void Prefix()
+        private static void Postfix()
         {
             Planner.CloseChest();
             PlannerInputHints.HideChest();

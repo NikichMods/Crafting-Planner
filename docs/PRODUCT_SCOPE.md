@@ -172,8 +172,16 @@ The user selected aligned material rows with one shared Have / Required / Missin
 
 The card must feel visually light: no thick border, heavy frame, or opaque window. Use a subtle translucent backing, strongest at the top-right and fading toward near-transparency at the bottom-left; exact opacity and spacing require in-game visual acceptance. Keep text and icons readable independently of backing opacity.
 
-The card's content, size and apparent position stay identical across build-menu and ordinary-HUD contexts. Input hints belong to the active host menu rather than enlarging or moving the card. Goal management keeps the native focused project; the ordinary HUD has no separate focus/navigation. The interactive sketch used substitute symbols and illustrative counts, not extracted game sprites or evidence of real controller input. Production must reuse native item icons and the host presentation stack, including native icon shader/tint rather than copying only sprite images.
+The card's content, size and apparent position stay identical across build-menu and ordinary-HUD contexts. Contextual input hints appear below the shared card body; they must not resize or move that body between views. Goal management keeps the native focused project; the ordinary HUD has no separate focus/navigation. The interactive sketch used substitute symbols and illustrative counts, not extracted game sprites or evidence of real controller input. Production must reuse native item icons and the host presentation stack, including native icon shader/tint rather than copying only sprite images.
 
 The user authorized implementing this direction with gamepad support. For the first candidate the user explicitly chose to show all rows; evaluate actual long-plan height in-game before deciding on clipping, paging or another overflow mechanism. No missing requirements may be silently hidden. Fine placement, visual density and controller hints remain subject to runtime verification.
 
 Russian is the current visual-review language. All 11 built-in host languages remain required: preserve live host names/font switching and put new labels through the shared localization layer immediately. Final translation/long-label/CJK review may occur once layout stabilizes; a Russian visual pass is not acceptance for all languages.
+
+### Runtime correction and calibration — 2026-10-15
+
+0.1.5 is rejected as final UI: absent control hints, context-dependent scale, misplaced backing, unequal name font sizes and insufficient separation from the native location banner. The next candidate must keep one uniform name font (wrap long names rather than shrink individual rows), provide larger tunable icons, separate the Planner visually below the location banner, and retain the card while the current storage is open. Add an obvious storage-local Take Needed action with mouse click and native gamepad Y, plus visible LT/RT project hints.
+
+The user explicitly requested a temporary live calibration panel with sliders and an export-to-log action. Tune only presentation; preserve native focused-project and storage-transfer semantics. Record all chosen parameters and context/geometry in one recoverable log event; this tool is research-only and must be removable before stable release.
+
+Expansion to ordinary workstation production recipes was explicitly withdrawn in the same feedback. The project-first P0 boundary and deferred per-save persistence remain unchanged.

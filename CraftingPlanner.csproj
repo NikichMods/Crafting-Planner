@@ -13,6 +13,9 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\\Release\\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(PlannerCalibration)' == 'true'">
+    <DefineConstants>$(DefineConstants);PLANNER_CALIBRATION</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="src\\*.cs" />

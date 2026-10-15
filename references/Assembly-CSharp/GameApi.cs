@@ -124,6 +124,7 @@ public class MultiInventory
 
 public class WorldGameObject : MonoBehaviour
 {
+    public ComponentsManager components { get { return null; } }
     public string obj_id;
     public Item data { get { return null; } }
 
@@ -205,11 +206,15 @@ public class GameSettings
 
 public class GUIElements : MonoBehaviour
 {
+    public UIWidget screen_size_widget;
     public static GUIElements me { get { return null; } }
     public HUD hud;
     public CraftGUI craft;
     public ChestGUI chest;
 }
+
+public class ComponentsManager { public BaseCharacterComponent character { get { return null; } } }
+public class BaseCharacterComponent { public bool control_enabled { get; set; } }
 
 public class BaseItemCellGUI : MonoBehaviour { public BaseItemCellElements x1; }
 public class BaseItemCellElements { public UI2DSprite icon; }

@@ -400,3 +400,12 @@ The next candidate should therefore be a UI-design implementation, not another c
 5. If convenient, switch Russian -> English -> Russian. A later final localization pass must cover long labels and CJK as well; this focused pass does not replace it.
 
 After the pass, collect the accessible local BepInEx log directly and match the loaded/installed version and hash. Runtime/visual acceptance is pending until user observations arrive.
+
+### 0.1.5 runtime return — 2026-10-15
+
+- Preserved local log `.local/evidence/0.1.5-return/LogOutput.log`, SHA-256 `dc100d6bf14c6bc0b9723d18dc3bc3166ec8be86db3c2a71dfb3572a9ff74712`; installed payload still matches the frozen 0.1.5 digest.
+- Loader identifies Crafting Planner 0.1.5 and both native card surfaces; no Planner failure/exception markers occur. RT increment and LT decrement/removal are exercised. Current-storage Y requested/moved 8 flitch against Missing=8 and storage=9; other absent ingredients requested0. This is bounded logic/load evidence, not presentation acceptance.
+- Shared log also contains Unity idle-point and missing-world-object errors. Their relationship to Planner is not established; do not attribute them to this plugin from the error alone.
+- User screenshots reject the current UI: differing scale between gameplay and construction, offset backing, inconsistent per-name text size, small icons, absent hints, confusion with the vanilla location banner, and missing card/action presentation in storage.
+- Confirmed static owners: UILabel.ShrinkContent caused per-name font reduction; UIWidget.pivot preserves world corners by moving the transform, and the backing's transform was not reset after the pivot assignment. Runtime parent-scale identity was not measured; the previous claim based only on prefab unit scale does not prove identical live presentation.
+- The next evidence must come from a corrected shared presentation and bounded live calibration, rather than guessed constants or acceptance of 0.1.5.

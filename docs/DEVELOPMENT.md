@@ -2,9 +2,9 @@
 
 ## Current working state
 
-Continue on `dev/0.1.5`, based on the synchronized migration branch. The migration preserved both `dev/0.1.4` (`877cb0b`) and the newer documentation/licensing baseline `main` (`f2921a8`). The current candidate implements the user-approved lightweight row card; its visual/runtime acceptance is pending. See `UI_IMPLEMENTATION.md` and the latest `TEST_LOG.md` entry.
+Continue on `dev/0.1.6`, based on the synchronized migration branch. The migration preserved both `dev/0.1.4` (`877cb0b`) and the newer documentation/licensing baseline `main` (`f2921a8`). The 0.1.5 runtime return rejects its presentation. The next candidate replaces the two card parents with one common native-frame presentation and temporary F1 calibration; visual/runtime acceptance is pending. See `UI_IMPLEMENTATION.md` and the latest `TEST_LOG.md` entry.
 
-Current installed candidate: 0.1.5, exact source `c300b01f28c6c852178293eb10e21ce4002ae2b8`, successful CI `38787593910`, DLL SHA-256 `4f01f304a6a03cb122a9ad0bac1515d6fce4fbc1ef5f5ac1f39b92a057c56831`. Exact CI bytes and manifest are preserved under ignored `artifacts/CraftingPlanner-0.1.5/`; private installation/log receipt is `.local/evidence/pre-0.1.5/`. Loader, appearance and controller acceptance are pending. Do not rebuild/overwrite this handed version.
+Current installed candidate: 0.1.5, exact source `c300b01f28c6c852178293eb10e21ce4002ae2b8`, successful CI `38787593910`, DLL SHA-256 `4f01f304a6a03cb122a9ad0bac1515d6fce4fbc1ef5f5ac1f39b92a057c56831`. Exact CI bytes and manifest are preserved under ignored `artifacts/CraftingPlanner-0.1.5/`; private installation/log receipt is `.local/evidence/pre-0.1.5/`. The loader and exercised LT/RT/Y logic are verified in the returned log; presentation is rejected. Do not rebuild/overwrite this handed version.
 
 The latest prior candidate with accepted in-game HUD/font evidence is the exact 0.1.4 artifact recorded in `TEST_LOG.md`, built from `ad836eae5556858feb09f9cbf4d8eefead78931f`, SHA-256 `b8ac438d19399963d51b9d7c1fd8fe0349d229566c70f80a1e80764d72f5f2d9`. Preserve that historical evidence and immutable identity separately from 0.1.5.
 
@@ -29,7 +29,7 @@ dotnet build CraftingPlanner.csproj -c Release --no-restore --nologo
 
 Verification output is `bin/Release/CraftingPlanner.dll`. Confirm it exists and that neither `Assembly-CSharp.dll` nor `Assembly-CSharp-firstpass.dll` appears in that output directory. These are signature-only compile references, never distributable game assemblies.
 
-The development workflow now verifies exact source/version identity, compiles, tests project-owned gradient/localization policy, checks reference exclusion and packages a numbered candidate with a hash manifest. `Plugin.PluginVersion` owns the semantic version and derives both assembly/file versions. Candidate 0.1.5 must remain distinct from the earlier immutable 0.1.4 artifact. No runtime or visual acceptance follows from compilation alone.
+The development workflow now verifies exact source/version identity, compiles, tests project-owned gradient/localization policy, checks reference exclusion and packages a numbered candidate with a hash manifest. `Plugin.PluginVersion` owns the semantic version and derives both assembly/file versions. Candidate 0.1.5 must remain distinct from the earlier immutable 0.1.4 artifact. No runtime or visual acceptance follows from compilation alone. For the temporary 0.1.6 calibration candidate add `-p:PlannerCalibration=true`; without this property the F1 editor and its input guards compile out. Hosted candidate CI explicitly enables and records this flag.
 
 ## Current implementation / next acceptance checkpoint
 

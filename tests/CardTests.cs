@@ -42,7 +42,7 @@ class CardTests
             foreach (string language in languages)
             {
                 string[] labels = (string[])texts[language];
-                Require(labels != null && labels.Length == 5, "Missing card labels: " + language);
+                Require(labels != null && labels.Length == 8, "Missing card labels: " + language);
                 foreach (string label in labels) Require(!string.IsNullOrEmpty(label), "Empty localized label");
             }
             MethodInfo normalize = localization.GetMethod("Normalize", BindingFlags.Static | BindingFlags.NonPublic);
