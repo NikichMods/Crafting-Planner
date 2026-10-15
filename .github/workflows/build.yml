@@ -54,7 +54,8 @@ jobs:
       - name: Test gradient policy and localization coverage
         shell: pwsh
         run: |
-          & "$env:WINDIR/Microsoft.NET/Framework64/v4.0.30319/csc.exe" /nologo /out:CardTests.exe tests/CardTests.cs
+          $testSource = (Resolve-Path -LiteralPath 'tests/CardTests.cs').Path
+          & "$env:WINDIR/Microsoft.NET/Framework64/v4.0.30319/csc.exe" /nologo /out:CardTests.exe $testSource
           if ($LASTEXITCODE -ne 0) { throw 'Test compilation failed' }
           & ./CardTests.exe bin/Release/CraftingPlanner.dll bin/Release references/Assembly-CSharp/bin/Release/net472 references/Assembly-CSharp-firstpass/bin/Release/net472 "$env:USERPROFILE/.nuget/packages/unity3d.sdk/2020.3.13.1/lib"
           if ($LASTEXITCODE -ne 0) { throw 'Card policy checks failed' }
