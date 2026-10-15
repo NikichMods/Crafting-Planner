@@ -20,6 +20,8 @@ CraftGUI horizontal hooks require the exact native focused CraftItemGUI, a suppo
 
 **READY — stored-goal identity/state isolation.** Existing Goals is the sole state owner. Move its quantity/list mutation into a Unity-independent helper shared by menu and HUD edits, with original semantic keys retained for stored goals and stale callback rejection. Preserve repeatable/one-off and zero-removal semantics, aggregation and manual materials; keep logging and one shared-render notification after successful handling. Direct tests exercise that production helper without invoking Unity ECalls in a desktop test process. This avoids adding a test-only bypass around the real UI lifecycle.
 
+**READY — selection normalization after removal.** PlannerEditing owns the HUD selection index. Its display already clamps against the current goal count; navigation must normalize the same index before applying up/down, especially after deleting the selected last row. Reuse one pure clamp in display and navigation. No host input/goal semantics change; a direct regression assertion proves the removed-tail index selects the surviving last row and then Down wraps to the first row. Native perceptual focus still needs the game.
+
 ## Current correction gate after the 0.1.5 runtime return
 
 The earlier READY sections below describe the historical 0.1.5 implementation, whose final presentation is rejected. Do not treat those static assumptions as accepted runtime layout evidence.

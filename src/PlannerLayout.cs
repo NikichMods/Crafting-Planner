@@ -8,6 +8,7 @@ namespace CraftingPlanner
         internal const int ArrowWidth = 20, QuantityWidth = 30;
         internal const int QuantitySlotWidth = ArrowWidth * 2 + QuantityWidth;
         internal static int QuantityX(int slotLeft) { return slotLeft + ArrowWidth; }
+        internal static int ClampSelection(int index, int count) { return Math.Max(0, Math.Min(index, count - 1)); }
 
         internal static float BackingAlpha(float x, float y, float width, float height, float radius, float feather)
         {

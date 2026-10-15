@@ -16,7 +16,7 @@ namespace CraftingPlanner
         internal static bool Available { get { return _allowed && _template != null; } }
         internal static ProjectGoal Selected
         {
-            get { var goals = Planner.GetGoals(); return goals.Count == 0 ? null : goals[Math.Max(0, Math.Min(_selected, goals.Count - 1))]; }
+            get { var goals = Planner.GetGoals(); return goals.Count == 0 ? null : goals[PlannerLayout.ClampSelection(_selected, goals.Count)]; }
         }
         internal static bool IsPlayer(BaseCharacterComponent character)
         {
@@ -68,6 +68,7 @@ namespace CraftingPlanner
                     return;
                 }
                 int count = Planner.GetGoals().Count;
+                _selected = PlannerLayout.ClampSelection(_selected, count);
                 if (LazyInput.GetKeyDown(GameKey.Up)) { _selected = (_selected + count - 1) % count; PlannerPresentation.Refresh(); }
                 else if (LazyInput.GetKeyDown(GameKey.Down)) { _selected = (_selected + 1) % count; PlannerPresentation.Refresh(); }
                 if (LazyInput.GetKeyDown(GameKey.Left)) Planner.AdjustPinned(Selected, -1, "hud_left");
