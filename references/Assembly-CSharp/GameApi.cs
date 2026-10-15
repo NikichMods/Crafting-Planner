@@ -48,6 +48,7 @@ public class CraftDefinition : BalanceBaseObject
     public List<Item> needs_from_wgo;
     public bool one_time_craft;
     public string change_wgo;
+    public string icon;
 
     public string GetNameNonLocalized()
     {
@@ -147,16 +148,22 @@ public class BaseGUI : MonoBehaviour
     public static event OnAnyWindowStateChanged on_window_closed { add { } remove { } }
     public bool is_shown_and_top { get { return false; } }
     public ButtonTipsStr button_tips { get { return null; } }
+    public GamepadNavigationController gamepad_controller { get { return null; } }
     public static List<BaseGUI> opened_windows = new List<BaseGUI>();
 }
 
 public class CraftGUI : BaseGUI
 {
     public CraftItemGUI craft_item_prefab;
+    public List<CraftItemGUI> GetItemsList() { return null; }
 }
 
 public class CraftItemGUI : MonoBehaviour
 {
+    public GameObject amount_buttons;
+    public UIWidget selection_frame;
+    public UITable ingredients_table;
+    public UILabel label_name;
     public BaseItemCellGUI item_gui;
     public CraftDefinition current_craft { get { return null; } }
 }
@@ -222,7 +229,9 @@ public class EasySpritesCollection : ScriptableObject
 {
     public static Sprite GetSprite(string name, bool noError, string collection) { return null; }
 }
-public enum GameKey { Option2 = 23, PrevSubTab = 28, NextSubTub = 29 }
+public enum GameKey { Work=8, Left=16, Right=17, Up=18, Down=19, Back=21, Option2 = 23, PrevSubTab = 28, NextSubTub = 29 }
+public class GamepadNavigationItem : MonoBehaviour { }
+public class GamepadNavigationController { public GamepadNavigationItem focused_item { get { return null; } } }
 public class GameKeyTip
 {
     public static string Get(GameKey key, string text, bool active, bool gamepadOnly, bool translate, bool previousNewline) { return text; }
@@ -230,6 +239,8 @@ public class GameKeyTip
 public class ButtonTipsStr : MonoBehaviour { public UILabel label; }
 public class LazyInput : MonoBehaviour
 {
+    public static bool GetKeyDown(GameKey key) { return false; }
+    public static void WaitForRelease(GameKey key) { }
     public static bool gamepad_active { get { return false; } }
     public static event System.Action on_input_changed { add { } remove { } }
 }

@@ -51,13 +51,13 @@ jobs:
           if ([Diagnostics.FileVersionInfo]::GetVersionInfo($dll).FileVersion -ne "$version.0") { throw 'File version mismatch' }
           "CANDIDATE_VERSION=$version" >> $env:GITHUB_ENV
 
-      - name: Test gradient policy and localization coverage
+      - name: Test rounded backing policy and localization coverage
         shell: pwsh
         run: |
           $testSource = (Resolve-Path -LiteralPath 'tests/CardTests.cs').Path
           & "$env:WINDIR/Microsoft.NET/Framework64/v4.0.30319/csc.exe" /nologo /out:CardTests.exe $testSource
           if ($LASTEXITCODE -ne 0) { throw 'Test compilation failed' }
-          & ./CardTests.exe bin/Release/CraftingPlanner.dll bin/Release references/Assembly-CSharp/bin/Release/net472 references/Assembly-CSharp-firstpass/bin/Release/net472 "$env:USERPROFILE/.nuget/packages/unity3d.sdk/2020.3.13.1/lib"
+          & ./CardTests.exe bin/Release/CraftingPlanner.dll bin/Release references/Assembly-CSharp/bin/Release/net472 references/Assembly-CSharp-firstpass/bin/Release/net472 references/Rewired_Core/bin/Release/net472 "$env:USERPROFILE/.nuget/packages/unity3d.sdk/2020.3.13.1/lib" --state
           if ($LASTEXITCODE -ne 0) { throw 'Card policy checks failed' }
 
       - name: Verify package boundary
@@ -72,6 +72,9 @@ jobs:
           }
           if (Test-Path 'bin/Release/Assembly-CSharp-firstpass.dll') {
             throw 'Compile-time Assembly-CSharp-firstpass stub leaked into output.'
+          }
+          if (Test-Path 'bin/Release/Rewired_Core.dll') {
+            throw 'Compile-time Rewired_Core stub leaked into output.'
           }
 
       - name: Package numbered candidate

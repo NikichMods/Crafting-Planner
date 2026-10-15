@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="references\Rewired_Core\Rewired_Core.csproj" Private="false" />
     <ProjectReference Include="references\\Assembly-CSharp-firstpass\\Assembly-CSharp-firstpass.csproj" Private="false" />
     <ProjectReference Include="references\\Assembly-CSharp\\Assembly-CSharp.csproj" Private="false" />
   </ItemGroup>

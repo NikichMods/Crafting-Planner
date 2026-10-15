@@ -10,6 +10,7 @@
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Rewired_Core\Rewired_Core.csproj" Private="false" />
     <PackageReference Include="Unity3D.SDK" Version="2020.3.13.1" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
   </ItemGroup>

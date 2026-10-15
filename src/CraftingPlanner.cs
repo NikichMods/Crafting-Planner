@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Crafting Planner";
-        public const string PluginVersion = "0.1.6";
+        public const string PluginVersion = "0.1.7";
 
         private Harmony _harmony;
 
@@ -32,6 +32,9 @@ namespace CraftingPlanner
         private void OnDestroy()
         {
             PlannerCalibration.Close();
+            PlannerEditing.Reset();
+            PlannerRowControls.DestroyAll();
+            PlannerChestControls.Destroy();
             LazyInput.on_input_changed -= PlannerInputHints.OnInputChanged;
             BaseGUI.on_window_opened -= PlannerInputHints.OnWindowChanged;
             BaseGUI.on_window_closed -= PlannerInputHints.OnWindowChanged;
@@ -88,6 +91,8 @@ namespace CraftingPlanner
         internal static void ResetSession()
         {
             PlannerCalibration.Close();
+            PlannerEditing.Reset();
+            PlannerRowControls.RestoreAll();
             Goals.Clear();
             ClearProjectContext();
             _currentChest = null;
@@ -175,68 +180,37 @@ namespace CraftingPlanner
                 return false;
             }
 
-            string key = BuildGoalKey(definition);
-            ProjectGoal goal = Goals.FirstOrDefault(x => x.Key == key);
+            return AdjustDefinition(definition, delta, trigger);
+        }
 
-            if (delta > 0)
-            {
-                bool repeatable = IsRepeatable(definition);
-                if (goal == null)
-                {
-                    goal = new ProjectGoal
-                    {
-                        Key = key,
-                        Definition = definition,
-                        Quantity = 1,
-                        Repeatable = repeatable
-                    };
-                    Goals.Add(goal);
-                }
-                else if (goal.Repeatable)
-                {
-                    if (goal.Quantity < int.MaxValue)
-                    {
-                        goal.Quantity++;
-                    }
-                }
+        internal static bool AdjustPinned(ProjectGoal goal, int delta, string trigger)
+        {
+            ProjectGoal updated;
+            if (!PlannerGoalState.AdjustPinned(Goals, goal, delta, out updated)) return false;
+            return NotifyAdjustment(updated, delta, trigger);
+        }
 
-                LogLine(
-                    "event=goal_adjust action=add trigger=" + trigger +
-                    " id=" + Safe(definition.id) +
-                    " quantity=" + goal.Quantity +
-                    " repeatable=" + goal.Repeatable);
-            }
-            else if (delta < 0)
-            {
-                if (goal == null)
-                {
-                    return false;
-                }
-
-                goal.Quantity--;
-                if (goal.Quantity <= 0)
-                {
-                    Goals.Remove(goal);
-                    LogLine(
-                        "event=goal_adjust action=remove trigger=" + trigger +
-                        " id=" + Safe(definition.id) +
-                        " quantity=0");
-                }
-                else
-                {
-                    LogLine(
-                        "event=goal_adjust action=decrement trigger=" + trigger +
-                        " id=" + Safe(definition.id) +
-                        " quantity=" + goal.Quantity);
-                }
-            }
-            else
-            {
-                return false;
-            }
-
-            PlannerCraftOverlay.Refresh();
-            PlannerHud.Refresh();
+        internal static int QuantityFor(CraftDefinition definition)
+        {
+            var goal = Goals.FirstOrDefault(x => x.Key == BuildGoalKey(definition));
+            return goal != null ? goal.Quantity : 0;
+        }
+        internal static bool AdjustProject(CraftDefinition definition, int delta)
+        {
+            return IsSupportedProject(definition) && AdjustDefinition(definition, delta, "mouse_project_arrow");
+        }
+        private static bool AdjustDefinition(CraftDefinition definition, int delta, string trigger)
+        {
+            ProjectGoal updated;
+            if (!PlannerGoalState.Adjust(Goals, definition, BuildGoalKey(definition), IsRepeatable(definition), delta, out updated)) return false;
+            return NotifyAdjustment(updated, delta, trigger);
+        }
+        private static bool NotifyAdjustment(ProjectGoal goal, int delta, string trigger)
+        {
+            LogLine("event=goal_adjust action=" + (delta > 0 ? "add" : goal.Quantity <= 0 ? "remove" : "decrement") +
+                " trigger=" + trigger + " id=" + Safe(goal.Definition.id) + " quantity=" + goal.Quantity + " repeatable=" + goal.Repeatable);
+            PlannerRowControls.RefreshAll();
+            PlannerPresentation.Refresh();
             return true;
         }
 
@@ -309,12 +283,14 @@ namespace CraftingPlanner
 
         internal static void OpenChest(WorldGameObject chest)
         {
+            PlannerChestControls.Clear();
             _currentChest = chest;
             LogLine("event=chest_open chest=" + Safe(chest != null ? chest.obj_id : null));
         }
 
         internal static void CloseChest()
         {
+            PlannerChestControls.Clear();
             _currentChest = null;
         }
 
@@ -331,12 +307,15 @@ namespace CraftingPlanner
 
             if (source == null || target == null)
             {
+                PlannerChestControls.Show(new List<KeyValuePair<string, int>>(), TransferNotice.Unavailable);
                 LogLine("event=take_needed result=failed reason=null_inventory trigger=" + trigger);
                 return true;
             }
 
             Dictionary<string, int> required = AggregateRequirements();
             bool movedAnything = false;
+            bool hadMissing = false, limitedBySpace = false, failed = false;
+            var actualMoves = new List<KeyValuePair<string, int>>();
 
             foreach (KeyValuePair<string, int> pair in required)
             {
@@ -347,6 +326,8 @@ namespace CraftingPlanner
                 int available = source.GetTotalCount(itemId, MultiInventory.DestinationType.AllFromFirst, true);
                 int capacity = target.CanAddCount(itemId, true);
                 int requested = Math.Min(missing, Math.Min(available, capacity));
+                hadMissing |= missing > 0;
+                limitedBySpace |= capacity < Math.Min(missing, available);
                 bool success = true;
 
                 if (requested > 0)
@@ -358,7 +339,10 @@ namespace CraftingPlanner
                         false,
                         true);
 
-                    movedAnything |= success;
+                    int actual = Math.Max(0, GetPlayerHave(itemId) - haveBefore);
+                    if (actual > 0) actualMoves.Add(new KeyValuePair<string, int>(itemId, actual));
+                    movedAnything |= actual > 0;
+                    failed |= actual < requested;
                 }
 
                 LogLine(
@@ -389,11 +373,14 @@ namespace CraftingPlanner
             }
 
             PlannerHud.Refresh();
+            TransferNotice notice = failed ? TransferNotice.Unavailable : limitedBySpace ? TransferNotice.NoSpace :
+                actualMoves.Count > 0 ? TransferNotice.None : hadMissing ? TransferNotice.NoStock : TransferNotice.Complete;
+            PlannerChestControls.Show(actualMoves, notice);
             LogLine("event=take_needed result=complete trigger=" + trigger + " moved_any=" + movedAnything);
             return true;
         }
 
-        private static bool IsSupportedProject(CraftDefinition definition)
+        internal static bool IsSupportedProject(CraftDefinition definition)
         {
             if (!HasPlainNeeds(definition))
             {
@@ -442,7 +429,7 @@ namespace CraftingPlanner
             return true;
         }
 
-        private static bool IsRepeatable(CraftDefinition definition)
+        internal static bool IsRepeatable(CraftDefinition definition)
         {
             ObjectCraftDefinition objectCraft = definition as ObjectCraftDefinition;
             return _context == ProjectContextKind.Builder &&
@@ -511,6 +498,47 @@ namespace CraftingPlanner
         internal static string RemoveGoal { get { return Current[5]; } }
         internal static string AddGoal { get { return Current[6]; } }
         internal static string CollectHelp { get { return Current[7]; } }
+        private static readonly Dictionary<string, string[]> EditTexts = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "en", new[] { "Edit plan", "Done", "Plan" } },
+            { "de", new[] { "Plan bearbeiten", "Fertig", "Plan" } },
+            { "fr", new[] { "Modifier le plan", "Terminé", "Plan" } },
+            { "pt-br", new[] { "Editar plano", "Concluir", "Plano" } },
+            { "es", new[] { "Editar plan", "Listo", "Plan" } },
+            { "ru", new[] { "Изменить план", "Готово", "План" } },
+            { "it", new[] { "Modifica piano", "Fine", "Piano" } },
+            { "pl", new[] { "Edytuj plan", "Gotowe", "Plan" } },
+            { "ja", new[] { "計画を編集", "完了", "計画" } },
+            { "zh-cn", new[] { "编辑计划", "完成", "计划" } },
+            { "ko", new[] { "계획 편집", "완료", "계획" } }
+        };
+        internal static string EditPlan { get { return CurrentEdit[0]; } }
+        internal static string FinishEditing { get { return CurrentEdit[1]; } }
+        internal static string PlanColumn { get { return CurrentEdit[2]; } }
+        private static readonly Dictionary<string, string[]> TransferTexts = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "en", new[] { "Taken:", "No needed materials here", "Not enough space", "Materials already collected", "Transfer unavailable" } },
+            { "de", new[] { "Genommen:", "Hier fehlen die benötigten Materialien", "Nicht genug Platz", "Materialien bereits gesammelt", "Transfer nicht verfügbar" } },
+            { "fr", new[] { "Pris :", "Aucun matériau nécessaire ici", "Pas assez de place", "Matériaux déjà réunis", "Transfert indisponible" } },
+            { "pt-br", new[] { "Coletado:", "Não há materiais necessários aqui", "Espaço insuficiente", "Materiais já coletados", "Transferência indisponível" } },
+            { "es", new[] { "Recogido:", "Aquí no hay materiales necesarios", "No hay espacio suficiente", "Materiales ya reunidos", "Transferencia no disponible" } },
+            { "ru", new[] { "Взято:", "Недостающего здесь нет", "Не хватило места", "Материалы уже собраны", "Перенос недоступен" } },
+            { "it", new[] { "Preso:", "Qui non ci sono materiali necessari", "Spazio insufficiente", "Materiali già raccolti", "Trasferimento non disponibile" } },
+            { "pl", new[] { "Wzięto:", "Brak potrzebnych materiałów tutaj", "Za mało miejsca", "Materiały już zebrane", "Przenoszenie niedostępne" } },
+            { "ja", new[] { "取得:", "必要な素材がありません", "空き容量が足りません", "素材は揃っています", "移動できません" } },
+            { "zh-cn", new[] { "已拿取：", "这里没有所需材料", "空间不足", "材料已集齐", "无法转移" } },
+            { "ko", new[] { "가져옴:", "여기에 필요한 재료가 없습니다", "공간이 부족합니다", "재료를 모두 모았습니다", "옮길 수 없습니다" } }
+        };
+        private static string[] CurrentTransfer
+        {
+            get { string[] value; return TransferTexts.TryGetValue(Normalize(CurrentLanguage), out value) ? value : TransferTexts["en"]; }
+        }
+        internal static string Taken { get { return CurrentTransfer[0]; } }
+        internal static string TransferMessage(TransferNotice notice) { return CurrentTransfer[(int)notice]; }
+        private static string[] CurrentEdit
+        {
+            get { string[] value; return EditTexts.TryGetValue(Normalize(CurrentLanguage), out value) ? value : EditTexts["en"]; }
+        }
 
         internal static string CurrentLanguage
         {
@@ -547,6 +575,7 @@ namespace CraftingPlanner
 
         internal static void OnLanguageChanged()
         {
+            PlannerRowControls.RefreshAll();
             PlannerHud.OnLanguageChanged();
             PlannerCraftOverlay.OnLanguageChanged();
             PlannerInputHints.Refresh();
@@ -615,6 +644,7 @@ namespace CraftingPlanner
     {
         private static void Postfix()
         {
+            PlannerRowControls.RestoreAll();
             PlannerCraftOverlay.Hide();
             Planner.ClearProjectContext();
         }
@@ -668,17 +698,12 @@ namespace CraftingPlanner
         }
     }
 
-    [HarmonyPatch(typeof(BaseGUI), "OnPressedNextSubTab")]
+    [HarmonyPatch(typeof(CraftGUI), "OnPressedRight")]
     internal static class AddGoalGamepadPatch
     {
-        private static bool Prefix(BaseGUI __instance, ref bool __result)
+        private static bool Prefix(CraftGUI __instance, ref bool __result)
         {
-            if (!(__instance is CraftGUI))
-            {
-                return true;
-            }
-
-            if (!Planner.AdjustFocusedProject(1, "gamepad_rt"))
+            if (!PlannerEditing.Horizontal(__instance, 1))
             {
                 return true;
             }
@@ -688,17 +713,12 @@ namespace CraftingPlanner
         }
     }
 
-    [HarmonyPatch(typeof(BaseGUI), "OnPressedPrevSubTab")]
+    [HarmonyPatch(typeof(CraftGUI), "OnPressedLeft")]
     internal static class RemoveGoalGamepadPatch
     {
-        private static bool Prefix(BaseGUI __instance, ref bool __result)
+        private static bool Prefix(CraftGUI __instance, ref bool __result)
         {
-            if (!(__instance is CraftGUI))
-            {
-                return true;
-            }
-
-            if (!Planner.AdjustFocusedProject(-1, "gamepad_lt"))
+            if (!PlannerEditing.Horizontal(__instance, -1))
             {
                 return true;
             }

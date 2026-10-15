@@ -13,6 +13,9 @@ public class UIDrawCall
 
 public class UIRect : MonoBehaviour
 {
+    public class AnchorPoint { public int absolute; }
+    public AnchorPoint leftAnchor = new AnchorPoint(), rightAnchor = new AnchorPoint();
+    public void ResetAndUpdateAnchors() { }
     public enum AnchorUpdate { OnEnable = 0, OnUpdate = 1, OnStart = 2 }
     public AnchorUpdate updateAnchors;
     public void SetAnchor(GameObject go)
@@ -90,10 +93,13 @@ public class UILabel : UIWidget
 }
 
 public class UIFont : MonoBehaviour { }
+public class UITable : MonoBehaviour { }
 public class UIEventListener : MonoBehaviour
 {
     public delegate void VoidDelegate(GameObject go);
     public VoidDelegate onClick;
+    public delegate void BoolDelegate(GameObject go, bool state);
+    public BoolDelegate onHover;
     public static UIEventListener Get(GameObject go) { return null; }
 }
 public class UICamera : MonoBehaviour
@@ -104,6 +110,11 @@ public class UICamera : MonoBehaviour
     public bool useController;
     public static UICamera FindCameraForLayer(int layer) { return null; }
 }
+
+namespace Rewired
+{
+    public interface IGamepadTemplate : IControllerTemplate { IControllerTemplateThumbStick rightStick { get; } }
+}
 public static class NGUIText
 {
     public enum Alignment { Automatic = 0, Left = 1, Center = 2, Right = 3, Justified = 4 }
@@ -113,6 +124,8 @@ public class UIBasicSprite : UIWidget { }
 public class UITexture : UIBasicSprite { public Texture mainTexture { get; set; } }
 public class UI2DSprite : UIBasicSprite
 {
+    public Material material { get; set; }
+    public Shader shader { get; set; }
     public Sprite sprite2D { get; set; }
     public bool fixedAspect { get; set; }
 }

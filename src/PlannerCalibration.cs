@@ -60,7 +60,7 @@ namespace CraftingPlanner
         {
             if (!_open) return;
             _window.height = Math.Max(280, Math.Min(720, Screen.height - 60));
-            _window = GUI.Window(197031, _window, Window, "Crafting Planner 0.1.6 — F1: закрыть");
+            _window = GUI.Window(197031, _window, Window, "Crafting Planner " + Plugin.PluginVersion + " — F1: закрыть");
         }
         private static void Window(int id)
         {
@@ -78,12 +78,13 @@ namespace CraftingPlanner
             s.Row = Slider("Высота строки (минимальная)", s.Row, 18, 48);
             s.Padding = Slider("Внутренние отступы", s.Padding, 4, 24);
             s.Column = Slider("Ширина числовых столбцов", s.Column, 32, 110);
-            s.ColumnGap = Slider("Промежуток столбцов", s.ColumnGap, 4, 20);
+            s.ColumnGap = Slider("Промежуток столбцов", s.ColumnGap, 0, 20);
             s.TitleGap = Slider("Отступ после заголовка", s.TitleGap, 0, 28);
             s.FooterGap = Slider("Отступ подсказки управления", s.FooterGap, 4, 32);
             s.Opacity = Slider("Плотность подложки", s.Opacity, 0, .85f);
             s.TextOpacity = Slider("Плотность текста", s.TextOpacity, .5f, 1);
-            s.FadePower = Slider("Затухание градиента", s.FadePower, .5f, 3);
+            s.ShadowRadius = Slider("Скругление подложки", s.ShadowRadius, 6, 90);
+            s.ShadowFeather = Slider("Мягкость краёв", s.ShadowFeather, 5, 28);
             bool dirty = GUI.changed;
             GUI.changed |= changed;
             GUILayout.EndScrollView();
