@@ -40,6 +40,18 @@ Direct static inspection: Graveyard Keeper 1.407 Assembly-CSharp SHA-256 e72e427
 
 Candidate 0.1.5 is built, policy-tested and installed from exact CI bytes; TEST_LOG.md owns its source/hash/run identity. These READY gates justified implementation; they are not runtime or subjective visual acceptance. The next evidence is the focused gamepad/menu/HUD pass in that log.
 
+## Qualitative UX reference review — 2026-10-15
+
+The research question was whether existing recipe trackers reveal usability problems relevant to the lightweight card. This is a targeted qualitative sample, not a representative survey:
+
+- [Subnautica removal discussion](https://www.reddit.com/r/subnautica/comments/1rrozgz/one_thing_i_need_for_subnautica_2_to_improve_upon/): the poster objects to finding an original recipe/fabricator merely to unpin it. Supports explicit remote editing, not a universal preferred key/controller gesture.
+- [Subnautica smart-pinning feedback](https://subnautica2.nolt.io/1046): the poster requests a combined material list to reduce multi-recipe clutter and repeated trips. Aggregation fits our adopted model; the request's recursive raw-material expansion remains outside our scope.
+- [Pinup author feature/changelog documentation](https://www.nexusmods.com/subnautica/mods/2749): direct quantity controls and aggregate totals are existing mod patterns; repeated auto-unpin fixes, including multiple triggers for multi-output recipes, caution against treating arbitrary inventory changes as completion. This is precedent, not compatibility or implementation evidence for Graveyard Keeper. No code/assets were imported.
+
+Own recommendations: visible inventory editing entry even when the plan is empty; stable rows rather than deficit-based reordering; concise storage-local transfer results. Full-project green tint stays deferred because shared stock requires allocation semantics. No expansion into recursive crafting, remote logistics, notes or automatic priorities follows from these examples.
+
+The updated private comparison has two compact browser layouts (238px/218px), neutral Required/Have, green zero Missing, muted-red positive Missing and a light title on the native header. Browser typography/effects are approximate; these are not NGUI constants or game readability acceptance. Verified preview at 736/360/320px, day/night/chest views and sample action. Current installed game candidate remains 0.1.6.
+
 ## 0.1.6 implemented candidate checkpoint
 
 One owned NGUI presentation now serves HUD/build/chest. Shared font size, wrapped label measurement, native numeric-width measurement and larger adjustable icons replace per-row shrinking. The backing pivot is reset and its fill invalidated for live gradient changes. Build hints remain visible before the first goal. The storage action is a mouse target and native Y hint with capacity/current-chest help text. The default top inset separates the card from the location banner; actual appearance remains open.
