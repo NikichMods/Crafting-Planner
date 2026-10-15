@@ -2,6 +2,8 @@
 
 ## Current working state
 
+The user accepted the completed interactive UI mockup for implementation on 2026-10-16. PRODUCT_SCOPE.md owns the final compact plain-card appearance, backing defaults, fixed quantity slots, per-row Plan controls and directional gamepad flow. Stop further speculative mockup iteration. The next checkpoint is native input/insertion readiness (including the unresolved physical HUD-entry binding), followed by a new candidate and in-game acceptance; none of this design is yet shipped in 0.1.6.
+
 Continue on `dev/0.1.6`, based on the synchronized migration branch. The migration preserved both `dev/0.1.4` (`877cb0b`) and the newer documentation/licensing baseline `main` (`f2921a8`). The 0.1.5 runtime return rejects its presentation. The next candidate replaces the two card parents with one common native-frame presentation and temporary F1 calibration; visual/runtime acceptance is pending. See `UI_IMPLEMENTATION.md` and the latest `TEST_LOG.md` entry.
 
 Current installed candidate: 0.1.6 with temporary F1 calibration, exact source `338038532cb929d139754b5e6e685d0607c2c3c1`, successful CI `38791576457`, DLL SHA-256 `359a808eb86b0069b87b49757d192d61ebbb9b1486ba829fec07eeaf3d6b89df`. Exact CI bytes and manifest are preserved under ignored `artifacts/CraftingPlanner-0.1.6/`; private installation receipt, previous log and verified 0.1.5 backup are under `.local/`. Installation is verified; loader, corrected geometry, hints, input guard and chest action await runtime acceptance. Both handed versions are immutable.
