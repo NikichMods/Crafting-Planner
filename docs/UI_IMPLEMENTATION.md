@@ -23,3 +23,5 @@ Keep existing verified BaseGUI semantic callbacks for project RT/LT and open-che
 ## Evidence identity
 
 Direct static inspection: Graveyard Keeper 1.407 Assembly-CSharp SHA-256 e72e4270e4b88dd0a87ca23c9cf1750aec4c4a0fedb40b6d2dae7902fc9c7fd8; firstpass 9dc6def3b7715dd27eeb168ddc0af47e31c6f38d3fbee24bf592899392026498. Shared UI_INPUT_TIME_AND_ENVIRONMENT.md owns icon shader/tint, native anchor/font/lifecycle limits. Accepted 0.1.4 HUD-parent and localization evidence remains in TEST_LOG.md. Private bounded IL/prefab inspection stays in ignored .local/; no host implementation/assets enter Git.
+
+Candidate 0.1.5 is built, policy-tested and installed from exact CI bytes; TEST_LOG.md owns its source/hash/run identity. These READY gates justified implementation; they are not runtime or subjective visual acceptance. The next evidence is the focused gamepad/menu/HUD pass in that log.

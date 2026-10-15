@@ -378,7 +378,12 @@ The next candidate should therefore be a UI-design implementation, not another c
 
 ## Crafting Planner 0.1.5 — lightweight row-card candidate
 
-- Branch: `dev/0.1.5`; exact source/CI/artifact identity will be recorded after the clean build gate, before installation/handoff.
+- Status: installed, awaiting real-runtime and visual acceptance. No stable promotion/release.
+- Branch: `dev/0.1.5`; exact candidate source `c300b01f28c6c852178293eb10e21ce4002ae2b8`.
+- Successful CI run `38787593910`; artifact `CraftingPlanner-0.1.5`, ID `11998627674`. Release compilation, source/version checks, policy tests, package-boundary verification and upload all passed.
+- Immutable DLL `CraftingPlanner-0.1.5.dll`; plugin 0.1.5, assembly/file version 0.1.5.0. SHA-256 `4f01f304a6a03cb122a9ad0bac1515d6fce4fbc1ef5f5ac1f39b92a057c56831`. ZIP SHA-256 `81bc1146908528bb7f447a8b9b7154e6dd194b5dd87d92362cc4698adca38d87`.
+- Exact downloaded CI bytes also passed gradient/localization policy checks against the installed game's actual managed references. Local artifact and manifest are preserved under ignored `artifacts/CraftingPlanner-0.1.5/`.
+- Installed as canonical `CraftingPlanner.dll` with the game closed on 2026-10-15; installed hash/version matched the exact CI artifact. No prior Planner payload existed; unrelated mods remain in place. Private preinstall log snapshot/receipt: `.local/evidence/pre-0.1.5/`. No new loader or visual observation exists yet.
 - Replaces the two text-only implementations with one owned renderer/layout. Native item sprites retain the native renderer's shader/tint. The backing is a borderless alpha gradient, strongest top-right and transparent bottom-left; icons/text retain independent opacity.
 - Both native surfaces anchor to the same HUD.zone_name geometry using NGUI anchors, preserving vanilla HUD hiding and existing project focus.
 - Existing RT/LT goal management and open-chest Y collection are retained. Separate hints use native platform key symbols and current top-window context; they do not replace vanilla tips or capture input.

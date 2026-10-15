@@ -4,7 +4,9 @@
 
 Continue on `dev/0.1.5`, based on the synchronized migration branch. The migration preserved both `dev/0.1.4` (`877cb0b`) and the newer documentation/licensing baseline `main` (`f2921a8`). The current candidate implements the user-approved lightweight row card; its visual/runtime acceptance is pending. See `UI_IMPLEMENTATION.md` and the latest `TEST_LOG.md` entry.
 
-The latest tested candidate remains the exact 0.1.4 artifact recorded in `TEST_LOG.md`, built from `ad836eae5556858feb09f9cbf4d8eefead78931f` with SHA-256 `b8ac438d19399963d51b9d7c1fd8fe0349d229566c70f80a1e80764d72f5f2d9`. A new local or CI verification build is not that immutable artifact and must not be installed or handed out under its identity.
+Current installed candidate: 0.1.5, exact source `c300b01f28c6c852178293eb10e21ce4002ae2b8`, successful CI `38787593910`, DLL SHA-256 `4f01f304a6a03cb122a9ad0bac1515d6fce4fbc1ef5f5ac1f39b92a057c56831`. Exact CI bytes and manifest are preserved under ignored `artifacts/CraftingPlanner-0.1.5/`; private installation/log receipt is `.local/evidence/pre-0.1.5/`. Loader, appearance and controller acceptance are pending. Do not rebuild/overwrite this handed version.
+
+The latest prior candidate with accepted in-game HUD/font evidence is the exact 0.1.4 artifact recorded in `TEST_LOG.md`, built from `ad836eae5556858feb09f9cbf4d8eefead78931f`, SHA-256 `b8ac438d19399963d51b9d7c1fd8fe0349d229566c70f80a1e80764d72f5f2d9`. Preserve that historical evidence and immutable identity separately from 0.1.5.
 
 Accepted evidence: supported builder/world-change requirement data; exercised goal quantities/aggregation; current-storage native transfer; CraftGUI visibility; ordinary HUD parent/lifecycle; live localization. Acceptance is bounded to the cases in `TEST_LOG.md`.
 
@@ -44,7 +46,7 @@ Do not repeat the accepted HUD-anchor experiment or add Borderless-specific comp
 
 The user confirmed on 2026-10-15 that this checkout was added as the local app project and this chat moved into it. The active workspace is now the repository root. Web-only decisions or assets absent from Git remain unknown and must be supplied if they change this recovered baseline.
 
-## Migration verification — 2026-10-15
+## Migration verification — earlier setup milestone, 2026-10-15
 
 - Integration commit: `7334d4e1acf19ac2a6d85b805db600b237f4bf44`; both original branch histories are preserved.
 - Runtime source, signature references, project file and NuGet configuration match `dev/0.1.4` exactly (`git diff --quiet` verified).
