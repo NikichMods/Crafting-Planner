@@ -185,3 +185,11 @@ Russian is the current visual-review language. All 11 built-in host languages re
 The user explicitly requested a temporary live calibration panel with sliders and an export-to-log action. Tune only presentation; preserve native focused-project and storage-transfer semantics. Record all chosen parameters and context/geometry in one recoverable log event; this tool is research-only and must be removable before stable release.
 
 Expansion to ordinary workstation production recipes was explicitly withdrawn in the same feedback. The project-first P0 boundary and deferred per-save persistence remain unchanged.
+
+### Design return after 0.1.6 — 2026-10-15
+
+The user confirmed the mouse storage action works but rejected its location/affordance in the information card. Move Take Needed into the native open-chest action row, before Take / Take One / Close, with native Y and a visible keyboard/mouse counterpart. The requested keyboard default is F in the open-chest context only; preserve Quick Stack's outside-chest action. A clickable mouse action must have recognizable button/hover feedback. Actual keyboard ownership and coexistence need verification before implementation.
+
+Center the construction-plan title on a native decorative header, keep it visually separate from the location title, add canonical construction icons, and align project/material icons by the same sizing/spacing rules. Center each numeric column beneath its heading. Dense rectangular backing, excess night-time brightness and long wrapped names remain rejected presentation properties.
+
+Text reduction is still a design choice: the user proposed an almost icon-only card, without adopting a final amount of text. Compare full names, project names only, and almost icon-only content before committing to that change. Preserve the explicit meaning of Have / Required / Missing unless an equally understandable replacement is agreed. Thin local text contrast and a softly fading body are candidate approaches, not accepted runtime results. Do not add time-of-day polling or a theme subsystem merely to compensate for an unaccepted palette.
