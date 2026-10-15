@@ -2,4 +2,4 @@
 using System.Reflection;
 [assembly: AssemblyTitle("Crafting Planner")]
 [assembly: AssemblyVersion(CraftingPlanner.Plugin.PluginVersion)]
-[assembly: AssemblyFileVersion(CraftingPlanner.Plugin.PluginVersion)]
+[assembly: AssemblyFileVersion(CraftingPlanner.Plugin.PluginVersion + ".0")]
