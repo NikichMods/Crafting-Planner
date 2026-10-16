@@ -6,6 +6,8 @@ Updated: 2026-10-17
 
 The complete 0.1.16 visual presentation is user-accepted as of 2026-10-17. Preserve it unless a new defect/request reopens visual work. Exercised core functionality is recorded in [TEST_LOG.md](TEST_LOG.md); this is not full functional or stable-release acceptance. Exact installed artifact and recovery are in [DEVELOPMENT.md](DEVELOPMENT.md).
 
+Subsequent user screenshot reopens a bounded defect: multi-line native spend in a clearing row overlaps planner quantity. Preserve the accepted ordinary/single-energy presentation while deciding this correction. A dedicated native-cost column before the planner controls is proposed, not yet adopted or implemented; exact width/ingredient/name tradeoff still requires design and host-layout evidence.
+
 ## Product model
 
 Building Planner is a functional replacement/superset for the Recipe Pin idea, but its P0 focus is **projects**, not arbitrary production recipes.
