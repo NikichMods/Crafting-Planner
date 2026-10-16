@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Crafting Planner";
-        public const string PluginVersion = "0.1.10";
+        public const string PluginVersion = "0.1.11";
 
         private Harmony _harmony;
 

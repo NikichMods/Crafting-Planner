@@ -13,8 +13,9 @@ public class UIDrawCall
 
 public class UIRect : MonoBehaviour
 {
-    public class AnchorPoint { public int absolute; }
+    public class AnchorPoint { public int absolute; public Transform target; public float relative; }
     public AnchorPoint leftAnchor = new AnchorPoint(), rightAnchor = new AnchorPoint();
+    public AnchorPoint topAnchor = new AnchorPoint(), bottomAnchor = new AnchorPoint();
     public void ResetAndUpdateAnchors() { }
     public enum AnchorUpdate { OnEnable = 0, OnUpdate = 1, OnStart = 2 }
     public AnchorUpdate updateAnchors;
@@ -93,7 +94,12 @@ public class UILabel : UIWidget
 }
 
 public class UIFont : MonoBehaviour { }
-public class UITable : MonoBehaviour { }
+public class UITable : MonoBehaviour
+{
+    public delegate void OnReposition();
+    public OnReposition onReposition;
+    public void Reposition() { }
+}
 public class UIEventListener : MonoBehaviour
 {
     public delegate void VoidDelegate(GameObject go);

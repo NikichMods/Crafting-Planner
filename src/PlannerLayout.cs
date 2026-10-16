@@ -5,6 +5,13 @@ namespace CraftingPlanner
     // Project-owned geometry; independent of NGUI and the current input device.
     internal static class PlannerLayout
     {
+        internal const int IconSlotWidth = 30;
+        internal static bool NumericCraftFont(bool bodyCraft, bool allNumbers, bool quantityOnly, bool quantity)
+        { return bodyCraft ^ (allNumbers || quantity && quantityOnly); }
+        internal static int TextRowHeight(int row, int font, int wrappedHeight)
+        { return Math.Max(Math.Max(row, font + 4), wrappedHeight); }
+        internal static int MinimumWidth(int padding, int column, int gap)
+        { return 2 * padding + IconSlotWidth + 8 + 3 * column + 2 * gap; }
         internal static int QuantityCenter(int width, int padding, int inset)
         { return width - padding - QuantitySlotWidth + ArrowWidth + QuantityWidth / 2 - inset; }
         internal const int ArrowWidth = 20, QuantityWidth = 30;

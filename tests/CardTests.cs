@@ -43,6 +43,30 @@ class CardTests
             int centreDefault = (int)centre.Invoke(null, new object[] {240, 4, 0});
             int centreInset = (int)centre.Invoke(null, new object[] {240, 4, 12});
             Require(centreDefault == 201 && centreInset == 189, "Column movement must include the project quantity centre");
+            MethodInfo numericFont = layout.GetMethod("NumericCraftFont", BindingFlags.Static | BindingFlags.NonPublic);
+            Require((bool)numericFont.Invoke(null, new object[] {true, false, true, false}), "Quantity-only font must leave material numbers unchanged");
+            Require(!(bool)numericFont.Invoke(null, new object[] {true, false, true, true}), "Quantity-only switch must affect quantity/arrows");
+            Require(!(bool)numericFont.Invoke(null, new object[] {true, true, true, true}), "Combined font switches must not cancel each other");
+            Require((bool)numericFont.Invoke(null, new object[] {false, true, false, false}), "Alternative numeric font must follow the selected body profile");
+            Type styleType = candidate.GetType("CraftingPlanner.PlannerStyle", true);
+            object style = Activator.CreateInstance(styleType, true);
+            BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+            styleType.GetField("Right", fieldFlags).SetValue(style, 12.955f);
+            styleType.GetField("IconX", fieldFlags).SetValue(style, -2.5f);
+            styleType.GetField("Scale", fieldFlags).SetValue(style, .647f);
+            MethodInfo clampStyle = styleType.GetMethod("Clamp", fieldFlags), recordStyle = styleType.GetMethod("Record", fieldFlags);
+            clampStyle.Invoke(style, null);
+            Require((float)styleType.GetField("Right", fieldFlags).GetValue(style) == 13 && (float)styleType.GetField("IconX", fieldFlags).GetValue(style) == -3, "Dimensions must snap consistently to whole UI units");
+            Require(Math.Abs((float)styleType.GetField("Scale", fieldFlags).GetValue(style) - .65f) < .00001f, "Scale must use explicit hundredth steps");
+            string snapped = (string)recordStyle.Invoke(style, null); clampStyle.Invoke(style, null);
+            Require(snapped == (string)recordStyle.Invoke(style, null), "Repeated layout clamp must not drift");
+            MethodInfo textRow = layout.GetMethod("TextRowHeight", BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo minimumWidth = layout.GetMethod("MinimumWidth", BindingFlags.Static | BindingFlags.NonPublic);
+            foreach (float iconSize in new[] {8f, 29f, 80f})
+            {
+                styleType.GetField("Icon", fieldFlags).SetValue(style, iconSize); clampStyle.Invoke(style, null);
+                Require((int)textRow.Invoke(null, new object[] {18,24,0}) == 28 && (int)minimumWidth.Invoke(null, new object[] {4,70,5}) == 266, "Visual icon size must not enlarge text rows or columns");
+            }
             MethodInfo clampSelection = layout.GetMethod("ClampSelection", BindingFlags.Static | BindingFlags.NonPublic);
             int afterRemoval = (int)clampSelection.Invoke(null, new object[] {3, 3});
             Require(afterRemoval == 2 && (afterRemoval + 1) % 3 == 0, "Focus must normalize before navigating after last-row removal");

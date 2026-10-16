@@ -73,15 +73,17 @@ namespace CraftingPlanner
             foreach (GameObject go in Feedback) if (go != null) { go.SetActive(false); UnityEngine.Object.Destroy(go); }
             Feedback.Clear();
             Color green = new Color(.533f, .843f, .486f), red = new Color(.894f, .467f, .400f);
-            int line = Math.Max(28, native.fontSize + 8);
-            int left = -_button.width / 2, x = left, y = -_button.height / 2 - line;
+            PlannerStyle style = PlannerStyle.Current;
+            int line = Math.Max(22, native.fontSize + 4) + (int)style.FeedbackLineGap;
+            int left = -_button.width / 2 + (int)style.FeedbackX, x = left, y = -_button.height / 2 + (int)style.FeedbackY;
+            int itemStep = 48 + (int)style.FeedbackGap;
             if (_moved.Count > 0)
             {
                 UILabel prefix = Text(PlannerLocalization.Taken, _button.transform, native, x, y, 100, green);
-                x += Math.Min(100, (int)Math.Ceiling(prefix.printedSize.x)) + 8;
+                x += Math.Min(100, (int)Math.Ceiling(prefix.printedSize.x)) + (int)style.FeedbackGap;
                 foreach (var pair in _moved)
                 {
-                    if (x + 54 > left + 324) { x = left; y -= line; }
+                    if (x + itemStep > left + 324) { x = left; y -= line; }
                     ItemDefinition definition = GameBalance.me.GetDataOrNull<ItemDefinition>(pair.Key);
                     Sprite sprite = definition != null ? EasySpritesCollection.GetSprite(definition.GetIcon(), false, "") : null;
                     if (sprite != null && template != null)
@@ -90,7 +92,7 @@ namespace CraftingPlanner
                         icon.SetAnchor((GameObject)null); icon.pivot = UIWidget.Pivot.Center; icon.width = icon.height = 20; icon.fixedAspect = false;
                         icon.transform.localScale = Vector3.one; icon.transform.localPosition = new Vector3(x + 10, y, 0);
                         icon.depth = native.depth + 4; icon.sprite2D = sprite; icon.gameObject.SetActive(true); Feedback.Add(icon.gameObject);
-                        Text(pair.Value.ToString(), _button.transform, native, x + 24, y, 30, green); x += 54;
+                        Text(pair.Value.ToString(), _button.transform, native, x + 24, y, 30, green); x += itemStep;
                     }
                     else
                     {

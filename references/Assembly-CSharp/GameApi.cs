@@ -154,6 +154,7 @@ public class BaseGUI : MonoBehaviour
 
 public class CraftGUI : BaseGUI
 {
+    public UITable craft_list_grid;
     public UniversalObjectInfoGUI object_info;
     public CraftItemGUI craft_item_prefab;
     public List<CraftItemGUI> GetItemsList() { return null; }

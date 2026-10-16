@@ -18,6 +18,11 @@ namespace CraftingPlanner
         private readonly UILabel _fontTemplate, _measure;
         private readonly UI2DSprite _iconTemplate;
         private readonly UITexture _back;
+        private readonly UI2DSprite _nativeHeader, _titleBack;
+        private readonly UIWidget _nativeLocation;
+        private readonly UILabel _title;
+        private float _nativeHeaderAlpha;
+        private bool _ownsHeader;
         private Texture2D _backTexture;
         private int _backWidth, _backHeight, _bodyTop;
         private float _backRadius, _backFeather;
@@ -31,9 +36,22 @@ namespace CraftingPlanner
         {
             get
             {
-                GUIElements gui = GUIElements.me;
-                return Style.CraftFont && gui != null && gui.craft != null && gui.craft.craft_item_prefab != null && gui.craft.craft_item_prefab.label_name != null ? gui.craft.craft_item_prefab.label_name : _fontTemplate;
+                return FontFor(Style.CraftFont);
             }
+        }
+        private UILabel FontFor(bool craft)
+        {
+            GUIElements gui = GUIElements.me;
+            return craft && gui != null && gui.craft != null && gui.craft.craft_item_prefab != null && gui.craft.craft_item_prefab.label_name != null ? gui.craft.craft_item_prefab.label_name : _fontTemplate;
+        }
+        private UILabel NumericTemplate(bool quantity)
+        { return FontFor(PlannerLayout.NumericCraftFont(Style.CraftFont, Style.AlternateNumbers, Style.AlternateQuantity, quantity)); }
+        internal static void ApplyQuantityFont(UILabel label, UILabel native)
+        {
+            PlannerStyle s = PlannerStyle.Current; GUIElements gui = GUIElements.me;
+            bool craft = PlannerLayout.NumericCraftFont(s.CraftFont, s.AlternateNumbers, s.AlternateQuantity, true);
+            UILabel template = !craft && gui != null && gui.hud != null && gui.hud.zone_name != null ? gui.hud.zone_name : native;
+            ApplyNativeFont(label, template); label.fontSize = native.fontSize;
         }
         private int _arrowCursor;
         private int _labelCursor, _iconCursor, _width, _height;
@@ -62,6 +80,17 @@ namespace CraftingPlanner
             _back.pivot = UIWidget.Pivot.TopRight;
             _back.transform.localPosition = Vector3.zero; // pivot preserves corners by moving the transform
             _back.depth = 0;
+            _nativeHeader = fontTemplate.transform.parent.GetComponent<UI2DSprite>();
+            if (_nativeHeader != null)
+            {
+                _nativeLocation = _nativeHeader.transform.parent.GetComponent<UIWidget>();
+                _titleBack = Child("planner-title-banner", _panelGo.transform).AddComponent<UI2DSprite>();
+                _titleBack.sprite2D = _nativeHeader.sprite2D; _titleBack.material = _nativeHeader.material; _titleBack.shader = _nativeHeader.shader;
+                _titleBack.color = _nativeHeader.color; _titleBack.depth = 1;
+                _titleBack.SetAnchor(_nativeHeader.gameObject, 0, 0, 0, 0, 1, 0, 1, 0);
+                _titleBack.updateAnchors = UIRect.AnchorUpdate.OnUpdate;
+                _title = Child("planner-title", _titleBack.transform).AddComponent<UILabel>();
+            }
             _measure = Child("measurement", _root.transform).AddComponent<UILabel>();
             _measure.gameObject.SetActive(false);
             _footer = Child("control-hint", _root.transform).AddComponent<UILabel>();
@@ -83,31 +112,32 @@ namespace CraftingPlanner
                 BoxCollider2D hit = label.GetComponent<BoxCollider2D>(); if (hit != null) hit.enabled = false;
                 UIEventListener listener = label.GetComponent<UIEventListener>(); if (listener != null) listener.onHover = null;
             }
-            int pad = (int)Style.Padding, line = (int)Math.Max(Style.Row, Style.Font + 4);
+            int pad = (int)Style.Padding, line = PlannerLayout.TextRowHeight((int)Style.Row, (int)Style.Font, 0);
             var rows = Planner.AggregateRequirements().Select(p => new MaterialRow(p.Key, p.Value, Planner.GetPlayerHave(p.Key))).ToList();
             rows.Sort((a, b) => string.Compare(a.Id, b.Id, StringComparison.Ordinal));
             int col = (int)Style.Column;
             foreach (string header in new[] { PlannerLocalization.Required, PlannerLocalization.Have, PlannerLocalization.Missing }) col = Math.Max(col, Measure(header, Math.Max(11, (int)Style.Font - 3)) + 4);
             foreach (MaterialRow row in rows)
-                foreach (int count in new[] { row.Have, row.Need, row.Missing }) col = Math.Max(col, Measure(count.ToString()) + 4);
+                foreach (int count in new[] { row.Have, row.Need, row.Missing }) col = Math.Max(col, Measure(count.ToString(), 0, true) + 4);
             col = (col + 1) / 2 * 2; // Even widths keep numeric/quantity centres exactly coincident.
             int columnGap = (int)Style.ColumnGap;
-            _width = Math.Max((int)Style.Width, 2 * pad + (int)Style.Icon + 8 + 3 * col + 2 * columnGap);
+            _width = Math.Max((int)Style.Width, PlannerLayout.MinimumWidth(pad, col, columnGap));
             int quantityCenter = PlannerLayout.QuantityCenter(_width, pad, (int)Style.ColumnInset);
             int firstCountX = quantityCenter - col / 2 - 2 * (col + columnGap);
             int y = pad;
             int titleHeight = Math.Max(22, (int)Style.Font + 6);
-            Center(PlannerLocalization.Plan, pad, y, _width - 2 * pad, titleHeight);
-            y += titleHeight + (int)Style.TitleGap + (int)Style.GoalsOffset;
+            if (_title == null) Center(PlannerLocalization.Plan, pad, y, _width - 2 * pad, titleHeight);
+            y += (_title == null ? titleHeight : 0) + (int)Style.TitleGap + (int)Style.GoalsOffset;
             _bodyTop = y;
+            int goalIndex = 0;
             foreach (ProjectGoal goal in Planner.GetGoals())
             {
-                int nameX = pad + (int)Style.Icon + 4;
+                int nameX = pad + PlannerLayout.IconSlotWidth + 4;
                 int slotX = quantityCenter - PlannerLayout.QuantityWidth / 2 - PlannerLayout.ArrowWidth;
                 UILabel name = Label(Planner.GetProjectName(goal.Definition), nameX, y, slotX - nameX - 4, line, false, true);
-                int rowHeight = Math.Max((int)Style.Icon, Math.Max(line, (int)Math.Ceiling(name.printedSize.y)));
-                SpriteIcon(goal.Definition.icon, pad, y + (rowHeight - (int)Style.Icon) / 2);
-                Center("×" + goal.Quantity, PlannerLayout.QuantityX(slotX), y + (rowHeight - line) / 2, PlannerLayout.QuantityWidth, line).overflowMethod = UILabel.Overflow.ShrinkContent;
+                int rowHeight = PlannerLayout.TextRowHeight((int)Style.Row, (int)Style.Font, (int)Math.Ceiling(name.printedSize.y));
+                SpriteIcon(goal.Definition.icon, IconLeft(pad), IconTop(y, rowHeight, goalIndex++, true));
+                Number("×" + goal.Quantity, PlannerLayout.QuantityX(slotX), y + (rowHeight - line) / 2, PlannerLayout.QuantityWidth, line, true).overflowMethod = UILabel.Overflow.ShrinkContent;
                 FocusRow(goal, name, pad, y, _width - 2 * pad, rowHeight);
                 if (!LazyInput.gamepad_active || PlannerEditing.Active)
                 {
@@ -121,19 +151,20 @@ namespace CraftingPlanner
             Center(PlannerLocalization.Have, firstCountX + col + columnGap, y, col, line).fontSize = Math.Max(11, (int)Style.Font - 3);
             Center(PlannerLocalization.Missing, firstCountX + 2 * (col + columnGap), y, col, line).fontSize = Math.Max(11, (int)Style.Font - 3);
             y += line;
+            int materialIndex = 0;
             foreach (MaterialRow row in rows)
             {
-                int rowHeight = Math.Max(line, (int)Style.Icon);
-                if (!Icon(row.Id, pad, y + (rowHeight - (int)Style.Icon) / 2))
+                int rowHeight = line;
+                if (!Icon(row.Id, IconLeft(pad), IconTop(y, rowHeight, materialIndex++, false)))
                 {
                     // A missing native image must never silently erase the ingredient identity.
                     UILabel fallback = Label(row.Name, pad, y, _width - 2 * pad, line, false, true);
                     y += Math.Max(line, (int)Math.Ceiling(fallback.printedSize.y));
                 }
                 int textY = y + (rowHeight - line) / 2;
-                Center(row.Need.ToString(), firstCountX, textY, col, line);
-                Center(row.Have.ToString(), firstCountX + col + columnGap, textY, col, line);
-                UILabel missing = Center(row.Missing.ToString(), firstCountX + 2 * (col + columnGap), textY, col, line);
+                Number(row.Need.ToString(), firstCountX, textY, col, line);
+                Number(row.Have.ToString(), firstCountX + col + columnGap, textY, col, line);
+                UILabel missing = Number(row.Missing.ToString(), firstCountX + 2 * (col + columnGap), textY, col, line);
                 missing.color = row.Missing == 0 ? new Color(0.533f, 0.843f, 0.486f, Style.TextOpacity) : new Color(0.894f, 0.467f, 0.400f, Style.TextOpacity);
                 y += rowHeight + 3;
             }
@@ -143,10 +174,26 @@ namespace CraftingPlanner
             for (int i = _focusCursor; i < _focusRows.Count; i++) _focusRows[i].gameObject.SetActive(false);
             _height = y + pad;
             Place();
+            Title();
             Footer(view, line);
             UIPanel host = PlannerPresentation.HostPanel(view);
             _panel.depth = host != null ? host.depth + 1 : 1;
             _panelGo.SetActive(true);
+        }
+        private int IconLeft(int padding) { return padding + (PlannerLayout.IconSlotWidth - (int)Style.Icon) / 2 + (int)Style.IconX; }
+        private int IconTop(int y, int height, int index, bool goal)
+        { return y + (height - (int)Style.Icon) / 2 + (int)Style.IconY + index * (int)(goal ? Style.GoalIconSpacing : Style.MaterialIconSpacing); }
+        private void Title()
+        {
+            if (_nativeHeader == null || _nativeLocation == null || _title == null) return;
+            if (!_ownsHeader) { _nativeHeaderAlpha = _nativeLocation.alpha; _ownsHeader = true; }
+            _nativeLocation.alpha = 0;
+            _nativeLocation.ResetAndUpdateAnchors();
+            _nativeHeader.ResetAndUpdateAnchors();
+            _titleBack.ResetAndUpdateAnchors();
+            Configure(_title, FontFor(Style.TitleCraftFont), _titleBack.width - 8, Math.Max(_titleBack.height, (int)Style.TitleFont + 4), false, false);
+            _title.fontSize = (int)Style.TitleFont; _title.alignment = NGUIText.Alignment.Center; _title.pivot = UIWidget.Pivot.Center;
+            _title.transform.localPosition = Vector3.zero; _title.text = PlannerLocalization.Plan;
         }
         private void Place()
         {
@@ -189,6 +236,14 @@ namespace CraftingPlanner
             label.transform.localPosition = new Vector3(-_width + x + width * .5f, -y - height * .5f, 0);
             return label;
         }
+        private UILabel Number(string text, int x, int y, int width, int height, bool quantity = false)
+        {
+            UILabel label = Center(text, x, y, width, height);
+            ApplyNativeFont(label, NumericTemplate(quantity)); label.fontSize = (int)Style.Font;
+            label.effectStyle = Style.Outline ? UILabel.Effect.Outline : UILabel.Effect.Shadow;
+            label.effectColor = new Color(.065f, .065f, .055f, .8f); label.effectDistance = new Vector2(1, 1);
+            return label;
+        }
         private void Arrow(ProjectGoal goal, int delta, int x, int y, int height)
         {
             if (_arrowCursor == _arrows.Count)
@@ -197,7 +252,7 @@ namespace CraftingPlanner
                 created.gameObject.AddComponent<BoxCollider2D>(); _arrows.Add(created);
             }
             UILabel glyph = _arrows[_arrowCursor++];
-            Configure(glyph, FontTemplate, PlannerLayout.ArrowWidth, height, false, false);
+            Configure(glyph, NumericTemplate(true), PlannerLayout.ArrowWidth, height, false, false);
             glyph.pivot = UIWidget.Pivot.Center; glyph.alignment = NGUIText.Alignment.Center;
             glyph.transform.localPosition = new Vector3(-_width + x + glyph.width / 2f, -y - height / 2f, 0);
             glyph.text = delta < 0 ? "<" : ">"; glyph.gameObject.SetActive(true);
@@ -253,9 +308,9 @@ namespace CraftingPlanner
             }
             return false;
         }
-        private int Measure(string text, int font = 0)
+        private int Measure(string text, int font = 0, bool number = false)
         {
-            ApplyNativeFont(_measure, FontTemplate); _measure.fontSize = font > 0 ? font : (int)Style.Font;
+            ApplyNativeFont(_measure, number ? NumericTemplate(false) : FontTemplate); _measure.fontSize = font > 0 ? font : (int)Style.Font;
             _measure.multiLine = false; _measure.maxLineCount = 1;
             _measure.overflowMethod = UILabel.Overflow.ResizeFreely; _measure.text = text;
             return (int)Math.Ceiling(_measure.printedSize.x);
@@ -294,6 +349,9 @@ namespace CraftingPlanner
             BaseGUI native = chest ? (BaseGUI)GUIElements.me.chest : GUIElements.me.craft;
             if (native != null && native.button_tips != null && native.button_tips.label != null) template = native.button_tips.label;
             Configure(_footer, template, _width, line, false, true);
+            if (Style.FooterCraftFont) ApplyNativeFont(_footer, FontFor(true));
+            _footer.fontSize = (int)Style.FooterFont; _footer.height = Math.Max(line, (int)Style.FooterFont + 4);
+            _footer.alignment = NGUIText.Alignment.Right;
             _footer.transform.localPosition = new Vector3(-_width, -_height - Style.FooterGap, 0);
             if (build)
             {
@@ -343,7 +401,7 @@ namespace CraftingPlanner
         }
         internal void Export(Camera camera)
         {
-            Planner.LogLine("event=calibration_export format=3 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
+            Planner.LogLine("event=calibration_export format=4 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
                 " actual_width=" + _width + " actual_height=" + _height + " screen=" + Screen.width + "x" + Screen.height +
                 " card_px=" + Rectangle(_root, camera) + " back_px=" + Rectangle(_back, camera) +
                 " font_asset=" + (_measure.bitmapFont != null ? _measure.bitmapFont.name : "dynamic") + " arrows=" + _arrowCursor + " focus_rows=" + _focusCursor + " language=" + PlannerLocalization.CurrentLanguage);
@@ -355,8 +413,9 @@ namespace CraftingPlanner
             Vector3 a = camera.WorldToScreenPoint(corners[0]), b = camera.WorldToScreenPoint(corners[2]);
             return string.Format(CultureInfo.InvariantCulture, "{0:0.#},{1:0.#},{2:0.#},{3:0.#}", a.x, a.y, b.x, b.y);
         }
-        internal void Hide() { if (_panelGo != null) _panelGo.SetActive(false); }
-        public void Dispose() { if (_panelGo != null) { _panelGo.SetActive(false); UnityEngine.Object.Destroy(_panelGo); } if (_backTexture != null) UnityEngine.Object.Destroy(_backTexture); }
+        private void RestoreHeader() { if (_ownsHeader && _nativeLocation != null) _nativeLocation.alpha = _nativeHeaderAlpha; _ownsHeader = false; }
+        internal void Hide() { RestoreHeader(); if (_panelGo != null) _panelGo.SetActive(false); }
+        public void Dispose() { RestoreHeader(); if (_panelGo != null) { _panelGo.SetActive(false); UnityEngine.Object.Destroy(_panelGo); } if (_backTexture != null) UnityEngine.Object.Destroy(_backTexture); }
         private sealed class MaterialRow
         {
             internal string Id, Name; internal int Have, Need, Missing;

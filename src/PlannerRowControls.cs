@@ -9,16 +9,18 @@ namespace CraftingPlanner
     internal sealed class PlannerRowControls : MonoBehaviour
     {
         private static readonly List<PlannerRowControls> Rows = new List<PlannerRowControls>();
+        private static UITable _nativeList;
         private const int Reserve = 80;
         private CraftItemGUI _row;
         private UIWidget _ingredients;
+        private UITable _ingredientLayout;
         private int _left, _right;
         private bool _shifted;
         private UIWidget _column;
         private UILabel _minus, _plus;
         private UILabel _quantity, _caption;
         private readonly List<UILabel> _texts = new List<UILabel>();
-        private bool _failed;
+        private bool _failed, _rendering;
         internal static void Ensure(CraftItemGUI row)
         {
             if (row == null) return;
@@ -74,16 +76,28 @@ namespace CraftingPlanner
         }
         private void Render()
         {
-            if (_failed || _row == null) return;
+            if (_failed || _row == null || _rendering) return;
+            _rendering = true;
             try
             {
+                if (!_row.gameObject.activeInHierarchy) { Restore(); Hide(); return; }
                 if (!Eligible(_row)) { Restore(); Hide(); return; }
                 if (_ingredients == null)
                 {
                     _ingredients = _row.ingredients_table.GetComponent<UIWidget>();
                     if (_ingredients == null) throw new InvalidOperationException("Native ingredient anchor widget unavailable");
                     _left = _ingredients.leftAnchor.absolute; _right = _ingredients.rightAnchor.absolute;
+                    _ingredientLayout = _row.ingredients_table;
+                    _ingredientLayout.onReposition += AfterIngredientLayout;
+                    UITable list = GUIElements.me.craft.craft_list_grid;
+                    if (_nativeList != list)
+                    {
+                        UnsubscribeList(); _nativeList = list;
+                        if (_nativeList != null) _nativeList.onReposition += RefreshAll;
+                    }
                 }
+                _row.GetComponent<UIWidget>().ResetAndUpdateAnchors();
+                _row.selection_frame.ResetAndUpdateAnchors();
                 if (!_shifted)
                 {
                     _ingredients.leftAnchor.absolute = _left - Reserve;
@@ -93,7 +107,9 @@ namespace CraftingPlanner
                 }
                 if (_column == null)
                 {
-                    _column = Child("CraftingPlannerColumn", transform).AddComponent<UIWidget>();
+                    UIPanel panel = _row.GetComponentInParent<UIPanel>();
+                    if (panel == null) throw new InvalidOperationException("Native clipped row panel unavailable");
+                    _column = Child("CraftingPlannerColumn", panel.transform).AddComponent<UIWidget>();
                     _column.pivot = UIWidget.Pivot.TopRight;
                     _column.updateAnchors = UIRect.AnchorUpdate.OnUpdate;
                     _column.SetAnchor(_row.selection_frame.gameObject, 1, -Reserve, 0, 4, 1, -4, 1, -5);
@@ -102,20 +118,25 @@ namespace CraftingPlanner
                     _minus = Arrow(-1, -63); _plus = Arrow(1, -13);
                 }
                 _column.ResetAndUpdateAnchors();
+                _ingredients.ResetAndUpdateAnchors();
+                _row.ingredients_table.Reposition();
                 AlignIngredients();
                 int quantity = Planner.QuantityFor(_row.current_craft);
                 foreach (UILabel label in _texts) PlannerCard.ApplyNativeFont(label, _row.label_name);
+                PlannerCard.ApplyQuantityFont(_quantity, _row.label_name);
+                PlannerCard.ApplyQuantityFont(_minus, _row.label_name); PlannerCard.ApplyQuantityFont(_plus, _row.label_name);
                 var items = GUIElements.me.craft.GetItemsList();
                 UILabel title = GUIElements.me.craft.object_info != null ? GUIElements.me.craft.object_info.text_header : null;
                 bool first = items != null && items.Find(Eligible) == _row;
                 if (title != null && first)
                 {
-                    if (_caption == null) _caption = Text(PlannerLocalization.PlanColumn, title.transform.parent, 0, 0, 72, 22);
+                    if (_caption == null) _caption = Text(PlannerLocalization.PlanColumn, GUIElements.me.craft.transform, 0, 0, 72, 22);
                     PlannerCard.ApplyNativeFont(_caption, title); _caption.color = title.color; _caption.depth = title.depth + 1;
                     _caption.text = PlannerLocalization.PlanColumn;
-                    Vector3[] corners = title.worldCorners;
-                    Vector3 position = _quantity.transform.position; position.y = (corners[0].y + corners[2].y) / 2;
-                    _caption.transform.position = position; _caption.gameObject.SetActive(true);
+                    _caption.SetAnchor(_quantity.gameObject, .5f, -36, .5f, -11, .5f, 36, .5f, 11);
+                    _caption.bottomAnchor.target = title.transform; _caption.topAnchor.target = title.transform;
+                    _caption.updateAnchors = UIRect.AnchorUpdate.OnUpdate;
+                    _caption.ResetAndUpdateAnchors(); _caption.gameObject.SetActive(true);
                 }
                 else if (_caption != null) _caption.gameObject.SetActive(false);
                 _quantity.text = "×" + quantity;
@@ -131,7 +152,10 @@ namespace CraftingPlanner
                 Restore(); Hide(); _failed = true;
                 Planner.LogLine("event=plan_column result=disabled_for_row error=" + ex);
             }
+            finally { _rendering = false; }
         }
+        private void AfterIngredientLayout() { Render(); }
+        private static void UnsubscribeList() { if (_nativeList != null) _nativeList.onReposition -= RefreshAll; _nativeList = null; }
         private void AlignIngredients()
         {
             float right = float.MinValue;
@@ -159,8 +183,16 @@ namespace CraftingPlanner
         {
             foreach (var row in Rows.ToArray()) if (row != null) { row.Restore(); row.Hide(); UnityEngine.Object.Destroy(row); }
             Rows.Clear();
+            UnsubscribeList();
         }
-        private void OnDestroy() { Restore(); if (_column != null) UnityEngine.Object.Destroy(_column.gameObject); if (_caption != null) UnityEngine.Object.Destroy(_caption.gameObject); Rows.Remove(this); }
+        private void OnDisable() { Restore(); Hide(); }
+        private void OnEnable() { if (_row != null) Render(); }
+        private void OnDestroy()
+        {
+            Restore(); if (_ingredientLayout != null) _ingredientLayout.onReposition -= AfterIngredientLayout;
+            if (_column != null) UnityEngine.Object.Destroy(_column.gameObject); if (_caption != null) UnityEngine.Object.Destroy(_caption.gameObject);
+            Rows.Remove(this); if (Rows.Count == 0) UnsubscribeList();
+        }
     }
     [HarmonyPatch(typeof(CraftItemGUI), "Redraw")]
     internal static class PlannerRowRedrawPatch

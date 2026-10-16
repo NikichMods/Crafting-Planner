@@ -73,12 +73,13 @@ namespace CraftingPlanner
             s.Right = Slider("Отступ справа", s.Right, 0, 400);
             s.Top = Slider("Отступ сверху", s.Top, 40, 400);
             s.Width = Slider("Ширина (минимальная)", s.Width, 240, 640);
-            s.Scale = Slider("Общий масштаб", s.Scale, .6f, 1.5f);
+            s.Scale = Slider("Общий масштаб (шаг 0.01)", s.Scale, .6f, 1.5f, .01f);
             GUILayout.Label("Текст и строки");
             s.CraftFont = GUILayout.Toggle(s.CraftFont, "Шрифт названий строительства (выкл. — шрифт HUD)");
             s.Outline = GUILayout.Toggle(s.Outline, "Обводка текста (выкл. — мягкая тень)");
-            s.Font = Slider("Размер шрифта", s.Font, 10, 24);
-            s.Icon = Slider("Иконки", s.Icon, 16, 40);
+            s.Font = Slider("Размер основного текста", s.Font, 10, 32);
+            s.AlternateNumbers = GUILayout.Toggle(s.AlternateNumbers, "Другой родной шрифт для всех чисел");
+            s.AlternateQuantity = GUILayout.Toggle(s.AlternateQuantity, "Другой родной шрифт для ×количества и стрелок");
             s.Row = Slider("Высота строки (минимальная)", s.Row, 18, 48);
             s.Padding = Slider("Внутренние отступы", s.Padding, 4, 24);
             s.Column = Slider("Ширина числовых столбцов", s.Column, 32, 110);
@@ -89,25 +90,43 @@ namespace CraftingPlanner
             s.MaterialsGap = Slider("Материалы: отступ от списка целей", s.MaterialsGap, 0, 60);
             s.TitleGap = Slider("Отступ после заголовка", s.TitleGap, 0, 28);
             s.FooterGap = Slider("Отступ подсказки управления", s.FooterGap, 4, 32);
+            GUILayout.Label("Заголовок на месте локации");
+            s.TitleCraftFont = GUILayout.Toggle(s.TitleCraftFont, "Заголовок: шрифт строительства (выкл. — HUD)");
+            s.TitleFont = Slider("Размер заголовка", s.TitleFont, 10, 32);
+            GUILayout.Label("Подсказка RS / B справа");
+            s.FooterCraftFont = GUILayout.Toggle(s.FooterCraftFont, "Подсказка: шрифт строительства (выкл. — шрифт кнопок)");
+            s.FooterFont = Slider("Размер подсказки", s.FooterFont, 10, 32);
+            GUILayout.Label("Иконки — независимо от текста и строк");
+            s.Icon = Slider("Размер изображений", s.Icon, 8, 80);
+            s.IconX = Slider("Иконки: сдвиг вправо", s.IconX, -60, 60);
+            s.IconY = Slider("Иконки: сдвиг вниз", s.IconY, -60, 60);
+            s.GoalIconSpacing = Slider("Иконки целей: добавка к вертикальному шагу", s.GoalIconSpacing, -20, 20);
+            s.MaterialIconSpacing = Slider("Иконки материалов: добавка к вертикальному шагу", s.MaterialIconSpacing, -20, 20);
+            GUILayout.Label("Сообщения сундука — весь блок");
+            s.FeedbackX = Slider("Сдвиг вправо", s.FeedbackX, -300, 500);
+            s.FeedbackY = -Slider("Отступ под строкой действий", -s.FeedbackY, 4, 150);
+            s.FeedbackGap = Slider("Промежуток между взятыми предметами", s.FeedbackGap, 0, 40);
+            s.FeedbackLineGap = Slider("Промежуток между строками сообщений", s.FeedbackLineGap, 0, 24);
             GUILayout.Label("Мягкая подложка");
-            s.Opacity = Slider("Плотность подложки", s.Opacity, 0, .85f);
-            s.TextOpacity = Slider("Плотность текста", s.TextOpacity, .5f, 1);
+            s.Opacity = Slider("Плотность подложки (%)", s.Opacity * 100, 0, 85) / 100;
+            s.TextOpacity = Slider("Плотность текста (%)", s.TextOpacity * 100, 50, 100) / 100;
             s.ShadowRadius = Slider("Скругление подложки", s.ShadowRadius, 6, 90);
             s.ShadowFeather = Slider("Мягкость краёв", s.ShadowFeather, 5, 28);
             bool dirty = GUI.changed;
             GUI.changed |= changed;
             GUILayout.EndScrollView();
-            if (dirty) { s.Clamp(); PlannerPresentation.Refresh(); }
+            if (dirty) { s.Clamp(); PlannerRowControls.RefreshAll(); PlannerPresentation.Refresh(); }
             if (GUILayout.Button("Записать настройки и геометрию в LogOutput.log")) PlannerPresentation.Export(_camera);
-            if (GUILayout.Button("Вернуть исходные настройки")) { PlannerStyle.Current = new PlannerStyle(); PlannerPresentation.Refresh(); }
-            GUILayout.Label("Настройки действуют до выхода. F2 также записывает их в лог.");
+            if (GUILayout.Button("Вернуть исходные настройки")) { PlannerStyle.Current = new PlannerStyle(); PlannerRowControls.RefreshAll(); PlannerPresentation.Refresh(); }
+            GUILayout.Label("Размеры/отступы — целые единицы UI. Масштаб — шаг 0.01.\nНастройки до выхода; F2 также записывает их в лог.");
             if (GUILayout.Button("Записать и закрыть (F2)")) Close();
             GUI.DragWindow(new Rect(0, 0, 550, 24));
         }
-        private static float Slider(string title, float value, float min, float max)
+        private static float Slider(string title, float value, float min, float max, float step = 1)
         {
-            GUILayout.Label(title + ": " + value.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture));
-            return GUILayout.HorizontalSlider(value, min, max);
+            float next = (float)(Math.Round(GUILayout.HorizontalSlider(value, min, max) / step, MidpointRounding.AwayFromZero) * step);
+            GUILayout.Label(title + ": " + next.ToString(step == 1 ? "0" : "0.00", System.Globalization.CultureInfo.InvariantCulture));
+            return next;
         }
 #else
         internal static bool IsOpen { get { return false; } }
