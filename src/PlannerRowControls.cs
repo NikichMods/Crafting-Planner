@@ -22,6 +22,8 @@ namespace CraftingPlanner
         private UIWidget _column;
         private UILabel _minus, _plus;
         private UILabel _quantity;
+        private UILabel _spend;
+        private int _spendBottom;
         private readonly List<UILabel> _texts = new List<UILabel>();
         private bool _failed, _rendering;
         internal static void Ensure(CraftItemGUI row)
@@ -48,7 +50,7 @@ namespace CraftingPlanner
         }
         internal void Restore()
         {
-            RestoreBorder();
+            RestoreBorder(); RestoreSpend();
             if (!_shifted || _ingredients == null) return;
             _ingredients.leftAnchor.absolute = _left; _ingredients.rightAnchor.absolute = _right;
             _ingredients.topAnchor.absolute = _top; _ingredients.bottomAnchor.absolute = _bottom;
@@ -144,10 +146,11 @@ namespace CraftingPlanner
                     label.fontSize = (int)style.MenuFont; label.effectStyle = style.MenuOutline ? UILabel.Effect.Outline : UILabel.Effect.Shadow;
                     label.effectColor = new Color(.06f, .06f, .05f, style.MenuShadowOpacity); label.effectDistance = new Vector2(style.MenuShadowSize, style.MenuShadowSize);
                 }
-                _quantity.transform.localPosition = new Vector3(-38 + style.MenuQuantityX, -28 + style.MenuQuantityY, 0);
+                int energyShift = SeparateEnergy();
+                _quantity.transform.localPosition = new Vector3(-38 + style.MenuQuantityX, -28 + style.MenuQuantityY - energyShift, 0);
                 _quantity.text = "×" + quantity;
-                _minus.transform.localPosition = new Vector3(-63 + style.MenuMinusX, -28 + style.MenuMinusY, 0);
-                _plus.transform.localPosition = new Vector3(-13 + style.MenuPlusX, -28 + style.MenuPlusY, 0);
+                _minus.transform.localPosition = new Vector3(-63 + style.MenuMinusX, -28 + style.MenuMinusY - energyShift, 0);
+                _plus.transform.localPosition = new Vector3(-13 + style.MenuPlusX, -28 + style.MenuPlusY - energyShift, 0);
                 if (_background == null && _row.selection_frame.leftAnchor.target != null) _background = _row.selection_frame.leftAnchor.target.GetComponent<UIBasicSprite>();
                 if (style.MenuHideBorder && _background != null && _background.type == UIBasicSprite.Type.Advanced)
                 {
@@ -166,6 +169,23 @@ namespace CraftingPlanner
                 Planner.LogLine("event=plan_column result=disabled_for_row error=" + ex);
             }
             finally { _rendering = false; }
+        }
+        private void RestoreSpend()
+        {
+            if (_spend != null) { _spend.bottomAnchor.absolute = _spendBottom; _spend.ResetAndUpdateAnchors(); }
+            _spend = null;
+        }
+        private int SeparateEnergy()
+        {
+            RestoreSpend();
+            UILabel spend = _row.txt_spend;
+            if (spend == null || !spend.gameObject.activeInHierarchy || !PlannerLayout.SingleLineEnergy(spend.text)) return 0;
+            spend.ResetAndUpdateAnchors();
+            int shift = PlannerLayout.EnergyRowShift(spend.height, (int)Math.Ceiling(spend.printedSize.y));
+            if (shift == 0) return 0;
+            _spend = spend; _spendBottom = spend.bottomAnchor.absolute;
+            spend.bottomAnchor.absolute = _spendBottom + 2 * shift; spend.ResetAndUpdateAnchors();
+            return shift;
         }
         private void RestoreBorder()
         {

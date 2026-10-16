@@ -38,6 +38,15 @@ namespace CraftingPlanner
             return rows.ToArray();
         }
 
+        internal static bool SingleLineEnergy(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return false;
+            string visible = text.Trim();
+            return visible.IndexOf("(en)", StringComparison.Ordinal) >= 0 && visible.IndexOf('\n') < 0 && visible.IndexOf('\r') < 0;
+        }
+        internal static int EnergyRowShift(int boxHeight, int printedHeight)
+        { return Math.Max(0, Math.Min(8, (boxHeight - printedHeight - 2) / 2)); }
+
         internal static float BackingAlpha(float x, float y, float width, float height, float radius, float feather)
         {
             if (width <= 0 || height <= 0 || feather <= 0) return 0;

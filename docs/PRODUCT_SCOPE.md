@@ -292,3 +292,7 @@ User reports stale Have/Missing after Quick Stack's world stack action, correcte
 ### 0.1.14 return — combined construction controls
 
 User accepts current chest actions/results, compact right alignment and immediate Quick Stack refresh. Preserve them. Replace the separate second Add to planner line with ONE common row: planner action at the left, existing native actions in native order to the right, final Close aligned to menu frame right edge. Equal measured gaps and leftward growth accommodate translations. Keyboard/mouse shows only the planner help at the same edge. Native build click and gamepad bindings remain unchanged. Match the native action text's cream/brown gradient, not merely its white base color. Use native dark round arrow artwork comparable in size to native button glyphs; no custom texture is required. F2 may tune common row X/Y/gap and planner-caption size.
+
+### Energy-cost row separation — 2026-10-17
+
+User accepts the combined lower action row and native round arrow icons in0.1.15. A supported repair action shows energy behind the planner counter. Separate native energy above and quantity/arrows below only when a single-line energy cost is visible. Preserve native cost semantics, ordinary builder layout, row height, accepted footer/chest and all input behavior. Prefer a bounded integer shift within existing whitespace over native row resizing or a new cost renderer. Multiline/special costs are not generalized by this repair-specific pass.

@@ -166,6 +166,7 @@ public class UniversalObjectInfoGUI : MonoBehaviour { public UILabel text_header
 
 public class CraftItemGUI : MonoBehaviour
 {
+    public UILabel txt_spend;
     public GameObject amount_buttons;
     public UIWidget selection_frame;
     public UITable ingredients_table;

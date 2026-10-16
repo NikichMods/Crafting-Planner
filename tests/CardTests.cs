@@ -69,6 +69,18 @@ class CardTests
             mark.Invoke(null, null); mark.Invoke(null, null); mark.Invoke(null, null);
             Require((bool)consume.Invoke(null, null) && !(bool)consume.Invoke(null, null), "A transfer batch must request only one refresh");
             mark.Invoke(null, null); reset.Invoke(null, null); Require(!(bool)consume.Invoke(null, null), "Unload must clear pending transfer work");
+            MethodInfo energyShift = layout.GetMethod("EnergyRowShift", BindingFlags.Static | BindingFlags.NonPublic);
+            Require((int)energyShift.Invoke(null, new object[] {36,16}) == 8, "Repair energy and planner need matching separation");
+            for (int height = 16; height <= 60; height++) for (int printed = 12; printed <= 48; printed++)
+            {
+                int shift = (int)energyShift.Invoke(null, new object[] {height,printed});
+                Require(shift >= 0 && shift <= 8, "Energy displacement must remain bounded");
+                if (shift > 0) Require(height - 2 * shift >= printed + 2, "Energy content must keep its full height");
+            }
+            MethodInfo energyLine = layout.GetMethod("SingleLineEnergy", BindingFlags.Static | BindingFlags.NonPublic);
+            Require((bool)energyLine.Invoke(null, new object[] {"[c](en)[/c]10"}), "Native formatted energy must be detected");
+            foreach (string text in new[] {"", " ", "(time)2:30", "(en)10\n(time)2:30"})
+                Require(!(bool)energyLine.Invoke(null, new object[] {text}), "Unrelated or multiline costs must retain native geometry");
             Type styleType = candidate.GetType("CraftingPlanner.PlannerStyle", true);
             MethodInfo baseline = styleType.GetMethod("BaselineValue", BindingFlags.Static | BindingFlags.NonPublic);
             Require((float)baseline.Invoke(null, new object[] {"MenuX"}) == 17 && (float)baseline.Invoke(null, new object[] {"FeedbackY"}) == -5, "Individual resets must use the returned candidate baseline");
