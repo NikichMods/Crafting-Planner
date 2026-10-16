@@ -280,3 +280,11 @@ User selects **Building Planner** as the mod display name and English HUD header
 ### Unified chest actions and menu caption — 2026-10-16
 
 User requires native A / X / B followed by Y Take Needed in one row, right-aligned under the chest, with equal gaps between measured localized blocks and expansion leftward. Preserve native omitted/disabled actions and input. Keyboard F uses the same right edge. Common row X/Y and gap replace independent native/Y offsets; result placement remains independently tunable. Replace the supported menu Plan caption with localized **Add to planner**, centred over ingredients at the native title level, matching native title styling. Expose caption X/Y/font size with individual resets. Retain accepted Building Planner English HUD title, RS/B tuning and all 11 languages. English is the priority visual checkpoint, not a reduction in supported locales.
+
+### 0.1.13 return — secondary help and storage refresh
+
+User accepts the unified right-aligned A/X/B/Y row. Add to planner in the construction header overstates the mod action and obscures the native window's primary build purpose; replace it with a separate lower help line using the same < / > glyphs/font as the quantity controls. Native row click still builds; horizontal input only adjusts the plan. Keep the existing independent help position/size controls, relocated with the text.
+
+Every storage result, including Taken/icon/count rows and all notices, must right-align to the action row edge and grow left. Measure number widths instead of reserving fixed cells; retain actual transferred quantities and optional negative spacing for visual tuning. Feedback X becomes relative to that right edge.
+
+User reports stale Have/Missing after Quick Stack's world stack action, corrected only by a later UI refresh. Fix invalidation at the verified native successful transfer boundary; do not change Quick Stack's world gesture, transfer rules, player inventory counting or current-storage Take Needed semantics. Direct Quick Stack internals and remote storage behavior remain outside scope.

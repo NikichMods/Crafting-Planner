@@ -21,7 +21,7 @@ namespace CraftingPlanner
         private bool _shifted;
         private UIWidget _column;
         private UILabel _minus, _plus;
-        private UILabel _quantity, _caption;
+        private UILabel _quantity, _caption, _hintMinus, _hintPlus;
         private readonly List<UILabel> _texts = new List<UILabel>();
         private bool _failed, _rendering;
         internal static void Ensure(CraftItemGUI row)
@@ -141,30 +141,44 @@ namespace CraftingPlanner
                 }
                 _quantity.transform.localPosition = new Vector3(-38 + style.MenuQuantityX, -28 + style.MenuQuantityY, 0);
                 var items = GUIElements.me.craft.GetItemsList();
-                UILabel title = GUIElements.me.craft.object_info != null ? GUIElements.me.craft.object_info.text_header : null;
+                UILabel tips = GUIElements.me.craft.button_tips != null ? GUIElements.me.craft.button_tips.label : null;
                 bool first = items != null && items.Find(Eligible) == _row;
-                if (title != null && first)
+                if (tips != null && first)
                 {
                     if (_caption == null)
                     {
-                        UIPanel titlePanel = title.GetComponentInParent<UIPanel>();
-                        if (titlePanel == null) throw new InvalidOperationException("Native title panel unavailable");
-                        _caption = Text(PlannerLocalization.PlanColumn, titlePanel.transform, 0, 0, 72, 22);
+                        UIPanel tipsPanel = tips.GetComponentInParent<UIPanel>();
+                        if (tipsPanel == null) throw new InvalidOperationException("Native action-tip panel unavailable");
+                        _caption = Text("", tipsPanel.transform, 0, 0, 160, 24);
+                        _hintMinus = Text("<", tipsPanel.transform, 0, 0, 20, 24);
+                        _hintPlus = Text(">", tipsPanel.transform, 0, 0, 20, 24);
                     }
-                    PlannerCard.ApplyNativeFont(_caption, title); _caption.color = title.color; _caption.depth = title.depth + 1;
-                    _caption.fontSize = (int)style.MenuCaptionFont;
-                    _caption.effectStyle = title.effectStyle; _caption.effectColor = title.effectColor; _caption.effectDistance = title.effectDistance;
-                    _caption.overflowMethod = UILabel.Overflow.ResizeFreely; _caption.text = PlannerLocalization.PlanColumn;
-                    int captionWidth = Math.Max(1, (int)Math.Ceiling(_caption.printedSize.x) + 4);
-                    int captionHeight = Math.Max((int)style.MenuCaptionFont + 4, (int)Math.Ceiling(_caption.printedSize.y));
-                    _caption.overflowMethod = UILabel.Overflow.ClampContent;
-                    int cx = IngredientCentre() + (int)style.MenuCaptionX, cy = (int)style.MenuCaptionY;
-                    _caption.SetAnchor(_ingredients.gameObject, .5f, cx - captionWidth / 2, .5f, cy - captionHeight / 2, .5f, cx + (captionWidth + 1) / 2, .5f, cy + (captionHeight + 1) / 2);
-                    _caption.bottomAnchor.target = title.transform; _caption.topAnchor.target = title.transform;
-                    _caption.updateAnchors = UIRect.AnchorUpdate.OnUpdate;
-                    _caption.ResetAndUpdateAnchors(); _caption.gameObject.SetActive(true);
+                    PlannerCard.ApplyNativeFont(_caption, tips); _caption.fontSize = (int)style.MenuCaptionFont;
+                    _caption.color = tips.color; _caption.text = PlannerLocalization.PlanColumn;
+                    foreach (UILabel arrow in new[] { _hintMinus, _hintPlus })
+                    {
+                        PlannerCard.ApplyNativeFont(arrow, style.MenuHudFont ? GUIElements.me.hud.zone_name : _row.label_name);
+                        arrow.fontSize = (int)style.MenuCaptionFont; arrow.color = _minus.color;
+                        arrow.effectStyle = _minus.effectStyle; arrow.effectColor = _minus.effectColor; arrow.effectDistance = _minus.effectDistance;
+                    }
+                    UILabel[] help = { _hintMinus, _hintPlus, _caption };
+                    int[] widths = new int[help.Length]; int total = 12;
+                    for (int i = 0; i < help.Length; i++)
+                    {
+                        help[i].overflowMethod = UILabel.Overflow.ResizeFreely;
+                        widths[i] = Math.Max(1, (int)Math.Ceiling(help[i].printedSize.x) + 2); total += widths[i];
+                        help[i].overflowMethod = UILabel.Overflow.ClampContent;
+                    }
+                    int[] starts = PlannerLayout.RightAlignedStarts(widths, total / 2 + (int)style.MenuCaptionX, 6);
+                    int height = (int)style.MenuCaptionFont + 6, y = -28 + (int)style.MenuCaptionY;
+                    for (int i = 0; i < help.Length; i++)
+                    {
+                        help[i].depth = tips.depth + 1;
+                        help[i].SetAnchor(tips.gameObject, .5f, starts[i], .5f, y - height / 2, .5f, starts[i] + widths[i], .5f, y + (height + 1) / 2);
+                        help[i].updateAnchors = UIRect.AnchorUpdate.OnUpdate; help[i].ResetAndUpdateAnchors(); help[i].gameObject.SetActive(true);
+                    }
                 }
-                else if (_caption != null) _caption.gameObject.SetActive(false);
+                else HideHelp();
                 _quantity.text = "×" + quantity;
                 _minus.transform.localPosition = new Vector3(-63 + style.MenuMinusX, -28 + style.MenuMinusY, 0);
                 _plus.transform.localPosition = new Vector3(-13 + style.MenuPlusX, -28 + style.MenuPlusY, 0);
@@ -194,23 +208,6 @@ namespace CraftingPlanner
         }
         private void AfterIngredientLayout() { Render(); }
         private static void UnsubscribeList() { if (_nativeList != null) _nativeList.onReposition -= RefreshAll; _nativeList = null; }
-        private int IngredientCentre()
-        {
-            float left = float.MaxValue, right = float.MinValue;
-            foreach (UIWidget widget in _row.ingredients_table.GetComponentsInChildren<UIWidget>())
-            {
-                if (widget == _ingredients || !widget.gameObject.activeInHierarchy) continue;
-                foreach (Vector3 corner in widget.worldCorners)
-                {
-                    float x = _ingredients.transform.InverseTransformPoint(corner).x;
-                    left = Math.Min(left, x); right = Math.Max(right, x);
-                }
-            }
-            if (left == float.MaxValue) return 0;
-            // Anchor relative .5 follows the widget centre, independently of its native pivot.
-            float centre = (_ingredients.transform.InverseTransformPoint(_ingredients.worldCorners[0]).x + _ingredients.transform.InverseTransformPoint(_ingredients.worldCorners[2]).x) / 2;
-            return (int)Math.Round((left + right) / 2 - centre);
-        }
         private void AlignIngredients()
         {
             float right = float.MinValue;
@@ -225,7 +222,8 @@ namespace CraftingPlanner
             _ingredients.leftAnchor.absolute += delta; _ingredients.rightAnchor.absolute += delta;
             _ingredients.ResetAndUpdateAnchors(); _row.label_name.ResetAndUpdateAnchors();
         }
-        private void Hide() { if (_column != null) _column.gameObject.SetActive(false); if (_caption != null) _caption.gameObject.SetActive(false); }
+        private void HideHelp() { foreach (UILabel label in new[] { _caption, _hintMinus, _hintPlus }) if (label != null) label.gameObject.SetActive(false); }
+        private void Hide() { if (_column != null) _column.gameObject.SetActive(false); HideHelp(); }
         internal static void RefreshAll()
         {
             for (int i = Rows.Count - 1; i >= 0; i--) { if (Rows[i] == null) Rows.RemoveAt(i); else Rows[i].Render(); }
@@ -245,7 +243,8 @@ namespace CraftingPlanner
         private void OnDestroy()
         {
             Restore(); if (_ingredientLayout != null) _ingredientLayout.onReposition -= AfterIngredientLayout;
-            if (_column != null) UnityEngine.Object.Destroy(_column.gameObject); if (_caption != null) UnityEngine.Object.Destroy(_caption.gameObject);
+            if (_column != null) UnityEngine.Object.Destroy(_column.gameObject);
+            foreach (UILabel label in new[] { _caption, _hintMinus, _hintPlus }) if (label != null) UnityEngine.Object.Destroy(label.gameObject);
             Rows.Remove(this); if (Rows.Count == 0) UnsubscribeList();
         }
     }

@@ -81,11 +81,13 @@ namespace CraftingPlanner
                     Place(Actions[i], native, starts[i] + widths[i], (int)style.ChestRowY, widths[i], Actions[i].height);
                     Actions[i].color = TipColor(false);
                 }
-                // Preserve the result's previous independent origin; action-row offsets cannot move it.
                 if (_feedbackRoot == null) _feedbackRoot = Child("transfer-result", gui.chest.transform, native.gameObject.layer).AddComponent<UIWidget>();
-                int legacyWidth = Math.Max(100, width + 20), legacyHeight = Math.Max(28, (int)Math.Ceiling(_button.printedSize.y) + 8);
-                int fx = (int)style.FeedbackX - legacyWidth - 8, fy = (int)style.FeedbackY - legacyHeight / 2;
-                _feedbackRoot.SetAnchor(native.gameObject, 0, fx - 1, .5f, fy - 1, 0, fx + 1, .5f, fy + 1);
+                int fx = (int)(style.ChestRowX + style.FeedbackX), fy = (int)(style.ChestRowY + style.FeedbackY) - 14;
+                _feedbackRoot.SetAnchor(native.gameObject, 1, fx - 1, .5f, fy - 1, 1, fx + 1, .5f, fy + 1);
+                _feedbackRoot.leftAnchor.target = _feedbackRoot.rightAnchor.target = native.rightAnchor.target;
+                _feedbackRoot.leftAnchor.relative = _feedbackRoot.rightAnchor.relative = native.rightAnchor.relative;
+                _feedbackRoot.leftAnchor.absolute = native.rightAnchor.absolute + fx - 1;
+                _feedbackRoot.rightAnchor.absolute = native.rightAnchor.absolute + fx + 1;
                 _feedbackRoot.ResetAndUpdateAnchors(); _feedbackRoot.gameObject.SetActive(true);
                 DrawFeedback(native, gui.craft.craft_item_prefab.item_gui.x1.icon);
                 native.alpha = 0;
@@ -134,6 +136,18 @@ namespace CraftingPlanner
             }
             Refresh();
         }
+        private sealed class ResultGroup
+        {
+            internal int Width;
+            internal readonly List<UIWidget> Widgets = new List<UIWidget>();
+        }
+        private static UILabel ResultText(string text, UILabel native, Color color)
+        {
+            UILabel label = Text(text, _feedbackRoot.transform, native, 0, 0, 324, color);
+            label.overflowMethod = UILabel.Overflow.ResizeFreely;
+            int width = Math.Max(1, (int)Math.Ceiling(label.printedSize.x));
+            label.overflowMethod = UILabel.Overflow.ClampContent; label.width = width; return label;
+        }
         private static void DrawFeedback(UILabel native, UI2DSprite template)
         {
             foreach (GameObject go in Feedback) if (go != null) { go.SetActive(false); UnityEngine.Object.Destroy(go); }
@@ -141,36 +155,52 @@ namespace CraftingPlanner
             Color green = new Color(.533f, .843f, .486f), red = new Color(.894f, .467f, .400f);
             PlannerStyle style = PlannerStyle.Current;
             int line = Math.Max(22, native.fontSize + 4) + (int)style.FeedbackLineGap;
-            int left = 0, x = left, y = 0;
-            int itemStep = 48 + (int)style.FeedbackGap;
+            var groups = new List<ResultGroup>();
             if (_moved.Count > 0)
             {
-                UILabel prefix = Text(PlannerLocalization.Taken, _feedbackRoot.transform, native, x, y, 100, green);
-                x += Math.Min(100, (int)Math.Ceiling(prefix.printedSize.x)) + (int)style.FeedbackGap;
+                UILabel prefix = ResultText(PlannerLocalization.Taken, native, green);
+                var group = new ResultGroup { Width = prefix.width + 6 }; group.Widgets.Add(prefix); groups.Add(group);
                 foreach (var pair in _moved)
                 {
-                    if (x + itemStep > left + 324) { x = left; y -= line; }
                     ItemDefinition definition = GameBalance.me.GetDataOrNull<ItemDefinition>(pair.Key);
                     Sprite sprite = definition != null ? EasySpritesCollection.GetSprite(definition.GetIcon(), false, "") : null;
+                    group = new ResultGroup();
                     if (sprite != null && template != null)
                     {
                         UI2DSprite icon = UnityEngine.Object.Instantiate(template, _feedbackRoot.transform, false);
                         icon.SetAnchor((GameObject)null); icon.pivot = UIWidget.Pivot.Center; icon.width = icon.height = 20; icon.fixedAspect = false;
-                        icon.transform.localScale = Vector3.one; icon.transform.localPosition = new Vector3(x + 10, y, 0);
+                        icon.transform.localScale = Vector3.one; icon.transform.localPosition = new Vector3(10, 0, 0);
                         icon.depth = native.depth + 4; icon.sprite2D = sprite; icon.gameObject.SetActive(true); Feedback.Add(icon.gameObject);
-                        Text(pair.Value.ToString(), _feedbackRoot.transform, native, x + 24, y, 30, green); x += itemStep;
+                        UILabel number = ResultText(pair.Value.ToString(), native, green);
+                        number.transform.localPosition = new Vector3(24, 0, 0);
+                        group.Width = 24 + number.width; group.Widgets.Add(icon); group.Widgets.Add(number);
                     }
                     else
                     {
-                        y -= line; x = left;
-                        Text(Planner.GetItemName(pair.Key) + " ×" + pair.Value, _feedbackRoot.transform, native, x, y, 324, green); y -= line;
+                        UILabel fallback = ResultText(Planner.GetItemName(pair.Key) + " ×" + pair.Value, native, green);
+                        group.Width = fallback.width; group.Widgets.Add(fallback);
                     }
+                    groups.Add(group);
+                }
+            }
+            int[] widths = new int[groups.Count];
+            for (int i = 0; i < groups.Count; i++) widths[i] = groups[i].Width;
+            int[] rows = PlannerLayout.ResultRowStarts(widths, 324, (int)style.FeedbackGap);
+            for (int row = 0; row < rows.Length; row++)
+            {
+                int end = row + 1 < rows.Length ? rows[row + 1] : groups.Count;
+                int[] rowWidths = new int[end - rows[row]]; Array.Copy(widths, rows[row], rowWidths, 0, rowWidths.Length);
+                int[] starts = PlannerLayout.RightAlignedStarts(rowWidths, 0, (int)style.FeedbackGap);
+                for (int i = rows[row]; i < end; i++) foreach (UIWidget widget in groups[i].Widgets)
+                {
+                    Vector3 offset = widget.transform.localPosition;
+                    widget.transform.localPosition = new Vector3(starts[i - rows[row]] + offset.x, -row * line, 0);
                 }
             }
             if (_notice != TransferNotice.None)
             {
-                if (_moved.Count > 0) y -= line;
-                Text(PlannerLocalization.TransferMessage(_notice), _feedbackRoot.transform, native, left, y, 324, _notice == TransferNotice.Complete ? green : red);
+                UILabel notice = ResultText(PlannerLocalization.TransferMessage(_notice), native, _notice == TransferNotice.Complete ? green : red);
+                notice.transform.localPosition = new Vector3(-notice.width, -rows.Length * line, 0);
             }
         }
         internal static void Show(List<KeyValuePair<string, int>> moved, TransferNotice notice) { _moved = moved; _notice = notice; Refresh(); }

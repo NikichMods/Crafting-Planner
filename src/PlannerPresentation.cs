@@ -410,7 +410,7 @@ namespace CraftingPlanner
         }
         internal void Export(Camera camera)
         {
-            Planner.LogLine("event=calibration_export format=6 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
+            Planner.LogLine("event=calibration_export format=7 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
                 " actual_width=" + _width + " actual_height=" + _height + " screen=" + Screen.width + "x" + Screen.height +
                 " card_px=" + Rectangle(_root, camera) + " back_px=" + Rectangle(_back, camera) +
                 " font_asset=" + (_measure.bitmapFont != null ? _measure.bitmapFont.name : "dynamic") + " arrows=" + _arrowCursor + " focus_rows=" + _focusCursor + " language=" + PlannerLocalization.CurrentLanguage);

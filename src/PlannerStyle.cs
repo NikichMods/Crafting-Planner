@@ -14,7 +14,7 @@ namespace CraftingPlanner
         internal bool AlternateNumbers = false, AlternateQuantity = true, TitleCraftFont = false, FooterCraftFont = true;
         internal float TitleFont = 16, FooterFont = 20;
         internal float IconX = -3, IconY, GoalIconSpacing, MaterialIconSpacing;
-        internal float FeedbackX = 264, FeedbackY = -5, FeedbackGap = 0, FeedbackLineGap = 4;
+        internal float FeedbackX = 0, FeedbackY = -5, FeedbackGap = 0, FeedbackLineGap = 4;
         internal static PlannerStyle Current = new PlannerStyle();
         internal void Clamp()
         {
@@ -29,7 +29,7 @@ namespace CraftingPlanner
             IconX = Bound(IconX, -60, 60); IconY = Bound(IconY, -60, 60);
             GoalIconSpacing = Bound(GoalIconSpacing, -20, 20); MaterialIconSpacing = Bound(MaterialIconSpacing, -20, 20);
             FeedbackX = Bound(FeedbackX, -600, 1000); FeedbackY = Bound(FeedbackY, -300, 150);
-            FeedbackGap = Bound(FeedbackGap, 0, 40); FeedbackLineGap = Bound(FeedbackLineGap, 0, 24);
+            FeedbackGap = Bound(FeedbackGap, -8, 40); FeedbackLineGap = Bound(FeedbackLineGap, 0, 24);
             Right = Pixel(Right); Top = Pixel(Top); Width = Pixel(Width); Font = Pixel(Font); Icon = Pixel(Icon); Row = Pixel(Row);
             Padding = Pixel(Padding); Column = Pixel(Column); ColumnGap = Pixel(ColumnGap); TitleGap = Pixel(TitleGap); FooterGap = Pixel(FooterGap);
             ShadowRadius = Pixel(ShadowRadius); ShadowFeather = Pixel(ShadowFeather); GoalsOffset = Pixel(GoalsOffset); MaterialsGap = Pixel(MaterialsGap); ColumnInset = Pixel(ColumnInset);

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 using System;
+using System.Collections.Generic;
 namespace CraftingPlanner
 {
     // Project-owned geometry; independent of NGUI and the current input device.
@@ -24,6 +25,17 @@ namespace CraftingPlanner
             int[] starts = new int[widths.Length];
             for (int i = widths.Length - 1; i >= 0; i--) { starts[i] = right - widths[i]; right = starts[i] - gap; }
             return starts;
+        }
+
+        internal static int[] ResultRowStarts(int[] widths, int limit, int gap)
+        {
+            var rows = new List<int>(); int occupied = 0;
+            for (int i = 0; i < widths.Length; i++)
+            {
+                if (i == 0 || occupied + gap + widths[i] > limit) { rows.Add(i); occupied = widths[i]; }
+                else occupied += gap + widths[i];
+            }
+            return rows.ToArray();
         }
 
         internal static float BackingAlpha(float x, float y, float width, float height, float radius, float feather)

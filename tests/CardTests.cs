@@ -55,6 +55,20 @@ class CardTests
                 Require(starts[widths.Length - 1] + widths[widths.Length - 1] == -7, "Localized row must retain its right edge");
                 for (int i = 1; i < widths.Length; i++) Require(starts[i] - starts[i - 1] - widths[i - 1] == 10, "Action blocks must retain equal gaps across languages and omitted actions");
             }
+            MethodInfo rowStarts = layout.GetMethod("ResultRowStarts", BindingFlags.Static | BindingFlags.NonPublic);
+            Require(((int[])rowStarts.Invoke(null, new object[] {new int[0], 324, 0})).Length == 0, "A notice without items must stay on its first line");
+            int[] wrapped = (int[])rowStarts.Invoke(null, new object[] {new[] {60,100,100,100}, 324, 0});
+            Require(wrapped.Length == 2 && wrapped[0] == 0 && wrapped[1] == 3, "Results must wrap at the real measured width");
+            int[] compact = (int[])rowStarts.Invoke(null, new object[] {new[] {40,35,44,53}, 180, -4});
+            Require(compact.Length == 1, "Compact results must retain arbitrary count widths");
+            Type invalidation = candidate.GetType("CraftingPlanner.PlannerInventoryRefresh", true);
+            MethodInfo mark = invalidation.GetMethod("Mark", BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo consume = invalidation.GetMethod("Consume", BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo reset = invalidation.GetMethod("Reset", BindingFlags.Static | BindingFlags.NonPublic);
+            reset.Invoke(null, null); Require(!(bool)consume.Invoke(null, null), "Idle frames must not request inventory work");
+            mark.Invoke(null, null); mark.Invoke(null, null); mark.Invoke(null, null);
+            Require((bool)consume.Invoke(null, null) && !(bool)consume.Invoke(null, null), "A transfer batch must request only one refresh");
+            mark.Invoke(null, null); reset.Invoke(null, null); Require(!(bool)consume.Invoke(null, null), "Unload must clear pending transfer work");
             Type styleType = candidate.GetType("CraftingPlanner.PlannerStyle", true);
             MethodInfo baseline = styleType.GetMethod("BaselineValue", BindingFlags.Static | BindingFlags.NonPublic);
             Require((float)baseline.Invoke(null, new object[] {"MenuX"}) == 17 && (float)baseline.Invoke(null, new object[] {"FeedbackY"}) == -5, "Individual resets must use the returned candidate baseline");
@@ -65,10 +79,12 @@ class CardTests
             styleType.GetField("Right", fieldFlags).SetValue(style, 12.955f);
             styleType.GetField("IconX", fieldFlags).SetValue(style, -2.5f);
             styleType.GetField("Scale", fieldFlags).SetValue(style, .647f);
+            styleType.GetField("FeedbackGap", fieldFlags).SetValue(style, -4.2f);
             MethodInfo clampStyle = styleType.GetMethod("Clamp", fieldFlags), recordStyle = styleType.GetMethod("Record", fieldFlags);
             clampStyle.Invoke(style, null);
             Require((float)styleType.GetField("Right", fieldFlags).GetValue(style) == 13 && (float)styleType.GetField("IconX", fieldFlags).GetValue(style) == -3, "Dimensions must snap consistently to whole UI units");
             Require(Math.Abs((float)styleType.GetField("Scale", fieldFlags).GetValue(style) - .65f) < .00001f, "Scale must use explicit hundredth steps");
+            Require((float)styleType.GetField("FeedbackGap", fieldFlags).GetValue(style) == -4, "Negative item spacing must remain configurable in whole units");
             string snapped = (string)recordStyle.Invoke(style, null); clampStyle.Invoke(style, null);
             Require(snapped == (string)recordStyle.Invoke(style, null), "Repeated layout clamp must not drift");
             MethodInfo textRow = layout.GetMethod("TextRowHeight", BindingFlags.Static | BindingFlags.NonPublic);

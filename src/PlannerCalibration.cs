@@ -124,7 +124,7 @@ namespace CraftingPlanner
             s.MenuHideBorder = GUILayout.Toggle(s.MenuHideBorder, "Убрать внутреннюю правую границу родных строк");
             s.IngredientsX = Slider(nameof(s.IngredientsX), "Ингредиенты меню: вправо", s.IngredientsX, -300, 300);
             s.IngredientsY = Slider(nameof(s.IngredientsY), "Ингредиенты меню: вверх", s.IngredientsY, -300, 300);
-            GUILayout.Label("Меню — подпись Добавить в план");
+            GUILayout.Label("Меню — подсказка < > Добавить в план внизу");
             s.MenuCaptionX = Slider(nameof(s.MenuCaptionX), "Подпись: вправо", s.MenuCaptionX, -300, 300);
             s.MenuCaptionY = Slider(nameof(s.MenuCaptionY), "Подпись: вверх", s.MenuCaptionY, -300, 300);
             s.MenuCaptionFont = Slider(nameof(s.MenuCaptionFont), "Размер подписи", s.MenuCaptionFont, 10, 32);
@@ -140,7 +140,7 @@ namespace CraftingPlanner
             s.ChestActionGap = Slider(nameof(s.ChestActionGap), "Одинаковый промежуток между действиями", s.ChestActionGap, 0, 40);
             s.FeedbackX = Slider(nameof(s.FeedbackX), "Результат переноса: вправо", s.FeedbackX, -600, 1000);
             s.FeedbackY = Slider(nameof(s.FeedbackY), "Результат переноса: вверх", s.FeedbackY, -300, 150);
-            s.FeedbackGap = Slider(nameof(s.FeedbackGap), "Промежуток между взятыми предметами", s.FeedbackGap, 0, 40);
+            s.FeedbackGap = Slider(nameof(s.FeedbackGap), "Промежуток между взятыми предметами", s.FeedbackGap, -8, 40);
             s.FeedbackLineGap = Slider(nameof(s.FeedbackLineGap), "Промежуток между строками сообщений", s.FeedbackLineGap, 0, 24);
             GUILayout.Label("Мягкая подложка");
             s.Opacity = Slider(nameof(s.Opacity), "Плотность подложки (%)", s.Opacity * 100, 0, 85) / 100;

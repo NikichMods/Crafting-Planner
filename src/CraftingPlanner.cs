@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Building Planner";
-        public const string PluginVersion = "0.1.13";
+        public const string PluginVersion = "0.1.14";
 
         private Harmony _harmony;
 
@@ -33,6 +33,7 @@ namespace CraftingPlanner
         {
             PlannerCalibration.Close();
             PlannerEditing.Reset();
+            PlannerInventoryRefresh.Reset();
             PlannerRowControls.DestroyAll();
             PlannerChestControls.Destroy();
             LazyInput.on_input_changed -= PlannerInputHints.OnInputChanged;
@@ -49,6 +50,7 @@ namespace CraftingPlanner
 
         private void Update() { PlannerCalibration.Update(); }
         private void OnGUI() { PlannerCalibration.Draw(); }
+        private void LateUpdate() { PlannerInventoryRefresh.Flush(); }
     }
 
     internal enum ProjectContextKind

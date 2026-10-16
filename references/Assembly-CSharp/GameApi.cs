@@ -98,8 +98,11 @@ public class Item
     }
 }
 
+public class Inventory { public Item data { get { return null; } } }
+
 public class MultiInventory
 {
+    public List<Inventory> all { get { return null; } }
     public enum DestinationType
     {
         OnlyFirst,
