@@ -1,19 +1,18 @@
 # Building Planner
 
-A vanilla-friendly Graveyard Keeper 1.407 mod project for pinning multiple construction/world projects and gathering exactly the materials still needed.
+A vanilla-friendly Graveyard Keeper 1.407 mod for planning multiple construction, repair, upgrade and clearing projects, and collecting the materials still needed.
 
-Core direction:
+Choose projects and quantities in supported native menus, then use the shared HUD to compare **Required / Have / Missing** against what your character carries. Adjust the plan with mouse or gamepad. **Take Needed** collects only missing materials from the currently open chest, bounded by its contents and native inventory capacity; partial transfers are supported.
 
-`pinned projects -> aggregate requirements -> player Have -> Missing -> Take Needed from the current storage`
+The current development candidate is **0.1.16**. Its visual presentation is accepted; functional/release work continues. Goals currently last for the session. Automatic goal reduction after successful placement is the next required feature and is not implemented yet.
 
-The project is currently in the research/prototype stage. P0 is project-first: repeatable construction plus verified one-off repair/upgrade/clearing projects. Ordinary workstation production recipes such as "make 10 planks" are not planner goals. Production scope remains intentionally narrow: no remote crafting, no automatic cross-storage logistics, no dependency expansion, and no world-level chest collection without a later explicit decision.
+Ordinary workstation production recipes such as "make 10 planks" are not planner goals. Materials are not recursively expanded; crafting/building and travel remain manual. There is no remote crafting or automatic cross-storage collection. Gamepad and all 11 host languages are supported targets.
 
-Engineering contract: `NikichMods/DevRules`.
+Project documentation:
 
-Current research:
-- `docs/PRODUCT_SCOPE.md`
-- `docs/RESEARCH_REPORT_2026-09-21.md`
-- `docs/VERIFIED_GAME_DATA.md`
-- `docs/TEST_LOG.md`
+- [Product scope and current UX](docs/PRODUCT_SCOPE.md)
+- [Development status and recovery](docs/DEVELOPMENT.md)
+- [Verified game data](docs/VERIFIED_GAME_DATA.md)
+- [Runtime acceptance and candidate history](docs/TEST_LOG.md)
 
-Development and recovery: `docs/DEVELOPMENT.md` (current prototype, local compilation, evidence and UI design checkpoint).
+Engineering contract: `NikichMods/DevRules`. Technical identity remains `CraftingPlanner`.

@@ -1,10 +1,14 @@
 # Building Planner — Product Scope
 
-Updated: 2026-10-16
+Updated: 2026-10-17
+
+## Current milestone
+
+The complete 0.1.16 visual presentation is user-accepted as of 2026-10-17. Preserve it unless a new defect/request reopens visual work. Exercised core functionality is recorded in [TEST_LOG.md](TEST_LOG.md); this is not full functional or stable-release acceptance. Exact installed artifact and recovery are in [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## Product model
 
-Crafting Planner is a functional replacement/superset for the Recipe Pin idea, but its P0 focus is **projects**, not arbitrary production recipes.
+Building Planner is a functional replacement/superset for the Recipe Pin idea, but its P0 focus is **projects**, not arbitrary production recipes.
 
 Player loop:
 
@@ -37,6 +41,12 @@ P0 does not expand dependencies. If a bench needs planks, the planner asks for p
 - One-off repair/upgrade/clearing projects are quantity 1.
 - Quantity belongs to the planner goal, not to a workstation craft queue or private amount widget.
 
+## Required next milestone: successful-operation reduction
+
+Automatic reduction is required follow-up and absent from 0.1.16. For repeatable placeables, decrement exactly one at verified successful placement/material commitment, not at later physical construction completion. Failed/cancelled/rejected placement removes none. Remove a goal at zero and recompute derived aggregate requirements; native code alone spends materials. Do not introduce an in-progress tracker.
+
+One-time upgrade/repair/clearing actions need their own verified success boundary and exact goal identity. Menu selection and inventory changes alone are not success evidence. Existing static `DoPlace` inspection does not close the success/exactly-once gate; verify before relying on a production hook.
+
 ## Materials
 
 Across all pinned projects:
@@ -62,7 +72,7 @@ P0 goals are session-local. Per-save persistence is an explicit desired follow-u
 
 ## UI
 
-Desired production presentation is vanilla-style.
+The accepted presentation is a compact native-style card: project icons/names with fixed quantity positions, stable canonical-ID material order and centered numeric columns. Missing zero is green, positive Missing is restrained red; other counts remain neutral. Native title and restrained text sit over a soft rounded backing fading at the edges. Extra corner ornaments and hard/heavy rectangular framing are not adopted.
 
 Preferred technical direction:
 - use the game's native NGUI-style HUD hierarchy and visual components where practical;
@@ -97,28 +107,21 @@ Builder-internal pseudo actions such as remove/move controls are not planner pro
 
 ## P0 goal management UX
 
-Gamepad support is mandatory for P0 (explicitly reaffirmed by the user on 2026-10-15). All planner actions must be usable without a mouse: focused-project quantity changes and current-storage Take Needed. Provide context-appropriate button hints, preserve native menu focus/navigation, and keep ordinary HUD display from capturing input. The existing LT/RT and open-chest Y mappings are the prototype baseline, not blanket evidence of final input compatibility or support for every controller's glyphs. Final bindings, glyph presentation and compatibility need verification on the supported gamepad path.
+Mouse/keyboard and gamepad management are required and exercised on supported paths. Native build-row activation still builds; separate left/right quantity controls adjust only the plan. Decrement from one removes a goal; one-off projects remain capped at one. Native ordinary production/queue controls retain ownership.
 
-The 0.1.6 baseline intentionally does **not** use a separate planner-management window. The user has since requested remote plan management; see the current follow-up scope below. Its entry gesture is not yet adopted.
+The ordinary HUD shows project names/icons and fixed quantity slots above aggregate material icon/count rows. Mouse arrows remain visible with hover emphasis, and hovered rows highlight. Gamepad RS enters deliberate HUD editing; up/down selects a visibly highlighted row, left/right changes quantity, B finishes. Outside deliberate editing, the HUD does not capture gameplay. The RS/Edit Plan or B/Done hint is right-aligned and remains previewable while F2 is open. There is no separate management window or draft/apply state.
 
-Goal quantity is managed directly from the currently focused supported project card in the game's existing project/build craft UI:
+The shared card stays in the same apparent position across ordinary HUD, supported build/world-project menus, character Inventory tab and chest. The native location banner is replaced by the planner title while shown and restored when hidden. English title/display name is **Building Planner**; host project/item names and owned labels follow the live language.
 
-- add/increment acts on the focused project;
-- decrement acts on the focused project;
-- decrement from quantity 1 removes the goal;
-- one-off repairs, clearings, and one-time upgrades are capped at quantity 1;
-- repeatable placeable construction projects may have quantity greater than 1.
+Supported-menu help is ONE right-aligned row: round native left/right arrow symbols plus localized Add to planner first, followed by original native action blocks in native order, with final Close at the frame edge. Measured equal gaps and leftward growth accommodate translations. Planner help copies the native cream-to-brown label gradient/font/effect and round arrow sprites. Keyboard/mouse shows only planner help. Do not restore the rejected Add to planner header: it misleadingly made planning look like the window's primary build action. Visible single-line repair energy sits above quantity/arrows inside the existing row; arbitrary multiline costs are not generalized.
 
-In the 0.1.6 baseline, the goal-list presentation is display-only. The follow-up requests deliberate editing outside the builder; ordinary gameplay must still not capture focus unintentionally.
+Chest gamepad hints are one right-aligned **A / X / B / Y** row, preserving native omitted/disabled actions. Y Take Needed ends at the chest's right edge, equal measured gaps expand leftward; keyboard F uses that edge. Results/notices right-align to the same edge and report actual transferred item icons/counts, with compact measured spacing. A guaranteed pre-action transfer manifest is not adopted. Quick Stack's world transfer now immediately refreshes Have/Missing through a scoped native transfer observer; reserve protection and gesture takeover remain outside scope.
 
-Planner state should remain visible while the player is managing goals in the native project/build UI. RT/LT (or later accepted equivalents) should update the displayed goal quantity/material totals immediately, without requiring the player to close the craft window first. After the craft/project UI closes, the same planner state remains available on the ordinary gameplay HUD.
-
-Concrete key/button bindings remain an implementation/compatibility detail. Vanilla CraftGUI X/Y must not be repurposed if doing so overrides their existing behavior. The first 0.1.0 candidate uses LT/RT for direct-card decrement/increment and keeps Y for Take Needed in an open chest.
-
+F2 is temporary live calibration (format 8): individually resettable sliders, labels above controls, separate text/numeric/quantity styles, title and footer controls, independent icon visual size/offsets, grouped row/column placement and soft backing controls. Logical dimensions use integer steps with deliberate scale/opacity steps. Current accepted defaults are owned by source; calibration logs are recovery evidence, not a second settings database. The final public-build fate of F2 remains unresolved.
 
 ## Localization requirement
 
-Crafting Planner must support every language exposed by Graveyard Keeper 1.407.
+Building Planner must support every language exposed by Graveyard Keeper 1.407.
 
 Current host language set:
 - `en`
@@ -135,11 +138,15 @@ Current host language set:
 
 Rules:
 - host-owned project and item names must be resolved from the game for the current language rather than cached as localized planner state;
-- Crafting Planner-owned labels must have translations for every host language above, with English fallback only for unknown/unsupported external locale codes;
+- Building Planner-owned labels must have translations for every host language above, with English fallback only for unknown/unsupported external locale codes;
 - changing the game language at runtime must refresh Planner text and the correct host font/atlas without restarting the game;
 - localization must remain a small presentation layer and must not duplicate the game's item/project localization database.
 
-## UI design checkpoint
+## Historical design decisions and candidate evolution
+
+The following dated record preserves adopted, rejected and superseded design steps. Present-tense wording inside an older entry describes that stage only. Active requirements above and current acceptance in TEST_LOG.md take precedence; do not reopen old pending gates or restore old bindings/layouts from this history.
+
+### Initial UI design checkpoint
 
 The current text-only Planner output is a technical presentation scaffold, not the intended final visual design.
 

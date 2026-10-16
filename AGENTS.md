@@ -46,10 +46,13 @@ P0 is:
 
 Ordinary workstation item production (for example, pinning ten planks, polished stone, or a chisel) is not a P0 planner goal. Such items can appear as required materials for a project, but P0 does not recursively expand or pin their production recipes.
 
+### Required follow-up
+
+Automatic reduction after verified successful placement/material commitment is required next and absent from 0.1.16. Separate upgrade/repair/clearing success boundaries must be verified under `docs/PRODUCT_SCOPE.md`. This supersedes its initial deferral without expanding ordinary production scope.
+
 ### Not P0
 
 Do not pull these into the first production scope automatically:
-- auto-decrement after completed craft/build was originally deferred; the 2026-10-15 user review now requires it as follow-up work (absent from 0.1.6); completion timing must be verified under `docs/PRODUCT_SCOPE.md`;
 - save persistence (explicitly deferred after product review; session-only goals are accepted for P0);
 - Quick Stack reserve protection;
 - dependency expansion/base-material planning;
@@ -168,9 +171,10 @@ A world-level "Take Needed" action without opening the chest is also deferred fr
 Prefer one narrow research harness over repeated manual tests when runtime evidence is required.
 
 Current remaining runtime/product priorities:
-- runtime-verify the implemented compact card across CraftGUI/HUD/chest, including native icons, soft rounded backing, fixed quantity positions and direct mouse/gamepad management; `docs/PRODUCT_SCOPE.md` owns the adopted design and `docs/TEST_LOG.md` owns candidate acceptance;
-- choose and verify the final production pin/manage input gesture, including gamepad focus/compatibility; Probe 0.2.0 explicitly verified mouse focus but did not record a gamepad build-focus event;
-- isolate carried-bag/toolbelt and capacity-limited transfer edges only if production correctness still depends on runtime evidence beyond the already verified native inventory path.
+- verify exact successful-operation identity/boundary and exactly-once reduction for builder placement, then separate upgrade/repair/clearing paths;
+- retain the user-accepted 0.1.16 visual presentation and exercised mouse/gamepad gestures; acceptance is bounded by `docs/TEST_LOG.md`, not a claim of exhaustive host-flow or language/context coverage;
+- isolate carried-bag/toolbelt and capacity-limited transfer edges only where production correctness still needs evidence;
+- review temporary calibration and release readiness at the functional milestone; do not infer stable promotion from visual acceptance.
 
 The ordinary gameplay HUD anchor/lifecycle and live-localization gate are accepted from the 0.1.4 runtime pass.
 

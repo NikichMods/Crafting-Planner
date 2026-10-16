@@ -1,4 +1,31 @@
-# Lightweight row card — implementation gate, 2026-10-15
+# Building Planner — UI implementation
+
+## Current accepted implementation — 2026-10-17
+
+The user accepts the complete 0.1.16 visual presentation, including single-line repair-energy separation. Visual iteration is closed unless a new defect/request reopens it. [PRODUCT_SCOPE.md](PRODUCT_SCOPE.md) owns active UX requirements; [TEST_LOG.md](TEST_LOG.md) owns bounded runtime acceptance; [DEVELOPMENT.md](DEVELOPMENT.md) identifies the exact installed artifact and next functional milestone. A READY static gate below is not by itself runtime acceptance.
+
+Current source ownership:
+
+| Component | Responsibility |
+| --- | --- |
+| `PlannerPresentation` | shared native card/header/font/backing and visibility |
+| `PlannerRowControls` | supported native ingredient/quantity placement and energy separation; restore native geometry |
+| `PlannerBuildTips` | one frame-right-aligned menu action row, native gradient and round arrows |
+| `PlannerChestControls` | A/X/B/Y or F action row, measured right-aligned results/notices |
+| `PlannerEditing` | deliberate RS entry, selection/edit/B exit and narrow player-control containment |
+| `PlannerInventoryRefresh` | successful native transfer invalidation, coalesced in LateUpdate |
+| `PlannerStyle` / `PlannerTuning` | accepted style/layout defaults |
+| `PlannerCalibration` | temporary compile-flagged F2 editor, format 8, 55 sliders with local resets |
+| `PlannerLayout` | shared pure geometry policies |
+
+Native row activation/input, material/capacity semantics and world Quick Stack ownership are retained. Shared card quantity positions are independent of input-device arrows; icon visual sizing is independent of text row metrics. Native fonts/artwork and live localization are used; ordinary HUD appearance across all 11 languages is user-reported, without claiming every context/language combination was exercised.
+
+No UI redesign is the next task. Verify successful-operation reduction under PRODUCT_SCOPE.md; it is absent from 0.1.16. Final public-build calibration policy remains undecided.
+
+## Historical engineering gates
+
+The dated sections below preserve inspection, hypotheses and readiness decisions at their original candidate boundary. Their old pending/runtime-test wording is historical; use TEST_LOG.md and the current summary above for present acceptance. Rejected intermediate presentation is not an active requirement.
+## Lightweight row card — implementation gate, 2026-10-15
 
 ## Accepted mockup transfer — 2026-10-16
 

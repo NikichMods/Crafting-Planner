@@ -1,5 +1,7 @@
 # Initial Research Report — 2026-09-21
 
+> Historical record. Describes the original candidate/research stage; later evidence supersedes its pending gates and proposed bindings. See [DEVELOPMENT.md](DEVELOPMENT.md) for current recovery, [PRODUCT_SCOPE.md](PRODUCT_SCOPE.md) for active requirements and [TEST_LOG.md](TEST_LOG.md) for acceptance.
+
 Project: **Crafting Planner**
 Target: **Graveyard Keeper 1.407**
 
