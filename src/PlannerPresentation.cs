@@ -410,7 +410,7 @@ namespace CraftingPlanner
         }
         internal void Export(Camera camera)
         {
-            Planner.LogLine("event=calibration_export format=7 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
+            Planner.LogLine("event=calibration_export format=8 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
                 " actual_width=" + _width + " actual_height=" + _height + " screen=" + Screen.width + "x" + Screen.height +
                 " card_px=" + Rectangle(_root, camera) + " back_px=" + Rectangle(_back, camera) +
                 " font_asset=" + (_measure.bitmapFont != null ? _measure.bitmapFont.name : "dynamic") + " arrows=" + _arrowCursor + " focus_rows=" + _focusCursor + " language=" + PlannerLocalization.CurrentLanguage);
@@ -463,6 +463,7 @@ namespace CraftingPlanner
         internal static void Refresh()
         {
             PlannerChestControls.Refresh();
+            PlannerBuildTips.Refresh();
             if (_failed) return;
             GUIElements gui = GUIElements.me;
             if (gui == null || gui.screen_size_widget == null || gui.hud == null || gui.hud.zone_name == null || gui.craft == null || gui.craft.craft_item_prefab == null) return;
@@ -502,7 +503,7 @@ namespace CraftingPlanner
     {
         internal static void Open(CraftGUI gui) { PlannerRowControls.RefreshAll(); PlannerPresentation.Refresh(); }
         internal static void Refresh() { PlannerPresentation.Refresh(); }
-        internal static void Hide() { PlannerPresentation.Refresh(); }
+        internal static void Hide() { PlannerBuildTips.Clear(); PlannerPresentation.Refresh(); }
         internal static void OnLanguageChanged() { PlannerPresentation.Refresh(); }
         internal static void Destroy() { PlannerPresentation.Destroy(); }
     }

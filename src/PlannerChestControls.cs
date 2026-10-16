@@ -233,12 +233,12 @@ namespace CraftingPlanner
     [HarmonyPatch(typeof(ButtonTipsStr), "Print", new[] { typeof(List<GameKeyTip>), typeof(string) })]
     internal static class PlannerChestTipsPatch
     {
-        private static void Postfix(ButtonTipsStr __instance, List<GameKeyTip> __0) { PlannerChestControls.CaptureTips(__instance, __0); }
+        private static void Postfix(ButtonTipsStr __instance, List<GameKeyTip> __0) { PlannerChestControls.CaptureTips(__instance, __0); PlannerBuildTips.Capture(__instance, __0); }
     }
     [HarmonyPatch(typeof(ButtonTipsStr), "Print", new[] { typeof(GameKeyTip) })]
     internal static class PlannerChestSingleTipPatch
     {
-        private static void Postfix(ButtonTipsStr __instance, GameKeyTip __0) { PlannerChestControls.CaptureTips(__instance, new[] { __0 }); }
+        private static void Postfix(ButtonTipsStr __instance, GameKeyTip __0) { PlannerChestControls.CaptureTips(__instance, new[] { __0 }); PlannerBuildTips.Capture(__instance, new[] { __0 }); }
     }
     [HarmonyPatch(typeof(BaseGUI), "Update")]
     internal static class PlannerChestKeyboardPatch

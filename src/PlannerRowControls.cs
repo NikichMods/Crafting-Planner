@@ -21,7 +21,7 @@ namespace CraftingPlanner
         private bool _shifted;
         private UIWidget _column;
         private UILabel _minus, _plus;
-        private UILabel _quantity, _caption, _hintMinus, _hintPlus;
+        private UILabel _quantity;
         private readonly List<UILabel> _texts = new List<UILabel>();
         private bool _failed, _rendering;
         internal static void Ensure(CraftItemGUI row)
@@ -40,6 +40,11 @@ namespace CraftingPlanner
         {
             return Planner.IsSupportedProject(row.current_craft) && row.selection_frame != null && row.ingredients_table != null && row.label_name != null &&
                 (row.amount_buttons == null || !row.amount_buttons.activeSelf);
+        }
+        internal static bool HasSupportedRows(CraftGUI gui)
+        {
+            var items = gui.GetItemsList();
+            return items != null && items.Exists(row => row != null && row.gameObject.activeInHierarchy && Eligible(row));
         }
         internal void Restore()
         {
@@ -140,45 +145,6 @@ namespace CraftingPlanner
                     label.effectColor = new Color(.06f, .06f, .05f, style.MenuShadowOpacity); label.effectDistance = new Vector2(style.MenuShadowSize, style.MenuShadowSize);
                 }
                 _quantity.transform.localPosition = new Vector3(-38 + style.MenuQuantityX, -28 + style.MenuQuantityY, 0);
-                var items = GUIElements.me.craft.GetItemsList();
-                UILabel tips = GUIElements.me.craft.button_tips != null ? GUIElements.me.craft.button_tips.label : null;
-                bool first = items != null && items.Find(Eligible) == _row;
-                if (tips != null && first)
-                {
-                    if (_caption == null)
-                    {
-                        UIPanel tipsPanel = tips.GetComponentInParent<UIPanel>();
-                        if (tipsPanel == null) throw new InvalidOperationException("Native action-tip panel unavailable");
-                        _caption = Text("", tipsPanel.transform, 0, 0, 160, 24);
-                        _hintMinus = Text("<", tipsPanel.transform, 0, 0, 20, 24);
-                        _hintPlus = Text(">", tipsPanel.transform, 0, 0, 20, 24);
-                    }
-                    PlannerCard.ApplyNativeFont(_caption, tips); _caption.fontSize = (int)style.MenuCaptionFont;
-                    _caption.color = tips.color; _caption.text = PlannerLocalization.PlanColumn;
-                    foreach (UILabel arrow in new[] { _hintMinus, _hintPlus })
-                    {
-                        PlannerCard.ApplyNativeFont(arrow, style.MenuHudFont ? GUIElements.me.hud.zone_name : _row.label_name);
-                        arrow.fontSize = (int)style.MenuCaptionFont; arrow.color = _minus.color;
-                        arrow.effectStyle = _minus.effectStyle; arrow.effectColor = _minus.effectColor; arrow.effectDistance = _minus.effectDistance;
-                    }
-                    UILabel[] help = { _hintMinus, _hintPlus, _caption };
-                    int[] widths = new int[help.Length]; int total = 12;
-                    for (int i = 0; i < help.Length; i++)
-                    {
-                        help[i].overflowMethod = UILabel.Overflow.ResizeFreely;
-                        widths[i] = Math.Max(1, (int)Math.Ceiling(help[i].printedSize.x) + 2); total += widths[i];
-                        help[i].overflowMethod = UILabel.Overflow.ClampContent;
-                    }
-                    int[] starts = PlannerLayout.RightAlignedStarts(widths, total / 2 + (int)style.MenuCaptionX, 6);
-                    int height = (int)style.MenuCaptionFont + 6, y = -28 + (int)style.MenuCaptionY;
-                    for (int i = 0; i < help.Length; i++)
-                    {
-                        help[i].depth = tips.depth + 1;
-                        help[i].SetAnchor(tips.gameObject, .5f, starts[i], .5f, y - height / 2, .5f, starts[i] + widths[i], .5f, y + (height + 1) / 2);
-                        help[i].updateAnchors = UIRect.AnchorUpdate.OnUpdate; help[i].ResetAndUpdateAnchors(); help[i].gameObject.SetActive(true);
-                    }
-                }
-                else HideHelp();
                 _quantity.text = "×" + quantity;
                 _minus.transform.localPosition = new Vector3(-63 + style.MenuMinusX, -28 + style.MenuMinusY, 0);
                 _plus.transform.localPosition = new Vector3(-13 + style.MenuPlusX, -28 + style.MenuPlusY, 0);
@@ -222,8 +188,7 @@ namespace CraftingPlanner
             _ingredients.leftAnchor.absolute += delta; _ingredients.rightAnchor.absolute += delta;
             _ingredients.ResetAndUpdateAnchors(); _row.label_name.ResetAndUpdateAnchors();
         }
-        private void HideHelp() { foreach (UILabel label in new[] { _caption, _hintMinus, _hintPlus }) if (label != null) label.gameObject.SetActive(false); }
-        private void Hide() { if (_column != null) _column.gameObject.SetActive(false); HideHelp(); }
+        private void Hide() { if (_column != null) _column.gameObject.SetActive(false); }
         internal static void RefreshAll()
         {
             for (int i = Rows.Count - 1; i >= 0; i--) { if (Rows[i] == null) Rows.RemoveAt(i); else Rows[i].Render(); }
@@ -244,7 +209,6 @@ namespace CraftingPlanner
         {
             Restore(); if (_ingredientLayout != null) _ingredientLayout.onReposition -= AfterIngredientLayout;
             if (_column != null) UnityEngine.Object.Destroy(_column.gameObject);
-            foreach (UILabel label in new[] { _caption, _hintMinus, _hintPlus }) if (label != null) UnityEngine.Object.Destroy(label.gameObject);
             Rows.Remove(this); if (Rows.Count == 0) UnsubscribeList();
         }
     }

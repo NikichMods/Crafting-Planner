@@ -49,7 +49,7 @@ class CardTests
             Require(!(bool)numericFont.Invoke(null, new object[] {true, true, true, true}), "Combined font switches must not cancel each other");
             Require((bool)numericFont.Invoke(null, new object[] {false, true, false, false}), "Alternative numeric font must follow the selected body profile");
             MethodInfo alignedStarts = layout.GetMethod("RightAlignedStarts", BindingFlags.Static | BindingFlags.NonPublic);
-            foreach (int[] widths in new[] {new[] {48,65,72,140}, new[] {86,104,99,244}, new[] {72,140}, new[] {140}})
+            foreach (int[] widths in new[] {new[] {48,65,72,140}, new[] {180,86,104,99,244}, new[] {86,104,99,244}, new[] {72,140}, new[] {140}})
             {
                 int[] starts = (int[])alignedStarts.Invoke(null, new object[] {widths, -7, 10});
                 Require(starts[widths.Length - 1] + widths[widths.Length - 1] == -7, "Localized row must retain its right edge");
@@ -73,7 +73,7 @@ class CardTests
             MethodInfo baseline = styleType.GetMethod("BaselineValue", BindingFlags.Static | BindingFlags.NonPublic);
             Require((float)baseline.Invoke(null, new object[] {"MenuX"}) == 17 && (float)baseline.Invoke(null, new object[] {"FeedbackY"}) == -5, "Individual resets must use the returned candidate baseline");
             Require(Math.Abs((float)baseline.Invoke(null, new object[] {"Opacity"}) - 39) < .001f && Math.Abs((float)baseline.Invoke(null, new object[] {"FooterShadowOpacity"}) - 80) < .001f, "Percent controls must reset in display units");
-            Require((float)baseline.Invoke(null, new object[] {"MenuCaptionFont"}) == 16 && (float)baseline.Invoke(null, new object[] {"ChestActionGap"}) == 10, "Caption and action-row resets must use their own baselines");
+            Require((float)baseline.Invoke(null, new object[] {"MenuCaptionFont"}) == 16 && (float)baseline.Invoke(null, new object[] {"ChestActionGap"}) == 10 && (float)baseline.Invoke(null, new object[] {"MenuActionGap"}) == 10, "Caption and action-row resets must use their own baselines");
             object style = Activator.CreateInstance(styleType, true);
             BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic;
             styleType.GetField("Right", fieldFlags).SetValue(style, 12.955f);

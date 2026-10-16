@@ -88,12 +88,18 @@ public class UILabel : UIWidget
     public Effect effectStyle { get; set; }
     public Color effectColor { get; set; }
     public Vector2 effectDistance { get; set; }
+    public bool applyGradient { get; set; }
+    public Color gradientTop { get; set; }
+    public Color gradientBottom { get; set; }
     public int maxLineCount { get; set; }
     public bool multiLine { get; set; }
     public Overflow overflowMethod { get; set; }
 }
 
-public class UIFont : MonoBehaviour { }
+public class UIFont : MonoBehaviour { public UIAtlas atlas { get; set; } }
+public class UISpriteData { }
+public class UIAtlas : MonoBehaviour { public UISpriteData GetSprite(string name) { return null; } }
+public class UISprite : UIBasicSprite { public UIAtlas atlas { get; set; } public string spriteName { get; set; } }
 public class UITable : MonoBehaviour
 {
     public delegate void OnReposition();

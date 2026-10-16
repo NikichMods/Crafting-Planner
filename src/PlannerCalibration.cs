@@ -124,10 +124,11 @@ namespace CraftingPlanner
             s.MenuHideBorder = GUILayout.Toggle(s.MenuHideBorder, "Убрать внутреннюю правую границу родных строк");
             s.IngredientsX = Slider(nameof(s.IngredientsX), "Ингредиенты меню: вправо", s.IngredientsX, -300, 300);
             s.IngredientsY = Slider(nameof(s.IngredientsY), "Ингредиенты меню: вверх", s.IngredientsY, -300, 300);
-            GUILayout.Label("Меню — подсказка < > Добавить в план внизу");
-            s.MenuCaptionX = Slider(nameof(s.MenuCaptionX), "Подпись: вправо", s.MenuCaptionX, -300, 300);
-            s.MenuCaptionY = Slider(nameof(s.MenuCaptionY), "Подпись: вверх", s.MenuCaptionY, -300, 300);
-            s.MenuCaptionFont = Slider(nameof(s.MenuCaptionFont), "Размер подписи", s.MenuCaptionFont, 10, 32);
+            GUILayout.Label("Меню — общий ряд управления внизу");
+            s.MenuCaptionX = Slider(nameof(s.MenuCaptionX), "Весь ряд: вправо", s.MenuCaptionX, -300, 300);
+            s.MenuCaptionY = Slider(nameof(s.MenuCaptionY), "Весь ряд: вверх", s.MenuCaptionY, -300, 300);
+            s.MenuCaptionFont = Slider(nameof(s.MenuCaptionFont), "Размер подписи Добавить в план", s.MenuCaptionFont, 10, 32);
+            s.MenuActionGap = Slider(nameof(s.MenuActionGap), "Одинаковый промежуток между действиями меню", s.MenuActionGap, 0, 40);
             GUILayout.Label("Иконки — независимо от текста и строк");
             s.Icon = Slider(nameof(s.Icon), "Размер изображений", s.Icon, 8, 80);
             s.IconX = Slider(nameof(s.IconX), "Иконки: сдвиг вправо", s.IconX, -60, 60);

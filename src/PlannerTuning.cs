@@ -9,7 +9,7 @@ namespace CraftingPlanner
         internal float TitleY = 0, FooterX = -22, FooterY = 3, FooterIconSize = 16, FooterShadowSize = 1, FooterShadowOpacity = .8f;
         internal bool FooterOutline = true;
         internal float ChestRowX = 0, ChestRowY = 0, ChestActionGap = 10;
-        internal float MenuCaptionX = 0, MenuCaptionY = 0, MenuCaptionFont = 16;
+        internal float MenuCaptionX = 0, MenuCaptionY = 0, MenuCaptionFont = 16, MenuActionGap = 10;
         private static float Offset(float value) { return Pixel(Bound(value, -300, 300)); }
         private void ClampTuning()
         {
@@ -21,7 +21,7 @@ namespace CraftingPlanner
             MenuShadowOpacity = (float)System.Math.Round(Bound(MenuShadowOpacity, 0, 1), 2);
             FooterShadowOpacity = (float)System.Math.Round(Bound(FooterShadowOpacity, 0, 1), 2);
             ChestRowX = Pixel(Bound(ChestRowX, -600, 600)); ChestRowY = Offset(ChestRowY); ChestActionGap = Pixel(Bound(ChestActionGap, 0, 40));
-            MenuCaptionX = Offset(MenuCaptionX); MenuCaptionY = Offset(MenuCaptionY); MenuCaptionFont = Pixel(Bound(MenuCaptionFont, 10, 32));
+            MenuCaptionX = Offset(MenuCaptionX); MenuCaptionY = Offset(MenuCaptionY); MenuCaptionFont = Pixel(Bound(MenuCaptionFont, 10, 32)); MenuActionGap = Pixel(Bound(MenuActionGap, 0, 40));
         }
         private string TuningRecord()
         {
@@ -32,7 +32,7 @@ namespace CraftingPlanner
                 " title_y=" + N(TitleY) + " footer_x=" + N(FooterX) + " footer_y=" + N(FooterY) + " footer_icon_size=" + N(FooterIconSize) +
                 " footer_outline=" + FooterOutline + " footer_shadow_size=" + N(FooterShadowSize) + " footer_shadow_opacity=" + N(FooterShadowOpacity) +
                 " chest_row_x=" + N(ChestRowX) + " chest_row_y=" + N(ChestRowY) + " chest_action_gap=" + N(ChestActionGap) +
-                " menu_caption_x=" + N(MenuCaptionX) + " menu_caption_y=" + N(MenuCaptionY) + " menu_caption_font=" + N(MenuCaptionFont);
+                " menu_caption_x=" + N(MenuCaptionX) + " menu_caption_y=" + N(MenuCaptionY) + " menu_caption_font=" + N(MenuCaptionFont) + " menu_action_gap=" + N(MenuActionGap);
         }
     }
 }
