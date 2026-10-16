@@ -470,3 +470,12 @@ Rejected: native presentation differs from mockup, missing HUD arrows/mouse clic
 Exact source 2af839b1a495007f46b7c8f889f98b6d3008a82c, installed SHA256 ad6e0c402775407fae1a9d3af882126905d0e473b69bd6f648e092771819767c. Preserved private log SHA256 69dc51e43353b8779a3b487bc9da366c9f4090242c6e1b1fe44957f135b99ff8 records loading 0.1.10 with no planner exception. User confirms HUD mouse arrows, visible hover, RS editing and chest mouse/keyboard/gamepad transfer for exercised cases. This is bounded acceptance of those actions, not stable acceptance.
 
 Construction first-open geometry is broken; a quantity refresh partially repairs it. Six screenshots are preserved privately with the log. Chest result is visible but its position/spacing needs calibration. Recovered F2 settings from exports at log lines 2272/4004/4005/4049 are recorded in PRODUCT_SCOPE.md; preserve the original fractional measurements separately from rounded 0.1.11 defaults. New title/banner, font groups, icon independence and calibration controls follow the explicit user return. Inventory-tab and full multilingual visual acceptance are not inferred from this return.
+
+## 0.1.11 installed correction candidate — 2026-10-16
+
+- Exact source: 7749d701a84fa08f75ccc297ab994d6403af28f8, dev/0.1.11.
+- Successful CI: 38837166111; artifact 12019039672. ZIP SHA256 dcc201635dfcea19611b3a697a27aa80886bdc89af09e6a52edab5c489427a6d.
+- Numbered/installed canonical DLL SHA256: 19401a0e4111e13dc570ed6399f0863e348660fa8e8a09ef32a1003a7472e5f3, binary version 0.1.11.0, calibration enabled.
+- Both native-reference configurations compile. Clean hosted stub build, identity, state/geometry/font-policy/integer-calibration/localization coverage and reference-exclusion gates pass. Exact downloaded DLL policy tests pass. Dimensions/scale normalization is idempotent; quantity-only font selection leaves material numbers unchanged; icon visual size does not determine text row/card-width policy.
+- Installed while the game was closed, with previous 0.1.10 DLL/log preserved privately. Runtime and visual acceptance remain pending.
+- Requested check: first-open construction before edits, then scroll/reopen; HUD/gamepad and native row click ownership; independent icon tuning with stable text; font groups and title/footer placement; chest feedback calibration/export; location restoration and resolution-change stability. No all-language visual or automatic placement-decrement acceptance is inferred.
