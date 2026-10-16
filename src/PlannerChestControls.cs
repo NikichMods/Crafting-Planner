@@ -10,6 +10,10 @@ namespace CraftingPlanner
     {
         private static UILabel _button;
         private static UILabel _label;
+        private static UILabel _nativeTips;
+        private static UILabel _tipsPreview;
+        private static string _lastGamepadTips = "";
+        private static int _tipsLeft, _tipsRight;
         private static bool _failed;
         private static readonly List<GameObject> Feedback = new List<GameObject>();
         private static List<KeyValuePair<string, int>> _moved = new List<KeyValuePair<string, int>>();
@@ -34,9 +38,26 @@ namespace CraftingPlanner
             {
                 GUIElements gui = GUIElements.me;
                 if (gui == null || gui.chest == null || !gui.chest.is_shown_and_top || !Planner.HasGoals)
-                { if (_button != null) _button.gameObject.SetActive(false); return; }
+                { RestoreTips(); if (_tipsPreview != null) _tipsPreview.gameObject.SetActive(false); if (_button != null) _button.gameObject.SetActive(false); return; }
                 UILabel native = gui.chest.button_tips != null ? gui.chest.button_tips.label : null;
                 if (native == null) return;
+                if (_nativeTips != native)
+                {
+                    RestoreTips(); _nativeTips = native; _tipsLeft = native.leftAnchor.absolute; _tipsRight = native.rightAnchor.absolute;
+                }
+                PlannerStyle style = PlannerStyle.Current;
+                native.leftAnchor.absolute = _tipsLeft + (int)style.ChestTipsX; native.rightAnchor.absolute = _tipsRight + (int)style.ChestTipsX;
+                native.ResetAndUpdateAnchors();
+                bool preview = PlannerCalibration.IsOpen && !string.IsNullOrEmpty(_lastGamepadTips) && (!native.gameObject.activeInHierarchy || string.IsNullOrEmpty(native.text));
+                if (preview)
+                {
+                    if (_tipsPreview == null) _tipsPreview = Child("native-tips-preview", gui.chest.transform, native.gameObject.layer).AddComponent<UILabel>();
+                    PlannerCard.ApplyNativeFont(_tipsPreview, native); _tipsPreview.color = native.color; _tipsPreview.depth = native.depth + 1;
+                    _tipsPreview.pivot = UIWidget.Pivot.Center; _tipsPreview.alignment = native.alignment; _tipsPreview.maxLineCount = 1;
+                    _tipsPreview.SetAnchor(native.gameObject, 0, 0, 0, 0, 1, 0, 1, 0); _tipsPreview.ResetAndUpdateAnchors();
+                    _tipsPreview.text = _lastGamepadTips; _tipsPreview.gameObject.SetActive(true);
+                }
+                else if (_tipsPreview != null) _tipsPreview.gameObject.SetActive(false);
                 if (_button == null)
                 {
                     Feedback.Clear();
@@ -59,7 +80,8 @@ namespace CraftingPlanner
                 int width = Math.Max(100, (int)Math.Ceiling(_label.printedSize.x) + 20);
                 int height = Math.Max(28, (int)Math.Ceiling(_label.printedSize.y) + 8);
                 _label.overflowMethod = UILabel.Overflow.ClampContent;
-                _button.SetAnchor(native.gameObject, 0, -width - 8, .5f, -height / 2, 0, -8, .5f, height / 2);
+                int x = (int)(style.TakeX - style.ChestTipsX), y = (int)style.TakeY;
+                _button.SetAnchor(native.gameObject, 0, -width - 8 + x, .5f, -height / 2 + y, 0, -8 + x, .5f, height / 2 + y);
                 _button.ResetAndUpdateAnchors();
                 BoxCollider2D collider = _button.GetComponent<BoxCollider2D>(); collider.size = new Vector2(_button.width, _button.height);
                 _button.gameObject.SetActive(true);
@@ -68,6 +90,11 @@ namespace CraftingPlanner
             }
             catch (Exception ex) { _failed = true; Destroy(); Planner.LogLine("event=storage_controls result=disabled_for_session error=" + ex); }
         }
+        internal static void ObserveNativeTips(ChestGUI chest)
+        {
+            if (!PlannerCalibration.IsOpen && LazyInput.gamepad_active && chest.is_shown_and_top && chest.button_tips != null && chest.button_tips.label != null && !string.IsNullOrEmpty(chest.button_tips.label.text))
+                _lastGamepadTips = chest.button_tips.label.text;
+        }
         private static void DrawFeedback(UILabel native, UI2DSprite template)
         {
             foreach (GameObject go in Feedback) if (go != null) { go.SetActive(false); UnityEngine.Object.Destroy(go); }
@@ -75,7 +102,7 @@ namespace CraftingPlanner
             Color green = new Color(.533f, .843f, .486f), red = new Color(.894f, .467f, .400f);
             PlannerStyle style = PlannerStyle.Current;
             int line = Math.Max(22, native.fontSize + 4) + (int)style.FeedbackLineGap;
-            int left = -_button.width / 2 + (int)style.FeedbackX, x = left, y = -_button.height / 2 + (int)style.FeedbackY;
+            int left = -_button.width / 2 + (int)(style.FeedbackX - style.TakeX), x = left, y = -_button.height / 2 + (int)(style.FeedbackY - style.TakeY);
             int itemStep = 48 + (int)style.FeedbackGap;
             if (_moved.Count > 0)
             {
@@ -108,8 +135,13 @@ namespace CraftingPlanner
             }
         }
         internal static void Show(List<KeyValuePair<string, int>> moved, TransferNotice notice) { _moved = moved; _notice = notice; Refresh(); }
-        internal static void Clear() { _moved.Clear(); _notice = TransferNotice.None; if (_button != null) _button.gameObject.SetActive(false); }
-        internal static void Destroy() { if (_button != null) { _button.gameObject.SetActive(false); UnityEngine.Object.Destroy(_button.gameObject); } _button = null; Feedback.Clear(); }
+        private static void RestoreTips()
+        {
+            if (_nativeTips != null) { _nativeTips.leftAnchor.absolute = _tipsLeft; _nativeTips.rightAnchor.absolute = _tipsRight; _nativeTips.ResetAndUpdateAnchors(); }
+            _nativeTips = null;
+        }
+        internal static void Clear() { RestoreTips(); _lastGamepadTips = ""; if (_tipsPreview != null) _tipsPreview.gameObject.SetActive(false); _moved.Clear(); _notice = TransferNotice.None; if (_button != null) _button.gameObject.SetActive(false); }
+        internal static void Destroy() { RestoreTips(); if (_tipsPreview != null) UnityEngine.Object.Destroy(_tipsPreview.gameObject); _tipsPreview = null; if (_button != null) { _button.gameObject.SetActive(false); UnityEngine.Object.Destroy(_button.gameObject); } _button = null; Feedback.Clear(); }
     }
     [HarmonyPatch(typeof(BaseGUI), "Update")]
     internal static class PlannerChestKeyboardPatch
@@ -117,6 +149,7 @@ namespace CraftingPlanner
         private static void Postfix(BaseGUI __instance)
         {
             ChestGUI chest = __instance as ChestGUI;
+            if (chest != null) PlannerChestControls.ObserveNativeTips(chest);
             if (chest == null || !chest.is_shown_and_top || LazyInput.gamepad_active || PlannerCalibration.IsOpen || !LazyInput.GetKeyDown(GameKey.Work)) return;
             if (Planner.TakeNeeded(chest, "keyboard_storage_work")) LazyInput.WaitForRelease(GameKey.Work);
         }

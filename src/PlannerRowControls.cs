@@ -14,7 +14,10 @@ namespace CraftingPlanner
         private CraftItemGUI _row;
         private UIWidget _ingredients;
         private UITable _ingredientLayout;
-        private int _left, _right;
+        private int _left, _right, _top, _bottom;
+        private UIBasicSprite _background;
+        private UIBasicSprite.AdvancedType _rightBorder;
+        private bool _borderHidden;
         private bool _shifted;
         private UIWidget _column;
         private UILabel _minus, _plus;
@@ -40,8 +43,10 @@ namespace CraftingPlanner
         }
         internal void Restore()
         {
+            RestoreBorder();
             if (!_shifted || _ingredients == null) return;
             _ingredients.leftAnchor.absolute = _left; _ingredients.rightAnchor.absolute = _right;
+            _ingredients.topAnchor.absolute = _top; _ingredients.bottomAnchor.absolute = _bottom;
             _ingredients.ResetAndUpdateAnchors();
             if (_row != null && _row.label_name != null) _row.label_name.ResetAndUpdateAnchors();
             _shifted = false;
@@ -87,6 +92,7 @@ namespace CraftingPlanner
                     _ingredients = _row.ingredients_table.GetComponent<UIWidget>();
                     if (_ingredients == null) throw new InvalidOperationException("Native ingredient anchor widget unavailable");
                     _left = _ingredients.leftAnchor.absolute; _right = _ingredients.rightAnchor.absolute;
+                    _top = _ingredients.topAnchor.absolute; _bottom = _ingredients.bottomAnchor.absolute;
                     _ingredientLayout = _row.ingredients_table;
                     _ingredientLayout.onReposition += AfterIngredientLayout;
                     UITable list = GUIElements.me.craft.craft_list_grid;
@@ -112,19 +118,28 @@ namespace CraftingPlanner
                     _column = Child("CraftingPlannerColumn", panel.transform).AddComponent<UIWidget>();
                     _column.pivot = UIWidget.Pivot.TopRight;
                     _column.updateAnchors = UIRect.AnchorUpdate.OnUpdate;
-                    _column.SetAnchor(_row.selection_frame.gameObject, 1, -Reserve, 0, 4, 1, -4, 1, -5);
                     _quantity = Text("", _column.transform, -38, -28, PlannerLayout.QuantityWidth, 22);
                     _quantity.overflowMethod = UILabel.Overflow.ShrinkContent;
                     _minus = Arrow(-1, -63); _plus = Arrow(1, -13);
                 }
+                PlannerStyle style = PlannerStyle.Current;
+                _column.SetAnchor(_row.selection_frame.gameObject, 1, -Reserve + (int)style.MenuX, 0, 4 + (int)style.MenuY, 1, -4 + (int)style.MenuX, 1, -5 + (int)style.MenuY);
                 _column.ResetAndUpdateAnchors();
                 _ingredients.ResetAndUpdateAnchors();
                 _row.ingredients_table.Reposition();
                 AlignIngredients();
+                _ingredients.leftAnchor.absolute += (int)style.IngredientsX; _ingredients.rightAnchor.absolute += (int)style.IngredientsX;
+                _ingredients.topAnchor.absolute = _top + (int)style.IngredientsY; _ingredients.bottomAnchor.absolute = _bottom + (int)style.IngredientsY;
+                _ingredients.ResetAndUpdateAnchors(); _row.label_name.ResetAndUpdateAnchors();
                 int quantity = Planner.QuantityFor(_row.current_craft);
                 foreach (UILabel label in _texts) PlannerCard.ApplyNativeFont(label, _row.label_name);
-                PlannerCard.ApplyQuantityFont(_quantity, _row.label_name);
-                PlannerCard.ApplyQuantityFont(_minus, _row.label_name); PlannerCard.ApplyQuantityFont(_plus, _row.label_name);
+                foreach (UILabel label in new[] { _quantity, _minus, _plus })
+                {
+                    PlannerCard.ApplyNativeFont(label, style.MenuHudFont ? GUIElements.me.hud.zone_name : _row.label_name);
+                    label.fontSize = (int)style.MenuFont; label.effectStyle = style.MenuOutline ? UILabel.Effect.Outline : UILabel.Effect.Shadow;
+                    label.effectColor = new Color(.06f, .06f, .05f, style.MenuShadowOpacity); label.effectDistance = new Vector2(style.MenuShadowSize, style.MenuShadowSize);
+                }
+                _quantity.transform.localPosition = new Vector3(-38 + style.MenuQuantityX, -28 + style.MenuQuantityY, 0);
                 var items = GUIElements.me.craft.GetItemsList();
                 UILabel title = GUIElements.me.craft.object_info != null ? GUIElements.me.craft.object_info.text_header : null;
                 bool first = items != null && items.Find(Eligible) == _row;
@@ -140,8 +155,15 @@ namespace CraftingPlanner
                 }
                 else if (_caption != null) _caption.gameObject.SetActive(false);
                 _quantity.text = "×" + quantity;
-                _minus.transform.localPosition = new Vector3(-63, -28, 0);
-                _plus.transform.localPosition = new Vector3(-13, -28, 0);
+                _minus.transform.localPosition = new Vector3(-63 + style.MenuMinusX, -28 + style.MenuMinusY, 0);
+                _plus.transform.localPosition = new Vector3(-13 + style.MenuPlusX, -28 + style.MenuPlusY, 0);
+                if (_background == null && _row.selection_frame.leftAnchor.target != null) _background = _row.selection_frame.leftAnchor.target.GetComponent<UIBasicSprite>();
+                if (style.MenuHideBorder && _background != null && _background.type == UIBasicSprite.Type.Advanced)
+                {
+                    if (!_borderHidden) { _rightBorder = _background.rightType; _borderHidden = true; }
+                    _background.rightType = UIBasicSprite.AdvancedType.Invisible; _background.MarkAsChanged();
+                }
+                else RestoreBorder();
                 _plus.gameObject.SetActive(quantity == 0 || Planner.IsRepeatable(_row.current_craft));
                 _column.gameObject.SetActive(true);
                 UIEventListener.Get(_minus.gameObject).onHover(_minus.gameObject, UICamera.hoveredObject == _minus.gameObject);
@@ -153,6 +175,11 @@ namespace CraftingPlanner
                 Planner.LogLine("event=plan_column result=disabled_for_row error=" + ex);
             }
             finally { _rendering = false; }
+        }
+        private void RestoreBorder()
+        {
+            if (_borderHidden && _background != null) { _background.rightType = _rightBorder; _background.MarkAsChanged(); }
+            _borderHidden = false;
         }
         private void AfterIngredientLayout() { Render(); }
         private static void UnsubscribeList() { if (_nativeList != null) _nativeList.onReposition -= RefreshAll; _nativeList = null; }

@@ -3,18 +3,18 @@ using System;
 using System.Globalization;
 namespace CraftingPlanner
 {
-    internal sealed class PlannerStyle
+    internal sealed partial class PlannerStyle
     {
         internal float Right = 13, Top = 40, Width = 286, Scale = .65f;
-        internal float Font = 24, Icon = 29, Row = 18, Padding = 4;
-        internal float Column = 70, ColumnGap = 5, TitleGap = 0, FooterGap = 9;
-        internal float Opacity = 0.40f, TextOpacity = 1, ShadowRadius = 34, ShadowFeather = 28;
-        internal float GoalsOffset = 13, MaterialsGap = 13, ColumnInset = 19;
+        internal float Font = 24, Icon = 46, Row = 18, Padding = 12;
+        internal float Column = 67, ColumnGap = 5, TitleGap = 0, FooterGap = 9;
+        internal float Opacity = 0.35f, TextOpacity = 1, ShadowRadius = 34, ShadowFeather = 28;
+        internal float GoalsOffset = 0, MaterialsGap = 13, ColumnInset = 20;
         internal bool CraftFont = true, Outline = true;
-        internal bool AlternateNumbers = false, AlternateQuantity = false, TitleCraftFont = false, FooterCraftFont = false;
-        internal float TitleFont = 16, FooterFont = 24;
-        internal float IconX, IconY, GoalIconSpacing, MaterialIconSpacing;
-        internal float FeedbackX = 0, FeedbackY = -12, FeedbackGap = 6, FeedbackLineGap = 4;
+        internal bool AlternateNumbers = false, AlternateQuantity = true, TitleCraftFont = false, FooterCraftFont = true;
+        internal float TitleFont = 16, FooterFont = 20;
+        internal float IconX = -3, IconY, GoalIconSpacing, MaterialIconSpacing;
+        internal float FeedbackX = 11, FeedbackY = -5, FeedbackGap = 0, FeedbackLineGap = 4;
         internal static PlannerStyle Current = new PlannerStyle();
         internal void Clamp()
         {
@@ -28,7 +28,7 @@ namespace CraftingPlanner
             TitleFont = Bound(TitleFont, 10, 32); FooterFont = Bound(FooterFont, 10, 32);
             IconX = Bound(IconX, -60, 60); IconY = Bound(IconY, -60, 60);
             GoalIconSpacing = Bound(GoalIconSpacing, -20, 20); MaterialIconSpacing = Bound(MaterialIconSpacing, -20, 20);
-            FeedbackX = Bound(FeedbackX, -300, 500); FeedbackY = Bound(FeedbackY, -150, -4);
+            FeedbackX = Bound(FeedbackX, -600, 1000); FeedbackY = Bound(FeedbackY, -300, 150);
             FeedbackGap = Bound(FeedbackGap, 0, 40); FeedbackLineGap = Bound(FeedbackLineGap, 0, 24);
             Right = Pixel(Right); Top = Pixel(Top); Width = Pixel(Width); Font = Pixel(Font); Icon = Pixel(Icon); Row = Pixel(Row);
             Padding = Pixel(Padding); Column = Pixel(Column); ColumnGap = Pixel(ColumnGap); TitleGap = Pixel(TitleGap); FooterGap = Pixel(FooterGap);
@@ -37,8 +37,14 @@ namespace CraftingPlanner
             GoalIconSpacing = Pixel(GoalIconSpacing); MaterialIconSpacing = Pixel(MaterialIconSpacing);
             FeedbackX = Pixel(FeedbackX); FeedbackY = Pixel(FeedbackY); FeedbackGap = Pixel(FeedbackGap); FeedbackLineGap = Pixel(FeedbackLineGap);
             Opacity = (float)Math.Round(Opacity, 2); TextOpacity = (float)Math.Round(TextOpacity, 2);
+            ClampTuning();
         }
         private static float Pixel(float value) { return (float)Math.Round(value, MidpointRounding.AwayFromZero); }
+        internal static float BaselineValue(string field)
+        {
+            float value = (float)typeof(PlannerStyle).GetField(field, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(new PlannerStyle());
+            return field == "Opacity" || field == "TextOpacity" || field.EndsWith("ShadowOpacity", StringComparison.Ordinal) ? value * 100 : value;
+        }
         private static float Bound(float value, float min, float max)
         { return float.IsNaN(value) || float.IsInfinity(value) ? min : Math.Max(min, Math.Min(max, value)); }
         internal string Record()
@@ -51,7 +57,7 @@ namespace CraftingPlanner
                 " alternate_numbers=" + AlternateNumbers + " alternate_quantity=" + AlternateQuantity + " title_craft_font=" + TitleCraftFont + " title_font=" + N(TitleFont) +
                 " footer_craft_font=" + FooterCraftFont + " footer_font=" + N(FooterFont) + " icon_x=" + N(IconX) + " icon_y=" + N(IconY) +
                 " goal_icon_spacing=" + N(GoalIconSpacing) + " material_icon_spacing=" + N(MaterialIconSpacing) +
-                " feedback_x=" + N(FeedbackX) + " feedback_y=" + N(FeedbackY) + " feedback_gap=" + N(FeedbackGap) + " feedback_line_gap=" + N(FeedbackLineGap);
+                " feedback_x=" + N(FeedbackX) + " feedback_y=" + N(FeedbackY) + " feedback_gap=" + N(FeedbackGap) + " feedback_line_gap=" + N(FeedbackLineGap) + TuningRecord();
         }
         private static string N(float value) { return value.ToString("0.###", CultureInfo.InvariantCulture); }
     }

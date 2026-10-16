@@ -1,4 +1,4 @@
-# Crafting Planner
+# Building Planner
 
 A vanilla-friendly Graveyard Keeper 1.407 mod project for pinning multiple construction/world projects and gathering exactly the materials still needed.
 

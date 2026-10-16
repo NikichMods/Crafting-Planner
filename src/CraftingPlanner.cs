@@ -13,8 +13,8 @@ namespace CraftingPlanner
     public sealed class Plugin : BaseUnityPlugin
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
-        public const string PluginName = "Crafting Planner";
-        public const string PluginVersion = "0.1.11";
+        public const string PluginName = "Building Planner";
+        public const string PluginVersion = "0.1.12";
 
         private Harmony _harmony;
 
@@ -478,7 +478,7 @@ namespace CraftingPlanner
     {
         private static readonly Dictionary<string, string[]> Texts = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
         {
-            { "en", new[] { "Plan", "Have", "Need", "Missing", "Take needed", "Remove one", "Add one", "Only missing materials from this chest; limited by carrying capacity." } },
+            { "en", new[] { "Building Planner", "Have", "Need", "Missing", "Take needed", "Remove one", "Add one", "Only missing materials from this chest; limited by carrying capacity." } },
             { "de", new[] { "Plan", "Da", "Bedarf", "Fehlt", "Benötigtes nehmen", "Eins entfernen", "Eins hinzufügen", "Nur Fehlendes aus dieser Truhe, soweit Platz ist." } },
             { "fr", new[] { "Plan", "En sac", "Requis", "Manque", "Prendre le nécessaire", "Retirer 1", "Ajouter 1", "Matériaux manquants de ce coffre, selon la place disponible." } },
             { "pt-br", new[] { "Plano", "Tenho", "Preciso", "Falta", "Pegar o necessário", "Remover 1", "Adicionar 1", "Somente o que falta deste baú, conforme o espaço disponível." } },

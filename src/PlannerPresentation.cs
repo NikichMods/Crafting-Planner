@@ -26,7 +26,8 @@ namespace CraftingPlanner
         private Texture2D _backTexture;
         private int _backWidth, _backHeight, _bodyTop;
         private float _backRadius, _backFeather;
-        private readonly UILabel _footer;
+        private readonly UILabel _footer, _footerSymbol;
+        private string _stickSymbol = "(RS)", _backSymbol = "(B)";
         private readonly List<UILabel> _labels = new List<UILabel>();
         private readonly List<UI2DSprite> _icons = new List<UI2DSprite>();
         private readonly List<UILabel> _arrows = new List<UILabel>();
@@ -94,6 +95,7 @@ namespace CraftingPlanner
             _measure = Child("measurement", _root.transform).AddComponent<UILabel>();
             _measure.gameObject.SetActive(false);
             _footer = Child("control-hint", _root.transform).AddComponent<UILabel>();
+            _footerSymbol = Child("control-symbol", _root.transform).AddComponent<UILabel>();
         }
         private GameObject Child(string name, Transform parent)
         {
@@ -193,7 +195,7 @@ namespace CraftingPlanner
             _titleBack.ResetAndUpdateAnchors();
             Configure(_title, FontFor(Style.TitleCraftFont), _titleBack.width - 8, Math.Max(_titleBack.height, (int)Style.TitleFont + 4), false, false);
             _title.fontSize = (int)Style.TitleFont; _title.alignment = NGUIText.Alignment.Center; _title.pivot = UIWidget.Pivot.Center;
-            _title.transform.localPosition = Vector3.zero; _title.text = PlannerLocalization.Plan;
+            _title.transform.localPosition = new Vector3(0, Style.TitleY, 0); _title.text = PlannerLocalization.Plan;
         }
         private void Place()
         {
@@ -344,27 +346,34 @@ namespace CraftingPlanner
         }
         private void Footer(PlannerView view, int line)
         {
-            bool build = view == PlannerView.Build, chest = view == PlannerView.Chest;
-            UILabel template = _fontTemplate;
-            BaseGUI native = chest ? (BaseGUI)GUIElements.me.chest : GUIElements.me.craft;
+            bool preview = PlannerCalibration.IsOpen;
+            bool show = view == PlannerView.Hud && (preview || LazyInput.gamepad_active && PlannerEditing.Available);
+            _footer.gameObject.SetActive(show); _footerSymbol.gameObject.SetActive(show);
+            if (!show) return;
+            bool done = preview ? PlannerCalibration.PreviewDone : PlannerEditing.Active;
+            UILabel template = _fontTemplate; BaseGUI native = GUIElements.me.craft;
             if (native != null && native.button_tips != null && native.button_tips.label != null) template = native.button_tips.label;
-            Configure(_footer, template, _width, line, false, true);
+            if (!preview)
+            {
+                string stick = GameKeyTip.RightStick(true, true, false, "").ToString(), back = GameKeyTip.Get(GameKey.Back, "", true, true, false, false);
+                if (!string.IsNullOrEmpty(stick)) _stickSymbol = stick.Trim(); if (!string.IsNullOrEmpty(back)) _backSymbol = back.Trim();
+            }
+            Configure(_footer, template, _width, line, false, false);
             if (Style.FooterCraftFont) ApplyNativeFont(_footer, FontFor(true));
-            _footer.fontSize = (int)Style.FooterFont; _footer.height = Math.Max(line, (int)Style.FooterFont + 4);
-            _footer.alignment = NGUIText.Alignment.Right;
-            _footer.transform.localPosition = new Vector3(-_width, -_height - Style.FooterGap, 0);
-            if (build)
+            _footer.fontSize = (int)Style.FooterFont; _footer.overflowMethod = UILabel.Overflow.ResizeFreely;
+            _footer.pivot = UIWidget.Pivot.TopRight; _footer.alignment = NGUIText.Alignment.Right;
+            _footer.text = done ? PlannerLocalization.FinishEditing : PlannerLocalization.EditPlan;
+            float top = -_height - Style.FooterGap + Style.FooterY;
+            _footer.transform.localPosition = new Vector3(Style.FooterX, top, 0);
+            Configure(_footerSymbol, template, 48, 48, false, false);
+            _footerSymbol.fontSize = (int)Style.FooterIconSize; _footerSymbol.overflowMethod = UILabel.Overflow.ResizeFreely;
+            _footerSymbol.pivot = UIWidget.Pivot.TopRight; _footerSymbol.text = done ? _backSymbol : _stickSymbol;
+            _footerSymbol.transform.localPosition = new Vector3(Style.FooterX - (float)Math.Ceiling(_footer.printedSize.x) - 6, top + (_footerSymbol.printedSize.y - _footer.printedSize.y) / 2, 0);
+            foreach (UILabel label in new[] { _footer, _footerSymbol })
             {
-                _footer.text = "";
+                label.effectStyle = Style.FooterOutline ? UILabel.Effect.Outline : UILabel.Effect.Shadow;
+                label.effectColor = new Color(.06f, .06f, .05f, Style.FooterShadowOpacity); label.effectDistance = new Vector2(Style.FooterShadowSize, Style.FooterShadowSize);
             }
-            else if (chest)
-            {
-                _footer.text = ""; // Storage action and feedback live beside the native chest controls.
-            }
-            else if (view == PlannerView.Hud && LazyInput.gamepad_active && PlannerEditing.Available)
-                _footer.text = PlannerEditing.Active ? GameKeyTip.Get(GameKey.Back, PlannerLocalization.FinishEditing, true, true, false, false) : GameKeyTip.RightStick(true, true, false, PlannerLocalization.EditPlan).ToString();
-            else _footer.text = "";
-            _footer.gameObject.SetActive(!string.IsNullOrEmpty(_footer.text));
         }
         internal static void ApplyNativeFont(UILabel label, UILabel template)
         {
@@ -401,7 +410,7 @@ namespace CraftingPlanner
         }
         internal void Export(Camera camera)
         {
-            Planner.LogLine("event=calibration_export format=4 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
+            Planner.LogLine("event=calibration_export format=5 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
                 " actual_width=" + _width + " actual_height=" + _height + " screen=" + Screen.width + "x" + Screen.height +
                 " card_px=" + Rectangle(_root, camera) + " back_px=" + Rectangle(_back, camera) +
                 " font_asset=" + (_measure.bitmapFont != null ? _measure.bitmapFont.name : "dynamic") + " arrows=" + _arrowCursor + " focus_rows=" + _focusCursor + " language=" + PlannerLocalization.CurrentLanguage);

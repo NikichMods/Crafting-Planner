@@ -49,6 +49,9 @@ class CardTests
             Require(!(bool)numericFont.Invoke(null, new object[] {true, true, true, true}), "Combined font switches must not cancel each other");
             Require((bool)numericFont.Invoke(null, new object[] {false, true, false, false}), "Alternative numeric font must follow the selected body profile");
             Type styleType = candidate.GetType("CraftingPlanner.PlannerStyle", true);
+            MethodInfo baseline = styleType.GetMethod("BaselineValue", BindingFlags.Static | BindingFlags.NonPublic);
+            Require((float)baseline.Invoke(null, new object[] {"MenuX"}) == 0 && (float)baseline.Invoke(null, new object[] {"FeedbackY"}) == -5, "Individual resets must use the returned candidate baseline");
+            Require(Math.Abs((float)baseline.Invoke(null, new object[] {"Opacity"}) - 35) < .001f && Math.Abs((float)baseline.Invoke(null, new object[] {"FooterShadowOpacity"}) - 80) < .001f, "Percent controls must reset in display units");
             object style = Activator.CreateInstance(styleType, true);
             BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic;
             styleType.GetField("Right", fieldFlags).SetValue(style, 12.955f);
@@ -75,6 +78,7 @@ class CardTests
             IDictionary texts = (IDictionary)localization.GetField("Texts", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
             string[] languages = {"en","de","fr","pt-br","es","ru","it","pl","ja","zh-cn","ko"};
             Require(texts.Count == languages.Length, "Host language coverage changed");
+            Require(((string[])texts["en"])[0] == "Building Planner", "English HUD title must match the adopted product name");
             foreach (string language in languages)
             {
                 string[] labels = (string[])texts[language];

@@ -1,4 +1,4 @@
-# Crafting Planner — Working Contract
+# Building Planner — Working Contract
 
 This repository follows the canonical global development rules in `NikichMods/DevRules`. Start with `WORKING_RULES.md`; local checkout work also follows `CODEX_WORKFLOW.md`.
 
@@ -13,7 +13,7 @@ This file contains only project-specific additions, verified constraints, and ex
 
 ## Project identity
 
-- Project: **Crafting Planner**
+- Project: **Building Planner** (stable technical identity: CraftingPlanner)
 - Repository: `NikichMods/Crafting-Planner`
 - Game/runtime: **Graveyard Keeper 1.407**, PC, BepInEx/Harmony
 - Purpose: replace the Recipe Pin concept with a vanilla-friendly multi-project construction/material planner without remote crafting or automatic logistics.

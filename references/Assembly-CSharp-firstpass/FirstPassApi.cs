@@ -128,7 +128,13 @@ public static class NGUIText
     public enum Alignment { Automatic = 0, Left = 1, Center = 2, Right = 3, Justified = 4 }
     public enum SymbolStyle { None = 0, Normal = 1, Colored = 2, NoEffect = 3 }
 }
-public class UIBasicSprite : UIWidget { }
+public class UIBasicSprite : UIWidget
+{
+    public enum Type { Simple=0, Sliced=1, Tiled=2, Filled=3, Advanced=4 }
+    public enum AdvancedType { Invisible=0, Sliced=1, Tiled=2 }
+    public Type type { get; set; }
+    public AdvancedType rightType;
+}
 public class UITexture : UIBasicSprite { public Texture mainTexture { get; set; } }
 public class UI2DSprite : UIBasicSprite
 {
