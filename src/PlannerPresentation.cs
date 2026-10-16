@@ -27,7 +27,14 @@ namespace CraftingPlanner
         private readonly List<UILabel> _arrows = new List<UILabel>();
         private readonly List<UITexture> _focusRows = new List<UITexture>();
         private int _focusCursor;
-        private UILabel FontTemplate { get { return Style.CraftFont && GUIElements.me.craft.craft_item_prefab.label_name != null ? GUIElements.me.craft.craft_item_prefab.label_name : _fontTemplate; } }
+        private UILabel FontTemplate
+        {
+            get
+            {
+                GUIElements gui = GUIElements.me;
+                return Style.CraftFont && gui != null && gui.craft != null && gui.craft.craft_item_prefab != null && gui.craft.craft_item_prefab.label_name != null ? gui.craft.craft_item_prefab.label_name : _fontTemplate;
+            }
+        }
         private int _arrowCursor;
         private int _labelCursor, _iconCursor, _width, _height;
         private bool _iconWarning;
@@ -339,7 +346,7 @@ namespace CraftingPlanner
             Planner.LogLine("event=calibration_export format=3 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
                 " actual_width=" + _width + " actual_height=" + _height + " screen=" + Screen.width + "x" + Screen.height +
                 " card_px=" + Rectangle(_root, camera) + " back_px=" + Rectangle(_back, camera) +
-                " font_asset=" + (FontTemplate.bitmapFont != null ? FontTemplate.bitmapFont.name : "dynamic") + " arrows=" + _arrowCursor + " focus_rows=" + _focusCursor + " language=" + PlannerLocalization.CurrentLanguage);
+                " font_asset=" + (_measure.bitmapFont != null ? _measure.bitmapFont.name : "dynamic") + " arrows=" + _arrowCursor + " focus_rows=" + _focusCursor + " language=" + PlannerLocalization.CurrentLanguage);
         }
         private static string Rectangle(UIWidget widget, Camera camera)
         {

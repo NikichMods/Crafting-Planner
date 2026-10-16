@@ -52,7 +52,7 @@ namespace CraftingPlanner
         {
             UILabel label = Child("text", parent).AddComponent<UILabel>();
             PlannerCard.ApplyNativeFont(label, _row.label_name);
-            label.fontSize = 13; label.overflowMethod = UILabel.Overflow.ClampContent; label.maxLineCount = 1;
+            label.overflowMethod = UILabel.Overflow.ClampContent; label.maxLineCount = 1;
             label.pivot = UIWidget.Pivot.Center; label.alignment = NGUIText.Alignment.Center;
             label.width = width; label.height = height; label.depth = _row.selection_frame.depth + 3;
             label.color = new Color(.75f, .74f, .68f); label.effectStyle = UILabel.Effect.Shadow;
@@ -104,10 +104,10 @@ namespace CraftingPlanner
                 _column.ResetAndUpdateAnchors();
                 AlignIngredients();
                 int quantity = Planner.QuantityFor(_row.current_craft);
-                foreach (UILabel label in _texts) { PlannerCard.ApplyNativeFont(label, _row.label_name); label.fontSize = 13; }
+                foreach (UILabel label in _texts) PlannerCard.ApplyNativeFont(label, _row.label_name);
                 var items = GUIElements.me.craft.GetItemsList();
                 UILabel title = GUIElements.me.craft.object_info != null ? GUIElements.me.craft.object_info.text_header : null;
-                bool first = items != null && items.Count > 0 && items[0] == _row;
+                bool first = items != null && items.Find(Eligible) == _row;
                 if (title != null && first)
                 {
                     if (_caption == null) _caption = Text(PlannerLocalization.PlanColumn, title.transform.parent, 0, 0, 72, 22);
