@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Building Planner";
-        public const string PluginVersion = "0.1.12";
+        public const string PluginVersion = "0.1.13";
 
         private Harmony _harmony;
 
@@ -500,17 +500,17 @@ namespace CraftingPlanner
         internal static string CollectHelp { get { return Current[7]; } }
         private static readonly Dictionary<string, string[]> EditTexts = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
         {
-            { "en", new[] { "Edit plan", "Done", "Plan" } },
-            { "de", new[] { "Plan bearbeiten", "Fertig", "Plan" } },
-            { "fr", new[] { "Modifier le plan", "Terminé", "Plan" } },
-            { "pt-br", new[] { "Editar plano", "Concluir", "Plano" } },
-            { "es", new[] { "Editar plan", "Listo", "Plan" } },
-            { "ru", new[] { "Изменить план", "Готово", "План" } },
-            { "it", new[] { "Modifica piano", "Fine", "Piano" } },
-            { "pl", new[] { "Edytuj plan", "Gotowe", "Plan" } },
-            { "ja", new[] { "計画を編集", "完了", "計画" } },
-            { "zh-cn", new[] { "编辑计划", "完成", "计划" } },
-            { "ko", new[] { "계획 편집", "완료", "계획" } }
+            { "en", new[] { "Edit plan", "Done", "Add to planner" } },
+            { "de", new[] { "Plan bearbeiten", "Fertig", "Zum Plan hinzufügen" } },
+            { "fr", new[] { "Modifier le plan", "Terminé", "Ajouter au plan" } },
+            { "pt-br", new[] { "Editar plano", "Concluir", "Adicionar ao plano" } },
+            { "es", new[] { "Editar plan", "Listo", "Añadir al plan" } },
+            { "ru", new[] { "Изменить план", "Готово", "Добавить в план" } },
+            { "it", new[] { "Modifica piano", "Fine", "Aggiungi al piano" } },
+            { "pl", new[] { "Edytuj plan", "Gotowe", "Dodaj do planu" } },
+            { "ja", new[] { "計画を編集", "完了", "計画に追加" } },
+            { "zh-cn", new[] { "编辑计划", "完成", "添加到计划" } },
+            { "ko", new[] { "계획 편집", "완료", "계획에 추가" } }
         };
         internal static string EditPlan { get { return CurrentEdit[0]; } }
         internal static string FinishEditing { get { return CurrentEdit[1]; } }
@@ -789,11 +789,8 @@ namespace CraftingPlanner
     [HarmonyPatch(typeof(ChestGUI), "Open")]
     internal static class ChestOpenPatch
     {
-        private static void Postfix(WorldGameObject chest_obj)
-        {
-            Planner.OpenChest(chest_obj);
-            PlannerInputHints.Refresh();
-        }
+        private static void Prefix(WorldGameObject chest_obj) { Planner.OpenChest(chest_obj); }
+        private static void Postfix() { PlannerInputHints.Refresh(); }
     }
 
     [HarmonyPatch(typeof(ChestGUI), "Hide")]

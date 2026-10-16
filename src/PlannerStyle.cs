@@ -5,16 +5,16 @@ namespace CraftingPlanner
 {
     internal sealed partial class PlannerStyle
     {
-        internal float Right = 13, Top = 40, Width = 286, Scale = .65f;
-        internal float Font = 24, Icon = 46, Row = 18, Padding = 12;
+        internal float Right = 9, Top = 40, Width = 286, Scale = .65f;
+        internal float Font = 24, Icon = 50, Row = 18, Padding = 12;
         internal float Column = 67, ColumnGap = 5, TitleGap = 0, FooterGap = 9;
-        internal float Opacity = 0.35f, TextOpacity = 1, ShadowRadius = 34, ShadowFeather = 28;
-        internal float GoalsOffset = 0, MaterialsGap = 13, ColumnInset = 20;
+        internal float Opacity = 0.39f, TextOpacity = 1, ShadowRadius = 34, ShadowFeather = 28;
+        internal float GoalsOffset = -7, MaterialsGap = 12, ColumnInset = 20;
         internal bool CraftFont = true, Outline = true;
         internal bool AlternateNumbers = false, AlternateQuantity = true, TitleCraftFont = false, FooterCraftFont = true;
         internal float TitleFont = 16, FooterFont = 20;
         internal float IconX = -3, IconY, GoalIconSpacing, MaterialIconSpacing;
-        internal float FeedbackX = 11, FeedbackY = -5, FeedbackGap = 0, FeedbackLineGap = 4;
+        internal float FeedbackX = 264, FeedbackY = -5, FeedbackGap = 0, FeedbackLineGap = 4;
         internal static PlannerStyle Current = new PlannerStyle();
         internal void Clamp()
         {

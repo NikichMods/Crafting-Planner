@@ -19,6 +19,13 @@ namespace CraftingPlanner
         internal static int QuantityX(int slotLeft) { return slotLeft + ArrowWidth; }
         internal static int ClampSelection(int index, int count) { return Math.Max(0, Math.Min(index, count - 1)); }
 
+        internal static int[] RightAlignedStarts(int[] widths, int right, int gap)
+        {
+            int[] starts = new int[widths.Length];
+            for (int i = widths.Length - 1; i >= 0; i--) { starts[i] = right - widths[i]; right = starts[i] - gap; }
+            return starts;
+        }
+
         internal static float BackingAlpha(float x, float y, float width, float height, float radius, float feather)
         {
             if (width <= 0 || height <= 0 || feather <= 0) return 0;

@@ -493,3 +493,9 @@ Recovered format=4 baseline: icon46/padding12/column67/backing35%/goalsOffset0/c
 - Numbered and installed DLL SHA256 40e639d717f599e945518fe7ccc08cf61f24b2358b246fdc070fbac9b9bbac4d, binary version 0.1.12.0, calibration enabled. Intermediate CI 38885204969 is not the installed payload.
 - Both native-reference configurations compile; clean hosted stub build, identity/state/geometry/localization/font/reset/rounding tests and reference-exclusion pass. All 51 slider reset field IDs match their assignments; exact downloaded DLL policy tests pass. This does not prove native layout/input acceptance.
 - Installed with the host closed, previous 0.1.11 DLL and returned log preserved privately. Next native checks are listed in DEVELOPMENT.md; format=5 carries menu, footer, chest and title tuning.
+
+## 0.1.12 returned UI tuning — 2026-10-16
+
+Installed hash 40e639d717f599e945518fe7ccc08cf61f24b2358b246fdc070fbac9b9bbac4d matches the recorded source/artifact. Preserved private log SHA256 7752e1477aaffca6fc9b09890d2b87d2612e78760132f0ee490174d0c1ae56f2 loads Building Planner0.1.12; no planner exception/disable found. Two new screenshots show configured chest/menu. User accepts current HUD English header and completed RS/B tuning, but requests a unified right-aligned chest row to remove language-dependent gaps and a longer ingredient-centred menu caption to avoid the native close X. No stable acceptance.
+
+Final format=5 export supplies next defaults: right9/icon50/backing39%/goalsOffset-7/materialsGap12; menuX17/Y7/minusX13/plusX-13/ingredientsX29/HUDfont16/border retained; footerX-22/Y3/icon16; feedbackX264/Y-5/gap0/lineGap4. Other existing values are unchanged. Independent chest TakeX264/nativeTipsX-145 are superseded by the explicitly requested common right-aligned row; result coordinates remain based on their previous independent origin.

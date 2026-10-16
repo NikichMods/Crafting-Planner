@@ -48,10 +48,18 @@ class CardTests
             Require(!(bool)numericFont.Invoke(null, new object[] {true, false, true, true}), "Quantity-only switch must affect quantity/arrows");
             Require(!(bool)numericFont.Invoke(null, new object[] {true, true, true, true}), "Combined font switches must not cancel each other");
             Require((bool)numericFont.Invoke(null, new object[] {false, true, false, false}), "Alternative numeric font must follow the selected body profile");
+            MethodInfo alignedStarts = layout.GetMethod("RightAlignedStarts", BindingFlags.Static | BindingFlags.NonPublic);
+            foreach (int[] widths in new[] {new[] {48,65,72,140}, new[] {86,104,99,244}, new[] {72,140}, new[] {140}})
+            {
+                int[] starts = (int[])alignedStarts.Invoke(null, new object[] {widths, -7, 10});
+                Require(starts[widths.Length - 1] + widths[widths.Length - 1] == -7, "Localized row must retain its right edge");
+                for (int i = 1; i < widths.Length; i++) Require(starts[i] - starts[i - 1] - widths[i - 1] == 10, "Action blocks must retain equal gaps across languages and omitted actions");
+            }
             Type styleType = candidate.GetType("CraftingPlanner.PlannerStyle", true);
             MethodInfo baseline = styleType.GetMethod("BaselineValue", BindingFlags.Static | BindingFlags.NonPublic);
-            Require((float)baseline.Invoke(null, new object[] {"MenuX"}) == 0 && (float)baseline.Invoke(null, new object[] {"FeedbackY"}) == -5, "Individual resets must use the returned candidate baseline");
-            Require(Math.Abs((float)baseline.Invoke(null, new object[] {"Opacity"}) - 35) < .001f && Math.Abs((float)baseline.Invoke(null, new object[] {"FooterShadowOpacity"}) - 80) < .001f, "Percent controls must reset in display units");
+            Require((float)baseline.Invoke(null, new object[] {"MenuX"}) == 17 && (float)baseline.Invoke(null, new object[] {"FeedbackY"}) == -5, "Individual resets must use the returned candidate baseline");
+            Require(Math.Abs((float)baseline.Invoke(null, new object[] {"Opacity"}) - 39) < .001f && Math.Abs((float)baseline.Invoke(null, new object[] {"FooterShadowOpacity"}) - 80) < .001f, "Percent controls must reset in display units");
+            Require((float)baseline.Invoke(null, new object[] {"MenuCaptionFont"}) == 16 && (float)baseline.Invoke(null, new object[] {"ChestActionGap"}) == 10, "Caption and action-row resets must use their own baselines");
             object style = Activator.CreateInstance(styleType, true);
             BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic;
             styleType.GetField("Right", fieldFlags).SetValue(style, 12.955f);
@@ -87,6 +95,7 @@ class CardTests
             }
             IDictionary editTexts = (IDictionary)localization.GetField("EditTexts", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
             Require(editTexts.Count == languages.Length, "Editing language coverage changed");
+            Require(((string[])editTexts["en"])[2] == "Add to planner", "Supported menu must use the adopted caption");
             foreach (string language in languages)
             {
                 string[] labels = (string[])editTexts[language];

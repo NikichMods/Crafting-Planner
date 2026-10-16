@@ -3,12 +3,13 @@ namespace CraftingPlanner
 {
     internal sealed partial class PlannerStyle
     {
-        internal float MenuX = 0, MenuY = 0, MenuMinusX = 0, MenuMinusY = 0, MenuQuantityX = 0, MenuQuantityY = 0, MenuPlusX = 0, MenuPlusY = 0;
-        internal float IngredientsX = 0, IngredientsY = 0, MenuFont = 16, MenuShadowSize = 1, MenuShadowOpacity = .8f;
-        internal bool MenuHudFont = false, MenuOutline = false, MenuHideBorder = true;
-        internal float TitleY = 0, FooterX = 0, FooterY = 0, FooterIconSize = 20, FooterShadowSize = 1, FooterShadowOpacity = .8f;
+        internal float MenuX = 17, MenuY = 7, MenuMinusX = 13, MenuMinusY = 0, MenuQuantityX = 0, MenuQuantityY = 0, MenuPlusX = -13, MenuPlusY = 0;
+        internal float IngredientsX = 29, IngredientsY = 0, MenuFont = 16, MenuShadowSize = 1, MenuShadowOpacity = .8f;
+        internal bool MenuHudFont = true, MenuOutline = false, MenuHideBorder = false;
+        internal float TitleY = 0, FooterX = -22, FooterY = 3, FooterIconSize = 16, FooterShadowSize = 1, FooterShadowOpacity = .8f;
         internal bool FooterOutline = true;
-        internal float TakeX = 0, TakeY = 0, ChestTipsX = 0;
+        internal float ChestRowX = 0, ChestRowY = 0, ChestActionGap = 10;
+        internal float MenuCaptionX = 0, MenuCaptionY = 0, MenuCaptionFont = 16;
         private static float Offset(float value) { return Pixel(Bound(value, -300, 300)); }
         private void ClampTuning()
         {
@@ -19,7 +20,8 @@ namespace CraftingPlanner
             MenuShadowSize = Pixel(Bound(MenuShadowSize, 0, 4)); FooterShadowSize = Pixel(Bound(FooterShadowSize, 0, 4));
             MenuShadowOpacity = (float)System.Math.Round(Bound(MenuShadowOpacity, 0, 1), 2);
             FooterShadowOpacity = (float)System.Math.Round(Bound(FooterShadowOpacity, 0, 1), 2);
-            TakeX = Pixel(Bound(TakeX, -600, 1000)); TakeY = Offset(TakeY); ChestTipsX = Pixel(Bound(ChestTipsX, -600, 600));
+            ChestRowX = Pixel(Bound(ChestRowX, -600, 600)); ChestRowY = Offset(ChestRowY); ChestActionGap = Pixel(Bound(ChestActionGap, 0, 40));
+            MenuCaptionX = Offset(MenuCaptionX); MenuCaptionY = Offset(MenuCaptionY); MenuCaptionFont = Pixel(Bound(MenuCaptionFont, 10, 32));
         }
         private string TuningRecord()
         {
@@ -29,7 +31,8 @@ namespace CraftingPlanner
                 " menu_outline=" + MenuOutline + " menu_shadow_size=" + N(MenuShadowSize) + " menu_shadow_opacity=" + N(MenuShadowOpacity) + " menu_hide_border=" + MenuHideBorder +
                 " title_y=" + N(TitleY) + " footer_x=" + N(FooterX) + " footer_y=" + N(FooterY) + " footer_icon_size=" + N(FooterIconSize) +
                 " footer_outline=" + FooterOutline + " footer_shadow_size=" + N(FooterShadowSize) + " footer_shadow_opacity=" + N(FooterShadowOpacity) +
-                " take_x=" + N(TakeX) + " take_y=" + N(TakeY) + " chest_tips_x=" + N(ChestTipsX);
+                " chest_row_x=" + N(ChestRowX) + " chest_row_y=" + N(ChestRowY) + " chest_action_gap=" + N(ChestActionGap) +
+                " menu_caption_x=" + N(MenuCaptionX) + " menu_caption_y=" + N(MenuCaptionY) + " menu_caption_font=" + N(MenuCaptionFont);
         }
     }
 }

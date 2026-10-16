@@ -63,7 +63,7 @@ namespace CraftingPlanner
         {
             if (!_open) return;
             _window.height = Math.Max(280, Math.Min(720, Screen.height - 60));
-            _window = GUI.Window(197031, _window, Window, "Crafting Planner " + Plugin.PluginVersion + " — F2: закрыть");
+            _window = GUI.Window(197031, _window, Window, "Building Planner " + Plugin.PluginVersion + " — F2: закрыть");
         }
         private static void Window(int id)
         {
@@ -124,6 +124,10 @@ namespace CraftingPlanner
             s.MenuHideBorder = GUILayout.Toggle(s.MenuHideBorder, "Убрать внутреннюю правую границу родных строк");
             s.IngredientsX = Slider(nameof(s.IngredientsX), "Ингредиенты меню: вправо", s.IngredientsX, -300, 300);
             s.IngredientsY = Slider(nameof(s.IngredientsY), "Ингредиенты меню: вверх", s.IngredientsY, -300, 300);
+            GUILayout.Label("Меню — подпись Добавить в план");
+            s.MenuCaptionX = Slider(nameof(s.MenuCaptionX), "Подпись: вправо", s.MenuCaptionX, -300, 300);
+            s.MenuCaptionY = Slider(nameof(s.MenuCaptionY), "Подпись: вверх", s.MenuCaptionY, -300, 300);
+            s.MenuCaptionFont = Slider(nameof(s.MenuCaptionFont), "Размер подписи", s.MenuCaptionFont, 10, 32);
             GUILayout.Label("Иконки — независимо от текста и строк");
             s.Icon = Slider(nameof(s.Icon), "Размер изображений", s.Icon, 8, 80);
             s.IconX = Slider(nameof(s.IconX), "Иконки: сдвиг вправо", s.IconX, -60, 60);
@@ -131,9 +135,9 @@ namespace CraftingPlanner
             s.GoalIconSpacing = Slider(nameof(s.GoalIconSpacing), "Иконки целей: добавка к вертикальному шагу", s.GoalIconSpacing, -20, 20);
             s.MaterialIconSpacing = Slider(nameof(s.MaterialIconSpacing), "Иконки материалов: добавка к вертикальному шагу", s.MaterialIconSpacing, -20, 20);
             GUILayout.Label("Сообщения сундука — весь блок");
-            s.TakeX = Slider(nameof(s.TakeX), "Взять недостающее: вправо", s.TakeX, -600, 1000);
-            s.TakeY = Slider(nameof(s.TakeY), "Взять недостающее: вверх", s.TakeY, -300, 300);
-            s.ChestTipsX = Slider(nameof(s.ChestTipsX), "Родная строка A / X / B: вправо", s.ChestTipsX, -600, 600);
+            s.ChestRowX = Slider(nameof(s.ChestRowX), "Весь ряд A / X / B / Y (F): вправо", s.ChestRowX, -600, 600);
+            s.ChestRowY = Slider(nameof(s.ChestRowY), "Весь ряд подсказок: вверх", s.ChestRowY, -300, 300);
+            s.ChestActionGap = Slider(nameof(s.ChestActionGap), "Одинаковый промежуток между действиями", s.ChestActionGap, 0, 40);
             s.FeedbackX = Slider(nameof(s.FeedbackX), "Результат переноса: вправо", s.FeedbackX, -600, 1000);
             s.FeedbackY = Slider(nameof(s.FeedbackY), "Результат переноса: вверх", s.FeedbackY, -300, 150);
             s.FeedbackGap = Slider(nameof(s.FeedbackGap), "Промежуток между взятыми предметами", s.FeedbackGap, 0, 40);

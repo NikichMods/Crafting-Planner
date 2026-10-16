@@ -152,8 +152,14 @@ namespace CraftingPlanner
                         _caption = Text(PlannerLocalization.PlanColumn, titlePanel.transform, 0, 0, 72, 22);
                     }
                     PlannerCard.ApplyNativeFont(_caption, title); _caption.color = title.color; _caption.depth = title.depth + 1;
-                    _caption.text = PlannerLocalization.PlanColumn;
-                    _caption.SetAnchor(_quantity.gameObject, .5f, -36, .5f, -11, .5f, 36, .5f, 11);
+                    _caption.fontSize = (int)style.MenuCaptionFont;
+                    _caption.effectStyle = title.effectStyle; _caption.effectColor = title.effectColor; _caption.effectDistance = title.effectDistance;
+                    _caption.overflowMethod = UILabel.Overflow.ResizeFreely; _caption.text = PlannerLocalization.PlanColumn;
+                    int captionWidth = Math.Max(1, (int)Math.Ceiling(_caption.printedSize.x) + 4);
+                    int captionHeight = Math.Max((int)style.MenuCaptionFont + 4, (int)Math.Ceiling(_caption.printedSize.y));
+                    _caption.overflowMethod = UILabel.Overflow.ClampContent;
+                    int cx = IngredientCentre() + (int)style.MenuCaptionX, cy = (int)style.MenuCaptionY;
+                    _caption.SetAnchor(_ingredients.gameObject, .5f, cx - captionWidth / 2, .5f, cy - captionHeight / 2, .5f, cx + (captionWidth + 1) / 2, .5f, cy + (captionHeight + 1) / 2);
                     _caption.bottomAnchor.target = title.transform; _caption.topAnchor.target = title.transform;
                     _caption.updateAnchors = UIRect.AnchorUpdate.OnUpdate;
                     _caption.ResetAndUpdateAnchors(); _caption.gameObject.SetActive(true);
@@ -188,6 +194,23 @@ namespace CraftingPlanner
         }
         private void AfterIngredientLayout() { Render(); }
         private static void UnsubscribeList() { if (_nativeList != null) _nativeList.onReposition -= RefreshAll; _nativeList = null; }
+        private int IngredientCentre()
+        {
+            float left = float.MaxValue, right = float.MinValue;
+            foreach (UIWidget widget in _row.ingredients_table.GetComponentsInChildren<UIWidget>())
+            {
+                if (widget == _ingredients || !widget.gameObject.activeInHierarchy) continue;
+                foreach (Vector3 corner in widget.worldCorners)
+                {
+                    float x = _ingredients.transform.InverseTransformPoint(corner).x;
+                    left = Math.Min(left, x); right = Math.Max(right, x);
+                }
+            }
+            if (left == float.MaxValue) return 0;
+            // Anchor relative .5 follows the widget centre, independently of its native pivot.
+            float centre = (_ingredients.transform.InverseTransformPoint(_ingredients.worldCorners[0]).x + _ingredients.transform.InverseTransformPoint(_ingredients.worldCorners[2]).x) / 2;
+            return (int)Math.Round((left + right) / 2 - centre);
+        }
         private void AlignIngredients()
         {
             float right = float.MinValue;
