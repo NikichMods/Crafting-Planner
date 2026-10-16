@@ -485,3 +485,11 @@ Construction first-open geometry is broken; a quantity refresh partially repairs
 Exact source 7749d701a84fa08f75ccc297ab994d6403af28f8, installed DLL SHA256 19401a0e4111e13dc570ed6399f0863e348660fa8e8a09ef32a1003a7472e5f3. Private log SHA256 bb89b1611047fef6adaa16791c84541cab69078ee398362d43738fcb77120246 loads 0.1.11 with no planner exception found. User reports ordinary-HUD rendering appears correct across all 11 languages, with English screenshot; this is a bounded visual report, not exhaustive language/context acceptance. Menu geometry is improved but not accepted: quantity column is low and intersects a native vertical boundary. Three screenshots are preserved privately. Per-widget F2 tuning/reset and persistent calibration-time RS/B preview are requested.
 
 Recovered format=4 baseline: icon46/padding12/column67/backing35%/goalsOffset0/columnInset20/alternateQuantity=true/footerCraftFont=true/footerFont20/iconX=-3/feedbackX11/feedbackY-5/feedbackGap0; other fields match the returned log. Native A/X/B movement was explicitly simplified by the user to one horizontal whole-line control. User explicitly selected Building Planner for display name/English HUD title; stable technical identifiers are preserved.
+
+## 0.1.12 installed Building Planner candidate — 2026-10-16
+
+- Exact source aa49988daf9eaf28a26ada824ae16c8a5f8b5aea, dev/0.1.12. Plugin display name/English HUD header Building Planner; technical identity preserved.
+- Successful CI 38885542445, artifact 12039238521. ZIP SHA256 80e2206f5d4e5eea6c42c35723453edb37a5f51562d717aae90c576bfd20f187.
+- Numbered and installed DLL SHA256 40e639d717f599e945518fe7ccc08cf61f24b2358b246fdc070fbac9b9bbac4d, binary version 0.1.12.0, calibration enabled. Intermediate CI 38885204969 is not the installed payload.
+- Both native-reference configurations compile; clean hosted stub build, identity/state/geometry/localization/font/reset/rounding tests and reference-exclusion pass. All 51 slider reset field IDs match their assignments; exact downloaded DLL policy tests pass. This does not prove native layout/input acceptance.
+- Installed with the host closed, previous 0.1.11 DLL and returned log preserved privately. Next native checks are listed in DEVELOPMENT.md; format=5 carries menu, footer, chest and title tuning.

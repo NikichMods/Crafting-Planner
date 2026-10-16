@@ -1,6 +1,6 @@
-# Crafting Planner — Product Scope
+# Building Planner — Product Scope
 
-Updated: 2026-09-22
+Updated: 2026-10-16
 
 ## Product model
 
