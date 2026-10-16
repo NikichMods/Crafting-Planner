@@ -5,6 +5,8 @@ namespace CraftingPlanner
     // Project-owned geometry; independent of NGUI and the current input device.
     internal static class PlannerLayout
     {
+        internal static int QuantityCenter(int width, int padding, int inset)
+        { return width - padding - QuantitySlotWidth + ArrowWidth + QuantityWidth / 2 - inset; }
         internal const int ArrowWidth = 20, QuantityWidth = 30;
         internal const int QuantitySlotWidth = ArrowWidth * 2 + QuantityWidth;
         internal static int QuantityX(int slotLeft) { return slotLeft + ArrowWidth; }

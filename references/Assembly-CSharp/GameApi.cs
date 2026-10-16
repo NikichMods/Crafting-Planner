@@ -154,9 +154,11 @@ public class BaseGUI : MonoBehaviour
 
 public class CraftGUI : BaseGUI
 {
+    public UniversalObjectInfoGUI object_info;
     public CraftItemGUI craft_item_prefab;
     public List<CraftItemGUI> GetItemsList() { return null; }
 }
+public class UniversalObjectInfoGUI : MonoBehaviour { public UILabel text_header; }
 
 public class CraftItemGUI : MonoBehaviour
 {
@@ -213,12 +215,14 @@ public class GameSettings
 
 public class GUIElements : MonoBehaviour
 {
+    public GameGUI game_gui;
     public UIWidget screen_size_widget;
     public static GUIElements me { get { return null; } }
     public HUD hud;
     public CraftGUI craft;
     public ChestGUI chest;
 }
+public class GameGUI : BaseGUI { }
 
 public class ComponentsManager { public BaseCharacterComponent character { get { return null; } } }
 public class BaseCharacterComponent { public bool control_enabled { get; set; } }

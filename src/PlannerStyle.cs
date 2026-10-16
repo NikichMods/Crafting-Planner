@@ -9,6 +9,8 @@ namespace CraftingPlanner
         internal float Font = 16, Icon = 30, Row = 30, Padding = 4;
         internal float Column = 44, ColumnGap = 2, TitleGap = 0, FooterGap = 8;
         internal float Opacity = 0.40f, TextOpacity = 0.95f, ShadowRadius = 24, ShadowFeather = 13;
+        internal float GoalsOffset = 0, MaterialsGap = 6, ColumnInset = 0;
+        internal bool CraftFont = true, Outline = false;
         internal static PlannerStyle Current = new PlannerStyle();
         internal void Clamp()
         {
@@ -18,6 +20,7 @@ namespace CraftingPlanner
             ColumnGap = Bound(ColumnGap, 0, 20); TitleGap = Bound(TitleGap, 0, 28); FooterGap = Bound(FooterGap, 4, 32);
             Opacity = Bound(Opacity, 0, 0.85f); TextOpacity = Bound(TextOpacity, 0.5f, 1);
             ShadowRadius = Bound(ShadowRadius, 6, 90); ShadowFeather = Bound(ShadowFeather, 5, 28);
+            GoalsOffset = Bound(GoalsOffset, -12, 80); MaterialsGap = Bound(MaterialsGap, 0, 60); ColumnInset = Bound(ColumnInset, 0, 36);
         }
         private static float Bound(float value, float min, float max)
         { return float.IsNaN(value) || float.IsInfinity(value) ? min : Math.Max(min, Math.Min(max, value)); }
@@ -26,7 +29,8 @@ namespace CraftingPlanner
             return "right=" + N(Right) + " top=" + N(Top) + " width=" + N(Width) + " scale=" + N(Scale) +
                 " font=" + N(Font) + " icon=" + N(Icon) + " row=" + N(Row) + " padding=" + N(Padding) +
                 " column=" + N(Column) + " column_gap=" + N(ColumnGap) + " title_gap=" + N(TitleGap) +
-                " footer_gap=" + N(FooterGap) + " opacity=" + N(Opacity) + " text_opacity=" + N(TextOpacity) + " shadow_radius=" + N(ShadowRadius) + " shadow_feather=" + N(ShadowFeather);
+                " footer_gap=" + N(FooterGap) + " opacity=" + N(Opacity) + " text_opacity=" + N(TextOpacity) + " shadow_radius=" + N(ShadowRadius) + " shadow_feather=" + N(ShadowFeather) +
+                " goals_offset=" + N(GoalsOffset) + " materials_gap=" + N(MaterialsGap) + " column_inset=" + N(ColumnInset) + " font_profile=" + (CraftFont ? "craft" : "hud") + " outline=" + Outline;
         }
         private static string N(float value) { return value.ToString("0.###", CultureInfo.InvariantCulture); }
     }

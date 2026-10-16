@@ -8,7 +8,7 @@ namespace CraftingPlanner
     internal enum TransferNotice { None, NoStock, NoSpace, Complete, Unavailable }
     internal static class PlannerChestControls
     {
-        private static UITexture _button, _fill;
+        private static UILabel _button;
         private static UILabel _label;
         private static bool _failed;
         private static readonly List<GameObject> Feedback = new List<GameObject>();
@@ -22,8 +22,8 @@ namespace CraftingPlanner
         {
             GameObject go = Child("result-text", parent, native.gameObject.layer); Feedback.Add(go);
             UILabel label = go.AddComponent<UILabel>(); PlannerCard.ApplyNativeFont(label, native);
-            label.fontSize = 13; label.pivot = UIWidget.Pivot.Left; label.alignment = NGUIText.Alignment.Left;
-            label.width = width; label.height = 22; label.maxLineCount = 1; label.overflowMethod = UILabel.Overflow.ClampContent;
+            label.pivot = UIWidget.Pivot.Left; label.alignment = NGUIText.Alignment.Left;
+            label.width = width; label.height = Math.Max(22, native.fontSize + 4); label.maxLineCount = 1; label.overflowMethod = UILabel.Overflow.ClampContent;
             label.color = color; label.depth = native.depth + 4; label.text = text;
             go.transform.localPosition = new Vector3(x, y, 0); return label;
         }
@@ -40,17 +40,13 @@ namespace CraftingPlanner
                 if (_button == null)
                 {
                     Feedback.Clear();
-                    _button = Child("CraftingPlannerTakeNeeded", gui.chest.transform, native.gameObject.layer).AddComponent<UITexture>();
-                    _button.mainTexture = Texture2D.whiteTexture; _button.pivot = UIWidget.Pivot.Center; _button.depth = native.depth + 1;
-                    _button.color = new Color(.50f, .43f, .30f, .95f); _button.updateAnchors = UIRect.AnchorUpdate.OnUpdate;
+                    _button = Child("CraftingPlannerTakeNeeded", gui.chest.transform, native.gameObject.layer).AddComponent<UILabel>();
+                    _button.pivot = UIWidget.Pivot.Center; _button.depth = native.depth + 3;
+                    _button.alignment = NGUIText.Alignment.Center; _button.updateAnchors = UIRect.AnchorUpdate.OnUpdate;
                     _button.gameObject.AddComponent<BoxCollider2D>();
-                    _fill = Child("button-fill", _button.transform, native.gameObject.layer).AddComponent<UITexture>();
-                    _fill.mainTexture = Texture2D.whiteTexture; _fill.depth = native.depth + 2;
-                    _fill.SetAnchor(_button.gameObject, 0, 1, 0, 1, 1, -1, 1, -1); _fill.color = new Color(.13f, .12f, .10f, .9f);
-                    _label = Child("button-label", _button.transform, native.gameObject.layer).AddComponent<UILabel>();
-                    _label.pivot = UIWidget.Pivot.Center; _label.alignment = NGUIText.Alignment.Center; _label.depth = native.depth + 3;
+                    _label = _button;
                     var listener = UIEventListener.Get(_button.gameObject);
-                    listener.onHover = delegate(GameObject go, bool over) { _fill.color = over ? new Color(.28f, .23f, .15f, .95f) : new Color(.13f, .12f, .10f, .9f); };
+                    listener.onHover = delegate(GameObject go, bool over) { _label.color = over ? new Color(1, .94f, .72f) : native.color; };
                     listener.onClick = delegate(GameObject go)
                     {
                         if (!PlannerCalibration.IsOpen && GUIElements.me != null && GUIElements.me.chest.is_shown_and_top) Planner.TakeNeeded(GUIElements.me.chest, "mouse_storage_row");
@@ -63,11 +59,11 @@ namespace CraftingPlanner
                 int width = Math.Max(100, (int)Math.Ceiling(_label.printedSize.x) + 20);
                 int height = Math.Max(28, (int)Math.Ceiling(_label.printedSize.y) + 8);
                 _label.overflowMethod = UILabel.Overflow.ClampContent;
-                _label.SetAnchor(_button.gameObject, 0, 8, 0, 4, 1, -8, 1, -4);
                 _button.SetAnchor(native.gameObject, 0, -width - 8, .5f, -height / 2, 0, -8, .5f, height / 2);
                 _button.ResetAndUpdateAnchors();
                 BoxCollider2D collider = _button.GetComponent<BoxCollider2D>(); collider.size = new Vector2(_button.width, _button.height);
                 _button.gameObject.SetActive(true);
+                _label.color = UICamera.hoveredObject == _button.gameObject ? new Color(1, .94f, .72f) : native.color;
                 DrawFeedback(native, gui.craft.craft_item_prefab.item_gui.x1.icon);
             }
             catch (Exception ex) { _failed = true; Destroy(); Planner.LogLine("event=storage_controls result=disabled_for_session error=" + ex); }
@@ -77,14 +73,15 @@ namespace CraftingPlanner
             foreach (GameObject go in Feedback) if (go != null) { go.SetActive(false); UnityEngine.Object.Destroy(go); }
             Feedback.Clear();
             Color green = new Color(.533f, .843f, .486f), red = new Color(.894f, .467f, .400f);
-            int x = 0, y = 30;
+            int line = Math.Max(28, native.fontSize + 8);
+            int left = -_button.width / 2, x = left, y = -_button.height / 2 - line;
             if (_moved.Count > 0)
             {
                 UILabel prefix = Text(PlannerLocalization.Taken, _button.transform, native, x, y, 100, green);
                 x += Math.Min(100, (int)Math.Ceiling(prefix.printedSize.x)) + 8;
                 foreach (var pair in _moved)
                 {
-                    if (x + 54 > 324) { x = 0; y += 25; }
+                    if (x + 54 > left + 324) { x = left; y -= line; }
                     ItemDefinition definition = GameBalance.me.GetDataOrNull<ItemDefinition>(pair.Key);
                     Sprite sprite = definition != null ? EasySpritesCollection.GetSprite(definition.GetIcon(), false, "") : null;
                     if (sprite != null && template != null)
@@ -97,15 +94,15 @@ namespace CraftingPlanner
                     }
                     else
                     {
-                        y += 25; x = 0;
-                        Text(Planner.GetItemName(pair.Key) + " ×" + pair.Value, _button.transform, native, x, y, 324, green); y += 25;
+                        y -= line; x = left;
+                        Text(Planner.GetItemName(pair.Key) + " ×" + pair.Value, _button.transform, native, x, y, 324, green); y -= line;
                     }
                 }
             }
             if (_notice != TransferNotice.None)
             {
-                if (_moved.Count > 0) y += 25;
-                Text(PlannerLocalization.TransferMessage(_notice), _button.transform, native, 0, y, 324, _notice == TransferNotice.Complete ? green : red);
+                if (_moved.Count > 0) y -= line;
+                Text(PlannerLocalization.TransferMessage(_notice), _button.transform, native, left, y, 324, _notice == TransferNotice.Complete ? green : red);
             }
         }
         internal static void Show(List<KeyValuePair<string, int>> moved, TransferNotice notice) { _moved = moved; _notice = notice; Refresh(); }

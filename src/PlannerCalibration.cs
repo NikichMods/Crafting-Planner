@@ -21,7 +21,7 @@ namespace CraftingPlanner
         internal static bool IsOpen { get { return _open; } }
         internal static void Update()
         {
-            if (!Input.GetKeyDown(KeyCode.F1)) return;
+            if (!Input.GetKeyDown(KeyCode.F2)) return;
             if (_open) { Close(); return; }
             if (PlannerPresentation.GetView() == PlannerView.Hidden || !Planner.HasGoals) return;
             try
@@ -60,7 +60,7 @@ namespace CraftingPlanner
         {
             if (!_open) return;
             _window.height = Math.Max(280, Math.Min(720, Screen.height - 60));
-            _window = GUI.Window(197031, _window, Window, "Crafting Planner " + Plugin.PluginVersion + " — F1: закрыть");
+            _window = GUI.Window(197031, _window, Window, "Crafting Planner " + Plugin.PluginVersion + " — F2: закрыть");
         }
         private static void Window(int id)
         {
@@ -69,18 +69,27 @@ namespace CraftingPlanner
             PlannerStyle s = PlannerStyle.Current;
             bool changed = GUI.changed;
             GUI.changed = false;
+            GUILayout.Label("Карточка целиком");
             s.Right = Slider("Отступ справа", s.Right, 0, 400);
             s.Top = Slider("Отступ сверху", s.Top, 40, 400);
             s.Width = Slider("Ширина (минимальная)", s.Width, 240, 640);
             s.Scale = Slider("Общий масштаб", s.Scale, .6f, 1.5f);
-            s.Font = Slider("Шрифт", s.Font, 10, 24);
+            GUILayout.Label("Текст и строки");
+            s.CraftFont = GUILayout.Toggle(s.CraftFont, "Шрифт названий строительства (выкл. — шрифт HUD)");
+            s.Outline = GUILayout.Toggle(s.Outline, "Обводка текста (выкл. — мягкая тень)");
+            s.Font = Slider("Размер шрифта", s.Font, 10, 24);
             s.Icon = Slider("Иконки", s.Icon, 16, 40);
             s.Row = Slider("Высота строки (минимальная)", s.Row, 18, 48);
             s.Padding = Slider("Внутренние отступы", s.Padding, 4, 24);
             s.Column = Slider("Ширина числовых столбцов", s.Column, 32, 110);
             s.ColumnGap = Slider("Промежуток столбцов", s.ColumnGap, 0, 20);
+            s.ColumnInset = Slider("Все числовые столбцы левее", s.ColumnInset, 0, 36);
+            GUILayout.Label("Положение блоков");
+            s.GoalsOffset = Slider("Цели и материалы вместе: ниже/выше", s.GoalsOffset, -12, 80);
+            s.MaterialsGap = Slider("Материалы: отступ от списка целей", s.MaterialsGap, 0, 60);
             s.TitleGap = Slider("Отступ после заголовка", s.TitleGap, 0, 28);
             s.FooterGap = Slider("Отступ подсказки управления", s.FooterGap, 4, 32);
+            GUILayout.Label("Мягкая подложка");
             s.Opacity = Slider("Плотность подложки", s.Opacity, 0, .85f);
             s.TextOpacity = Slider("Плотность текста", s.TextOpacity, .5f, 1);
             s.ShadowRadius = Slider("Скругление подложки", s.ShadowRadius, 6, 90);
@@ -91,8 +100,8 @@ namespace CraftingPlanner
             if (dirty) { s.Clamp(); PlannerPresentation.Refresh(); }
             if (GUILayout.Button("Записать настройки и геометрию в LogOutput.log")) PlannerPresentation.Export(_camera);
             if (GUILayout.Button("Вернуть исходные настройки")) { PlannerStyle.Current = new PlannerStyle(); PlannerPresentation.Refresh(); }
-            GUILayout.Label("Настройки действуют до выхода. F1 также записывает их в лог.");
-            if (GUILayout.Button("Записать и закрыть (F1)")) Close();
+            GUILayout.Label("Настройки действуют до выхода. F2 также записывает их в лог.");
+            if (GUILayout.Button("Записать и закрыть (F2)")) Close();
             GUI.DragWindow(new Rect(0, 0, 550, 24));
         }
         private static float Slider(string title, float value, float min, float max)
@@ -136,5 +145,5 @@ namespace CraftingPlanner
     [HarmonyPatch(typeof(HUD), "Hide")]
     internal static class HudHidePresentationPatch { private static void Postfix() { PlannerPresentation.Refresh(); } }
     [HarmonyPatch(typeof(GUIElements), "RecalcScreenResolution")]
-    internal static class ResolutionPresentationPatch { private static void Postfix() { PlannerPresentation.Refresh(); } }
+    internal static class ResolutionPresentationPatch { private static void Postfix() { PlannerRowControls.RefreshAll(); PlannerPresentation.Refresh(); } }
 }

@@ -39,6 +39,10 @@ class CardTests
             }
             MethodInfo quantityX = layout.GetMethod("QuantityX", BindingFlags.Static | BindingFlags.NonPublic);
             Require((int)quantityX.Invoke(null, new object[] {100}) == 120, "Quantity must reserve its left arrow slot");
+            MethodInfo centre = layout.GetMethod("QuantityCenter", BindingFlags.Static | BindingFlags.NonPublic);
+            int centreDefault = (int)centre.Invoke(null, new object[] {240, 4, 0});
+            int centreInset = (int)centre.Invoke(null, new object[] {240, 4, 12});
+            Require(centreDefault == 201 && centreInset == 189, "Column movement must include the project quantity centre");
             MethodInfo clampSelection = layout.GetMethod("ClampSelection", BindingFlags.Static | BindingFlags.NonPublic);
             int afterRemoval = (int)clampSelection.Invoke(null, new object[] {3, 3});
             Require(afterRemoval == 2 && (afterRemoval + 1) % 3 == 0, "Focus must normalize before navigating after last-row removal");

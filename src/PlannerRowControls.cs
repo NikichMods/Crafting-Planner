@@ -14,7 +14,8 @@ namespace CraftingPlanner
         private UIWidget _ingredients;
         private int _left, _right;
         private bool _shifted;
-        private UITexture _column, _minus, _plus;
+        private UIWidget _column;
+        private UILabel _minus, _plus;
         private UILabel _quantity, _caption;
         private readonly List<UILabel> _texts = new List<UILabel>();
         private bool _failed;
@@ -58,16 +59,12 @@ namespace CraftingPlanner
             label.effectColor = new Color(.06f, .06f, .05f); label.effectDistance = new Vector2(1, 1);
             label.transform.localPosition = new Vector3(x, y, 0); label.text = text; _texts.Add(label); return label;
         }
-        private UITexture Arrow(int delta, int x)
+        private UILabel Arrow(int delta, int x)
         {
-            UITexture arrow = Child(delta < 0 ? "decrease" : "increase", _column.transform).AddComponent<UITexture>();
-            arrow.mainTexture = Texture2D.whiteTexture; arrow.pivot = UIWidget.Pivot.Center;
-            arrow.width = PlannerLayout.ArrowWidth; arrow.height = 26; arrow.depth = _row.selection_frame.depth + 2;
-            arrow.transform.localPosition = new Vector3(x, -10, 0); arrow.color = new Color(.35f, .35f, .35f, .22f);
+            UILabel arrow = Text(delta < 0 ? "<" : ">", _column.transform, x, -28, PlannerLayout.ArrowWidth, 26);
             BoxCollider2D collider = arrow.gameObject.AddComponent<BoxCollider2D>(); collider.size = new Vector2(arrow.width, arrow.height);
-            UILabel glyph = Text(delta < 0 ? "<" : ">", arrow.transform, 0, 0, arrow.width, arrow.height);
             UIEventListener events = UIEventListener.Get(arrow.gameObject);
-            events.onHover = delegate(GameObject go, bool over) { glyph.color = over ? new Color(1, .94f, .72f) : new Color(.75f, .74f, .68f); };
+            events.onHover = delegate(GameObject go, bool over) { arrow.color = over ? new Color(1, .94f, .72f) : new Color(.75f, .74f, .68f); };
             events.onClick = delegate(GameObject go)
             {
                 if (PlannerCalibration.IsOpen || GUIElements.me == null || !GUIElements.me.craft.is_shown_and_top || !Eligible(_row)) return;
@@ -80,7 +77,7 @@ namespace CraftingPlanner
             if (_failed || _row == null) return;
             try
             {
-                if (!Eligible(_row)) { Restore(); if (_column != null) _column.gameObject.SetActive(false); return; }
+                if (!Eligible(_row)) { Restore(); Hide(); return; }
                 if (_ingredients == null)
                 {
                     _ingredients = _row.ingredients_table.GetComponent<UIWidget>();
@@ -96,54 +93,74 @@ namespace CraftingPlanner
                 }
                 if (_column == null)
                 {
-                    _column = Child("CraftingPlannerColumn", transform).AddComponent<UITexture>();
-                    _column.mainTexture = Texture2D.whiteTexture; _column.pivot = UIWidget.Pivot.TopRight;
-                    _column.color = new Color(.17f, .18f, .20f, .9f); _column.depth = _row.selection_frame.depth + 1;
-                    _column.gameObject.AddComponent<BoxCollider2D>();
-                    // A hit anywhere in this owned column never forwards to the native row.
-                    UIEventListener.Get(_column.gameObject).onClick = delegate(GameObject go) { };
+                    _column = Child("CraftingPlannerColumn", transform).AddComponent<UIWidget>();
+                    _column.pivot = UIWidget.Pivot.TopRight;
                     _column.updateAnchors = UIRect.AnchorUpdate.OnUpdate;
                     _column.SetAnchor(_row.selection_frame.gameObject, 1, -Reserve, 0, 4, 1, -4, 1, -5);
-                    _caption = Text(PlannerLocalization.PlanColumn, _column.transform, -38, -7, 72, 14);
                     _quantity = Text("", _column.transform, -38, -28, PlannerLayout.QuantityWidth, 22);
                     _quantity.overflowMethod = UILabel.Overflow.ShrinkContent;
                     _minus = Arrow(-1, -63); _plus = Arrow(1, -13);
                 }
                 _column.ResetAndUpdateAnchors();
-                BoxCollider2D columnCollider = _column.GetComponent<BoxCollider2D>();
-                columnCollider.size = new Vector2(_column.width, _column.height);
-                columnCollider.offset = new Vector2(-_column.width * .5f, -_column.height * .5f);
+                AlignIngredients();
                 int quantity = Planner.QuantityFor(_row.current_craft);
                 foreach (UILabel label in _texts) { PlannerCard.ApplyNativeFont(label, _row.label_name); label.fontSize = 13; }
-                _caption.text = PlannerLocalization.PlanColumn;
                 var items = GUIElements.me.craft.GetItemsList();
-                _caption.gameObject.SetActive(items != null && items.Count > 0 && items[0] == _row);
+                UILabel title = GUIElements.me.craft.object_info != null ? GUIElements.me.craft.object_info.text_header : null;
+                bool first = items != null && items.Count > 0 && items[0] == _row;
+                if (title != null && first)
+                {
+                    if (_caption == null) _caption = Text(PlannerLocalization.PlanColumn, title.transform.parent, 0, 0, 72, 22);
+                    PlannerCard.ApplyNativeFont(_caption, title); _caption.color = title.color; _caption.depth = title.depth + 1;
+                    _caption.text = PlannerLocalization.PlanColumn;
+                    Vector3[] corners = title.worldCorners;
+                    Vector3 position = _quantity.transform.position; position.y = (corners[0].y + corners[2].y) / 2;
+                    _caption.transform.position = position; _caption.gameObject.SetActive(true);
+                }
+                else if (_caption != null) _caption.gameObject.SetActive(false);
                 _quantity.text = "×" + quantity;
                 _minus.transform.localPosition = new Vector3(-63, -28, 0);
                 _plus.transform.localPosition = new Vector3(-13, -28, 0);
                 _plus.gameObject.SetActive(quantity == 0 || Planner.IsRepeatable(_row.current_craft));
                 _column.gameObject.SetActive(true);
+                UIEventListener.Get(_minus.gameObject).onHover(_minus.gameObject, UICamera.hoveredObject == _minus.gameObject);
+                UIEventListener.Get(_plus.gameObject).onHover(_plus.gameObject, UICamera.hoveredObject == _plus.gameObject);
             }
             catch (Exception ex)
             {
-                Restore(); if (_column != null) _column.gameObject.SetActive(false); _failed = true;
+                Restore(); Hide(); _failed = true;
                 Planner.LogLine("event=plan_column result=disabled_for_row error=" + ex);
             }
         }
+        private void AlignIngredients()
+        {
+            float right = float.MinValue;
+            foreach (UIWidget widget in _row.ingredients_table.GetComponentsInChildren<UIWidget>())
+            {
+                if (widget == _ingredients || !widget.gameObject.activeInHierarchy) continue;
+                foreach (Vector3 corner in widget.worldCorners) right = Math.Max(right, transform.InverseTransformPoint(corner).x);
+            }
+            if (right == float.MinValue) return;
+            float target = transform.InverseTransformPoint(_column.worldCorners[0]).x - 7;
+            int delta = (int)Math.Round(target - right);
+            _ingredients.leftAnchor.absolute += delta; _ingredients.rightAnchor.absolute += delta;
+            _ingredients.ResetAndUpdateAnchors(); _row.label_name.ResetAndUpdateAnchors();
+        }
+        private void Hide() { if (_column != null) _column.gameObject.SetActive(false); if (_caption != null) _caption.gameObject.SetActive(false); }
         internal static void RefreshAll()
         {
             for (int i = Rows.Count - 1; i >= 0; i--) { if (Rows[i] == null) Rows.RemoveAt(i); else Rows[i].Render(); }
         }
         internal static void RestoreAll()
         {
-            foreach (var row in Rows) if (row != null) { row.Restore(); if (row._column != null) row._column.gameObject.SetActive(false); }
+            foreach (var row in Rows) if (row != null) { row.Restore(); row.Hide(); }
         }
         internal static void DestroyAll()
         {
-            foreach (var row in Rows.ToArray()) if (row != null) { row.Restore(); if (row._column != null) row._column.gameObject.SetActive(false); UnityEngine.Object.Destroy(row); }
+            foreach (var row in Rows.ToArray()) if (row != null) { row.Restore(); row.Hide(); UnityEngine.Object.Destroy(row); }
             Rows.Clear();
         }
-        private void OnDestroy() { Restore(); if (_column != null) UnityEngine.Object.Destroy(_column.gameObject); Rows.Remove(this); }
+        private void OnDestroy() { Restore(); if (_column != null) UnityEngine.Object.Destroy(_column.gameObject); if (_caption != null) UnityEngine.Object.Destroy(_caption.gameObject); Rows.Remove(this); }
     }
     [HarmonyPatch(typeof(CraftItemGUI), "Redraw")]
     internal static class PlannerRowRedrawPatch

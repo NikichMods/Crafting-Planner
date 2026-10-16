@@ -460,3 +460,11 @@ For material icons, the game already owns the canonical icon path. Native item U
 The 0.1.4 runtime pass applied the game's native 1600x1200 windowed resolution and `OnScreenSizeChanged(1600,1200)`. Immediately afterward the runtime detected external window-size changes through approximately 1616x1239 back to 2560x1440. The user screenshot showed the vanilla HUD itself globally displaced/scaled in that state, not a Planner-only failure.
 
 The Planner remained attached to its native HUD context throughout. Do not add Planner-specific Borderless Gaming polling, screen-size compensation, or alternate coordinate math to repair a host/global UI state. Such compensation would reintroduce the coordinate-system duplication that Probe 0.3.0 rejected.
+
+### 0.1.10 native correction evidence — 2026-10-16
+
+Same pinned 1.407 assemblies as above. UICamera.FindCameraForLayer searches registered cameras by culling-mask layer; cachedCamera is public. Arrow visibility must not depend on a one-time camera lookup before native GUI initialization. UILabel glyph/collider ownership uses the same verified UIEventListener dispatch as other controls.
+
+GUIElements.game_gui is public GameGUI. GameGUI.SelectTab(TabType) writes private _current_tab_type; enum Inventory=0, Techs=1, NPCs=2, Bodies=3, Map=4. No public current-tab getter was found. The planner reads that field only to restrict inventory visibility and refreshes after SelectTab. BaseCraftGUI.object_info and UniversalObjectInfoGUI.text_header are public title anchors. Native ingredient child worldCorners, not the table's own two-unit anchor widget, describe the visible right edge. Static evidence supports the correction; installed geometry acceptance remains open.
+
+Native current-language font correction is owned by GJL.EnsureLabelHasCorrectFont. Shared research UI_INPUT_TIME_AND_ENVIRONMENT.md documents atlas font/language distinctions and the live-language consumer requirement. Candidate raw labels rejoin that method without caching destroyed widgets; HUD/craft-template profile comparison imports no new font asset. This is not a promise that a browser Georgia mockup renders identically.

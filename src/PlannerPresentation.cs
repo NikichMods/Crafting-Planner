@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using HarmonyLib;
 using UnityEngine;
 namespace CraftingPlanner
 {
-    internal enum PlannerView { Hidden, Hud, Build, Chest }
+    internal enum PlannerView { Hidden, Hud, Build, Chest, Inventory }
 
     internal sealed class PlannerCard : IDisposable
     {
@@ -17,15 +18,16 @@ namespace CraftingPlanner
         private readonly UILabel _fontTemplate, _measure;
         private readonly UI2DSprite _iconTemplate;
         private readonly UITexture _back;
-        private readonly UI2DSprite _header;
         private Texture2D _backTexture;
         private int _backWidth, _backHeight, _bodyTop;
         private float _backRadius, _backFeather;
         private readonly UILabel _footer;
         private readonly List<UILabel> _labels = new List<UILabel>();
         private readonly List<UI2DSprite> _icons = new List<UI2DSprite>();
-        private readonly List<UITexture> _arrows = new List<UITexture>();
-        private readonly Camera _mouseCamera;
+        private readonly List<UILabel> _arrows = new List<UILabel>();
+        private readonly List<UITexture> _focusRows = new List<UITexture>();
+        private int _focusCursor;
+        private UILabel FontTemplate { get { return Style.CraftFont && GUIElements.me.craft.craft_item_prefab.label_name != null ? GUIElements.me.craft.craft_item_prefab.label_name : _fontTemplate; } }
         private int _arrowCursor;
         private int _labelCursor, _iconCursor, _width, _height;
         private bool _iconWarning;
@@ -37,8 +39,6 @@ namespace CraftingPlanner
             _anchor = anchor; _fontTemplate = fontTemplate; _iconTemplate = iconTemplate;
             _panelGo = new GameObject("CraftingPlannerPresentation");
             _panelGo.layer = fontTemplate.gameObject.layer;
-            UICamera events = UICamera.FindCameraForLayer(_panelGo.layer);
-            _mouseCamera = events != null ? events.GetComponent<Camera>() : null;
             _panelGo.SetActive(false);
             // Exact native frame chain: Screen size -> Screen size panel -> UI Root.
             _panelGo.transform.SetParent(anchor.transform.parent, false);
@@ -55,15 +55,6 @@ namespace CraftingPlanner
             _back.pivot = UIWidget.Pivot.TopRight;
             _back.transform.localPosition = Vector3.zero; // pivot preserves corners by moving the transform
             _back.depth = 0;
-            UI2DSprite nativeHeader = fontTemplate.transform.parent.GetComponent<UI2DSprite>();
-            if (nativeHeader != null)
-            {
-                _header = Child("native-title", _root.transform).AddComponent<UI2DSprite>();
-                _header.sprite2D = nativeHeader.sprite2D;
-                _header.material = nativeHeader.material; _header.shader = nativeHeader.shader;
-                _header.pivot = UIWidget.Pivot.TopRight; _header.transform.localPosition = Vector3.zero;
-                _header.depth = 1; _header.color = nativeHeader.color;
-            }
             _measure = Child("measurement", _root.transform).AddComponent<UILabel>();
             _measure.gameObject.SetActive(false);
             _footer = Child("control-hint", _root.transform).AddComponent<UILabel>();
@@ -79,8 +70,12 @@ namespace CraftingPlanner
             _view = view;
             if (view == PlannerView.Hidden || (!Planner.HasGoals && view != PlannerView.Build)) { Hide(); return; }
             Style.Clamp();
-            _labelCursor = 0; _iconCursor = 0; _arrowCursor = 0;
-            foreach (UITexture arrow in _arrows) UIEventListener.Get(arrow.gameObject).onHover = null;
+            _labelCursor = 0; _iconCursor = 0; _arrowCursor = 0; _focusCursor = 0;
+            foreach (UILabel label in _labels)
+            {
+                BoxCollider2D hit = label.GetComponent<BoxCollider2D>(); if (hit != null) hit.enabled = false;
+                UIEventListener listener = label.GetComponent<UIEventListener>(); if (listener != null) listener.onHover = null;
+            }
             int pad = (int)Style.Padding, line = (int)Math.Max(Style.Row, Style.Font + 4);
             var rows = Planner.AggregateRequirements().Select(p => new MaterialRow(p.Key, p.Value, Planner.GetPlayerHave(p.Key))).ToList();
             rows.Sort((a, b) => string.Compare(a.Id, b.Id, StringComparison.Ordinal));
@@ -88,31 +83,33 @@ namespace CraftingPlanner
             foreach (string header in new[] { PlannerLocalization.Required, PlannerLocalization.Have, PlannerLocalization.Missing }) col = Math.Max(col, Measure(header, Math.Max(11, (int)Style.Font - 3)) + 4);
             foreach (MaterialRow row in rows)
                 foreach (int count in new[] { row.Have, row.Need, row.Missing }) col = Math.Max(col, Measure(count.ToString()) + 4);
+            col = (col + 1) / 2 * 2; // Even widths keep numeric/quantity centres exactly coincident.
             int columnGap = (int)Style.ColumnGap;
             _width = Math.Max((int)Style.Width, 2 * pad + (int)Style.Icon + 8 + 3 * col + 2 * columnGap);
-            int firstCountX = _width - pad - 3 * col - 2 * columnGap;
+            int quantityCenter = PlannerLayout.QuantityCenter(_width, pad, (int)Style.ColumnInset);
+            int firstCountX = quantityCenter - col / 2 - 2 * (col + columnGap);
             int y = pad;
-            int titleHeight = Math.Max(32, line);
+            int titleHeight = Math.Max(22, (int)Style.Font + 6);
             Center(PlannerLocalization.Plan, pad, y, _width - 2 * pad, titleHeight);
-            y += titleHeight + (int)Style.TitleGap;
+            y += titleHeight + (int)Style.TitleGap + (int)Style.GoalsOffset;
             _bodyTop = y;
             foreach (ProjectGoal goal in Planner.GetGoals())
             {
                 int nameX = pad + (int)Style.Icon + 4;
-                int slotX = _width - pad - PlannerLayout.QuantitySlotWidth;
+                int slotX = quantityCenter - PlannerLayout.QuantityWidth / 2 - PlannerLayout.ArrowWidth;
                 UILabel name = Label(Planner.GetProjectName(goal.Definition), nameX, y, slotX - nameX - 4, line, false, true);
                 int rowHeight = Math.Max((int)Style.Icon, Math.Max(line, (int)Math.Ceiling(name.printedSize.y)));
                 SpriteIcon(goal.Definition.icon, pad, y + (rowHeight - (int)Style.Icon) / 2);
                 Center("×" + goal.Quantity, PlannerLayout.QuantityX(slotX), y + (rowHeight - line) / 2, PlannerLayout.QuantityWidth, line).overflowMethod = UILabel.Overflow.ShrinkContent;
-                if (PlannerEditing.Active && ReferenceEquals(PlannerEditing.Selected, goal)) name.color = new Color(1, .94f, .72f, Style.TextOpacity);
-                if (_mouseCamera != null && (!LazyInput.gamepad_active || PlannerEditing.Active))
+                FocusRow(goal, name, pad, y, _width - 2 * pad, rowHeight);
+                if (!LazyInput.gamepad_active || PlannerEditing.Active)
                 {
                     Arrow(goal, -1, slotX, y + (rowHeight - line) / 2, line);
                     if (goal.Repeatable) Arrow(goal, 1, slotX + PlannerLayout.ArrowWidth + PlannerLayout.QuantityWidth, y + (rowHeight - line) / 2, line);
                 }
                 y += rowHeight;
             }
-            y += 6;
+            y += (int)Style.MaterialsGap;
             Center(PlannerLocalization.Required, firstCountX, y, col, line).fontSize = Math.Max(11, (int)Style.Font - 3);
             Center(PlannerLocalization.Have, firstCountX + col + columnGap, y, col, line).fontSize = Math.Max(11, (int)Style.Font - 3);
             Center(PlannerLocalization.Missing, firstCountX + 2 * (col + columnGap), y, col, line).fontSize = Math.Max(11, (int)Style.Font - 3);
@@ -136,6 +133,7 @@ namespace CraftingPlanner
             for (int i = _labelCursor; i < _labels.Count; i++) _labels[i].gameObject.SetActive(false);
             for (int i = _iconCursor; i < _icons.Count; i++) _icons[i].gameObject.SetActive(false);
             for (int i = _arrowCursor; i < _arrows.Count; i++) _arrows[i].gameObject.SetActive(false);
+            for (int i = _focusCursor; i < _focusRows.Count; i++) _focusRows[i].gameObject.SetActive(false);
             _height = y + pad;
             Place();
             Footer(view, line);
@@ -149,7 +147,6 @@ namespace CraftingPlanner
             _root.transform.localScale = Vector3.one * Style.Scale;
             _root.transform.localPosition = Vector3.zero;
             UpdateBacking();
-            if (_header != null) { _header.width = _width; _header.height = _bodyTop - (int)Style.TitleGap; _header.transform.localPosition = Vector3.zero; }
             int w = (int)Math.Ceiling(_width * Style.Scale), h = (int)Math.Ceiling(_height * Style.Scale);
             _shell.width = w; _shell.height = h;
             _shell.SetAnchor(_anchor.gameObject, 1f, -(int)Style.Right - w, 1f, -(int)Style.Top - h, 1f, -(int)Style.Right, 1f, -(int)Style.Top);
@@ -164,7 +161,7 @@ namespace CraftingPlanner
             label.overflowMethod = wrap ? UILabel.Overflow.ResizeHeight : UILabel.Overflow.ClampContent;
             label.width = Math.Max(width, 1); label.height = height;
             label.color = new Color(0.94f, 0.90f, 0.80f, Style.TextOpacity);
-            label.effectStyle = UILabel.Effect.Outline;
+            label.effectStyle = Style.Outline ? UILabel.Effect.Outline : UILabel.Effect.Shadow;
             label.effectColor = new Color(.065f, .065f, .055f, .8f);
             label.effectDistance = new Vector2(1, 1);
             label.depth = 2;
@@ -173,7 +170,7 @@ namespace CraftingPlanner
         {
             if (_labelCursor == _labels.Count) _labels.Add(Child("text-" + _labelCursor, _root.transform).AddComponent<UILabel>());
             UILabel label = _labels[_labelCursor++];
-            Configure(label, _fontTemplate, width, height, right, wrap);
+            Configure(label, FontTemplate, width, height, right, wrap);
             label.transform.localPosition = new Vector3(-_width + x, -y, 0);
             label.text = text; label.gameObject.SetActive(true); return label;
         }
@@ -189,46 +186,69 @@ namespace CraftingPlanner
         {
             if (_arrowCursor == _arrows.Count)
             {
-                UITexture created = Child("plan-arrow-" + _arrowCursor, _root.transform).AddComponent<UITexture>();
-                created.mainTexture = Texture2D.whiteTexture; created.pivot = UIWidget.Pivot.TopLeft; created.depth = 1;
+                UILabel created = Child("plan-arrow-" + _arrowCursor, _root.transform).AddComponent<UILabel>();
                 created.gameObject.AddComponent<BoxCollider2D>(); _arrows.Add(created);
             }
-            UITexture button = _arrows[_arrowCursor++];
-            button.width = PlannerLayout.ArrowWidth; button.height = height;
-            button.transform.localPosition = new Vector3(-_width + x, -y, 0);
-            button.color = new Color(.2f, .2f, .18f, .04f); button.gameObject.SetActive(true);
-            BoxCollider2D collider = button.GetComponent<BoxCollider2D>();
-            collider.size = new Vector2(button.width, height); collider.offset = new Vector2(button.width * .5f, -height * .5f);
-            UILabel glyph = Center(delta < 0 ? "<" : ">", x, y, button.width, height);
+            UILabel glyph = _arrows[_arrowCursor++];
+            Configure(glyph, FontTemplate, PlannerLayout.ArrowWidth, height, false, false);
+            glyph.pivot = UIWidget.Pivot.Center; glyph.alignment = NGUIText.Alignment.Center;
+            glyph.transform.localPosition = new Vector3(-_width + x + glyph.width / 2f, -y - height / 2f, 0);
+            glyph.text = delta < 0 ? "<" : ">"; glyph.gameObject.SetActive(true);
+            BoxCollider2D collider = glyph.GetComponent<BoxCollider2D>();
+            collider.size = new Vector2(glyph.width, height); collider.offset = Vector2.zero;
             Color muted = new Color(.70f, .70f, .65f, Style.TextOpacity); glyph.color = muted;
-            UIEventListener listener = UIEventListener.Get(button.gameObject);
+            UIEventListener listener = UIEventListener.Get(glyph.gameObject);
             listener.onHover = delegate(GameObject go, bool over)
             {
                 glyph.color = over ? new Color(1, .94f, .72f, Style.TextOpacity) : muted;
-                button.color = new Color(.2f, .2f, .18f, over ? .25f : .04f);
             };
             listener.onClick = delegate(GameObject go)
             {
                 if (!PlannerCalibration.IsOpen && PlannerPresentation.GetView() != PlannerView.Hidden) Planner.AdjustPinned(goal, delta, "mouse_plan_arrow");
             };
-            listener.onHover(button.gameObject, UICamera.hoveredObject == button.gameObject);
+            listener.onHover(glyph.gameObject, UICamera.hoveredObject == glyph.gameObject);
+        }
+        private void FocusRow(ProjectGoal goal, UILabel name, int x, int y, int width, int height)
+        {
+            if (_focusCursor == _focusRows.Count)
+            {
+                UITexture focus = Child("goal-focus", _root.transform).AddComponent<UITexture>();
+                focus.mainTexture = Texture2D.whiteTexture; focus.pivot = UIWidget.Pivot.TopLeft; focus.depth = 1;
+                _focusRows.Add(focus);
+            }
+            UITexture band = _focusRows[_focusCursor++]; band.width = width; band.height = height;
+            band.transform.localPosition = new Vector3(-_width + x, -y, 0);
+            bool selected = PlannerEditing.Active && ReferenceEquals(PlannerEditing.Selected, goal);
+            band.color = new Color(.65f, .53f, .30f, selected ? .25f : 0);
+            band.gameObject.SetActive(true);
+            BoxCollider2D hit = name.GetComponent<BoxCollider2D>();
+            if (hit == null) hit = name.gameObject.AddComponent<BoxCollider2D>();
+            hit.enabled = !LazyInput.gamepad_active;
+            hit.size = new Vector2(name.width, height); hit.offset = new Vector2(name.width / 2f, -height / 2f);
+            UIEventListener.Get(name.gameObject).onHover = delegate(GameObject go, bool over)
+            {
+                band.color = new Color(.65f, .53f, .30f, selected ? .25f : over && !LazyInput.gamepad_active ? .12f : 0);
+            };
         }
         internal bool BlocksWorldClick()
         {
-            if (_panelGo == null || !_panelGo.activeInHierarchy || _mouseCamera == null || !Input.GetMouseButton(0)) return false;
+            if (_panelGo == null || !_panelGo.activeInHierarchy || !Input.GetMouseButton(0)) return false;
+            UICamera events = UICamera.FindCameraForLayer(_panelGo.layer);
+            Camera mouseCamera = events != null ? events.cachedCamera : null;
+            if (mouseCamera == null) return false;
             Vector3 pointer = Input.mousePosition;
-            foreach (UITexture arrow in _arrows)
+            foreach (UILabel arrow in _arrows)
             {
                 if (!arrow.gameObject.activeInHierarchy) continue;
                 Vector3[] corners = arrow.worldCorners;
-                Vector3 a = _mouseCamera.WorldToScreenPoint(corners[0]), b = _mouseCamera.WorldToScreenPoint(corners[2]);
+                Vector3 a = mouseCamera.WorldToScreenPoint(corners[0]), b = mouseCamera.WorldToScreenPoint(corners[2]);
                 if (pointer.x >= Math.Min(a.x, b.x) && pointer.x <= Math.Max(a.x, b.x) && pointer.y >= Math.Min(a.y, b.y) && pointer.y <= Math.Max(a.y, b.y)) return true;
             }
             return false;
         }
         private int Measure(string text, int font = 0)
         {
-            ApplyNativeFont(_measure, _fontTemplate); _measure.fontSize = font > 0 ? font : (int)Style.Font;
+            ApplyNativeFont(_measure, FontTemplate); _measure.fontSize = font > 0 ? font : (int)Style.Font;
             _measure.multiLine = false; _measure.maxLineCount = 1;
             _measure.overflowMethod = UILabel.Overflow.ResizeFreely; _measure.text = text;
             return (int)Math.Ceiling(_measure.printedSize.x);
@@ -270,18 +290,14 @@ namespace CraftingPlanner
             _footer.transform.localPosition = new Vector3(-_width, -_height - Style.FooterGap, 0);
             if (build)
             {
-                string left = GameKeyTip.Get(GameKey.Left, PlannerLocalization.RemoveGoal, true, true, false, false);
-                string right = GameKeyTip.Get(GameKey.Right, PlannerLocalization.AddGoal, true, true, false, false);
-                _footer.text = LazyInput.gamepad_active ? left + "   " + right : "";
+                _footer.text = "";
             }
             else if (chest)
             {
                 _footer.text = ""; // Storage action and feedback live beside the native chest controls.
             }
             else if (view == PlannerView.Hud && LazyInput.gamepad_active && PlannerEditing.Available)
-                _footer.text = PlannerEditing.Active ? GameKeyTip.Get(GameKey.Up, "", true, true, false, false) + GameKeyTip.Get(GameKey.Down, "", true, true, false, false) +
-                    "   " + GameKeyTip.Get(GameKey.Left, "", true, true, false, false) + GameKeyTip.Get(GameKey.Right, "", true, true, false, false) +
-                    "   " + GameKeyTip.Get(GameKey.Back, PlannerLocalization.FinishEditing, true, true, false, false) : GameKeyTip.RightStick(true, true, false, PlannerLocalization.EditPlan).ToString();
+                _footer.text = PlannerEditing.Active ? GameKeyTip.Get(GameKey.Back, PlannerLocalization.FinishEditing, true, true, false, false) : GameKeyTip.RightStick(true, true, false, PlannerLocalization.EditPlan).ToString();
             else _footer.text = "";
             _footer.gameObject.SetActive(!string.IsNullOrEmpty(_footer.text));
         }
@@ -291,6 +307,7 @@ namespace CraftingPlanner
             label.fontSize = template.fontSize; label.fontStyle = template.fontStyle; label.symbolStyle = template.symbolStyle;
             label.spacingX = template.spacingX; label.spacingY = template.spacingY;
             label.effectStyle = template.effectStyle; label.effectColor = template.effectColor; label.effectDistance = template.effectDistance;
+            GJL.EnsureLabelHasCorrectFont(label, false);
         }
         private void UpdateBacking()
         {
@@ -319,10 +336,10 @@ namespace CraftingPlanner
         }
         internal void Export(Camera camera)
         {
-            Planner.LogLine("event=calibration_export format=2 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
+            Planner.LogLine("event=calibration_export format=3 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
                 " actual_width=" + _width + " actual_height=" + _height + " screen=" + Screen.width + "x" + Screen.height +
                 " card_px=" + Rectangle(_root, camera) + " back_px=" + Rectangle(_back, camera) +
-                " font=" + (_fontTemplate.bitmapFont != null ? _fontTemplate.bitmapFont.name : "dynamic") + " language=" + PlannerLocalization.CurrentLanguage);
+                " font_asset=" + (FontTemplate.bitmapFont != null ? FontTemplate.bitmapFont.name : "dynamic") + " arrows=" + _arrowCursor + " focus_rows=" + _focusCursor + " language=" + PlannerLocalization.CurrentLanguage);
         }
         private static string Rectangle(UIWidget widget, Camera camera)
         {
@@ -342,6 +359,7 @@ namespace CraftingPlanner
 
     internal static class PlannerPresentation
     {
+        private static readonly System.Reflection.FieldInfo InventoryTab = AccessTools.Field(typeof(GameGUI), "_current_tab_type");
         private static PlannerCard _card;
         private static bool _failed;
         private static PlannerView _lastView = PlannerView.Hidden;
@@ -354,6 +372,7 @@ namespace CraftingPlanner
                 BaseGUI top = BaseGUI.opened_windows[BaseGUI.opened_windows.Count - 1];
                 if (top == gui.chest) return PlannerView.Chest;
                 if (top == gui.craft && Planner.ShouldShowCraftOverlay) return PlannerView.Build;
+                if (top == gui.game_gui && InventoryTab != null && Convert.ToInt32(InventoryTab.GetValue(top)) == 0) return PlannerView.Inventory;
                 return PlannerView.Hidden;
             }
             return gui.hud != null && gui.hud.gameObject.activeInHierarchy ? PlannerView.Hud : PlannerView.Hidden;
@@ -363,6 +382,7 @@ namespace CraftingPlanner
             GUIElements gui = GUIElements.me;
             if (view == PlannerView.Build && gui.craft != null) return gui.craft.GetComponentInParent<UIPanel>();
             if (view == PlannerView.Chest && gui.chest != null) return gui.chest.GetComponentInParent<UIPanel>();
+            if (view == PlannerView.Inventory && gui.game_gui != null) return gui.game_gui.GetComponentInParent<UIPanel>();
             return gui.hud != null ? gui.hud.panel : null;
         }
         internal static void Refresh()
@@ -392,6 +412,8 @@ namespace CraftingPlanner
         internal static bool BlocksWorldClick() { return GetView() == PlannerView.Hud && _card != null && _card.BlocksWorldClick(); }
         internal static void Destroy() { if (_card != null) _card.Dispose(); _card = null; }
     }
+    [HarmonyPatch(typeof(GameGUI), "SelectTab")]
+    internal static class PlannerInventoryTabPatch { private static void Postfix() { PlannerPresentation.Refresh(); } }
     // Existing state/native lifecycle callers converge on the same single object.
     internal static class PlannerHud
     {
