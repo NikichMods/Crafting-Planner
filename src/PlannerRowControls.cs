@@ -145,7 +145,12 @@ namespace CraftingPlanner
                 bool first = items != null && items.Find(Eligible) == _row;
                 if (title != null && first)
                 {
-                    if (_caption == null) _caption = Text(PlannerLocalization.PlanColumn, GUIElements.me.craft.transform, 0, 0, 72, 22);
+                    if (_caption == null)
+                    {
+                        UIPanel titlePanel = title.GetComponentInParent<UIPanel>();
+                        if (titlePanel == null) throw new InvalidOperationException("Native title panel unavailable");
+                        _caption = Text(PlannerLocalization.PlanColumn, titlePanel.transform, 0, 0, 72, 22);
+                    }
                     PlannerCard.ApplyNativeFont(_caption, title); _caption.color = title.color; _caption.depth = title.depth + 1;
                     _caption.text = PlannerLocalization.PlanColumn;
                     _caption.SetAnchor(_quantity.gameObject, .5f, -36, .5f, -11, .5f, 36, .5f, 11);
