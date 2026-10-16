@@ -455,3 +455,12 @@ After the pass, collect the accessible local BepInEx log directly and match the 
 Exact source 932a7ae0897d48e20a54ed977c0cfae91d4d5d6d; installed DLL SHA256 5ca022e46edae854e6841594a189a407fbcbf6aab2001275a573958de2a4f590 matches the immutable CI artifact. Preserved private LogOutput.log SHA256 d2ef5b6ce331cff731ba36e30ae58b18fa542a1a9e3774d9f7dc1187fa3f71d8 records loading 0.1.9; no planner exception/circuit-disable event found. User reports and seven screenshots confirm supported menu quantities/aggregation and actual needed-item transfer. RS enters/exits and directional changes work with character movement contained. This does not establish universal compatibility/transfer edges.
 
 Rejected: native presentation differs from mockup, missing HUD arrows/mouse clicks, insufficient controller focus contrast, duplicated/off-centre title, quantity/Missing misalignment, menu rectangular stripe and ingredient/name spacing, framed chest action, feedback hidden behind inventory windows. Character Inventory-tab visibility and F2 grouped calibration are newly requested. Runtime source correction continues on dev/0.1.10; 0.1.9 is not accepted for stable promotion.
+
+## 0.1.10 installed correction candidate — 2026-10-16
+
+- Exact source: 2af839b1a495007f46b7c8f889f98b6d3008a82c, dev/0.1.10.
+- Successful clean hosted CI: 38830954723; artifact 12016149655. ZIP SHA256 262b4ebf67b296cca0493d741a0f3f419fa9618e6ea68083956b7751deea2cea.
+- Numbered DLL and installed canonical DLL SHA256: ad6e0c402775407fae1a9d3af882126905d0e473b69bd6f648e092771819767c. Binary version 0.1.10.0, calibration enabled.
+- Both native-reference configurations compile; CI clean stub build, source/version identity, state/geometry/11-language tests and reference-exclusion checks pass. Exact downloaded DLL policy tests pass; archive digest and manifest verified. Unhanded intermediate CI 38830747876 is not the installed artifact.
+- Installed with host process absent; previous 0.1.9 payload/log and installation receipt preserved privately. No stable acceptance inferred.
+- Requested native checks: mouse HUD arrows/hover/click without world actions; RS focus/quantity/B exit; quantity/Missing alignment and F2 tuning/export; Inventory-tab visibility and other-tab/modal hiding; supported menu title/ingredients/names/scroll and native row-build click; plain chest Y/F action with actual/no-op/partial feedback below tips. All-language dictionary coverage is automated; native glyph/spacing review remains bounded to actual returns.
