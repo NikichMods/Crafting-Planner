@@ -535,3 +535,10 @@ Remaining UI request: combined bottom construction actions, native subdued text 
 ## 0.1.15 returned runtime — 2026-10-17
 
 User explicitly accepts native round direction icons and the combined menu help appearance/functionality. Preserved private log SHA256198c6cb73b389a284cc6f49b28f70d2691cce1fc7a8e9e520e17184d09d2e4a5 loads Building Planner0.1.15 with no planner exception/disable found; no new format8 export, so style defaults are retained. Installed source identity is156ffd13c9d47bd317adadc9ea6043e257cd213e, expected DLL SHA256a771b795d1c2467c85e13e34fe29c16ca17e4ccf43f1b14aa184fe03a2e60267. One repair-table screenshot shows native energy overlap with quantity/arrows; this opens only the supported energy-row layout correction, not a redesign or stable acceptance.
+
+## 0.1.16 installed candidate — 2026-10-17
+
+- Exact sourcea8bda9eeb0f4829ff5eaf2fbec0dfbbaa213c25b, dev/0.1.16. Successful CI38977362668, artifact12079323553, ZIP SHA256b7c9c3883da0cb031a855bb3ef34d9f016e1bd5a1f0f8de966229ff88b155fb7.
+- Installed/numbered DLL SHA25674f612880574d90a53d771a925f8cbc56bbb69f3e5b1acad8ffa7de189d2d37f, version0.1.16.0, calibration enabled. Installed with game closed after exact manifest/source/version/hash verification; prior0.1.15 DLL/log/receipt preserved privately.
+- Both native-reference configurations compile with warnings as errors. Hosted build/state/localization/geometry/font/reset/rounding/transfer-coalescing/energy-bound checks and reference exclusion pass. Downloaded exact DLL tests pass. Native energy-field signature is verified against exact host assemblies. No visual/runtime acceptance is inferred.
+- Check repair-table energy above quantity/arrows, mouse/gamepad, repeated quantity edits/reopen/scroll without drift, and unchanged ordinary construction/production geometry. Single-line native energy only; arbitrary multiline costs are not changed. Existing accepted tips/chest/Quick Stack presentation remains. No main/stable promotion.
