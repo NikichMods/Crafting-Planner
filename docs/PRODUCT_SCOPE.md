@@ -296,3 +296,7 @@ User accepts current chest actions/results, compact right alignment and immediat
 ### Energy-cost row separation — 2026-10-17
 
 User accepts the combined lower action row and native round arrow icons in0.1.15. A supported repair action shows energy behind the planner counter. Separate native energy above and quantity/arrows below only when a single-line energy cost is visible. Preserve native cost semantics, ordinary builder layout, row height, accepted footer/chest and all input behavior. Prefer a bounded integer shift within existing whitespace over native row resizing or a new cost renderer. Multiline/special costs are not generalized by this repair-specific pass.
+
+### Visual milestone accepted — 2026-10-17
+
+User explicitly accepts the complete current visual presentation, including the0.1.16 energy-row correction. Close visual iteration unless a new defect/request reopens it. This is visual acceptance, not an assertion that all functional edge cases or the release are accepted. No new binary/install is requested while the game remains running. Next required function is automatic reduction after verified successful placement, with separate repair/upgrade/clearing success paths; session persistence stays deferred.
