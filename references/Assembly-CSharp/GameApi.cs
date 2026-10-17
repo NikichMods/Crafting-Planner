@@ -102,6 +102,7 @@ public class Inventory { public Item data { get { return null; } } }
 
 public class MultiInventory
 {
+    public bool RemoveItems(List<Item> items, DestinationType destination, List<string> multiquality, List<Item> used) { return false; }
     public List<Inventory> all { get { return null; } }
     public enum DestinationType
     {
@@ -128,6 +129,8 @@ public class MultiInventory
 
 public class WorldGameObject : MonoBehaviour
 {
+    public bool just_built;
+    public long unique_id;
     public ComponentsManager components { get { return null; } }
     public string obj_id;
     public Item data { get { return null; } }
@@ -138,6 +141,21 @@ public class WorldGameObject : MonoBehaviour
     }
 }
 
+// Signatures only, verified on the inspected1.407 placement path.
+public class BuildModeLogics
+{
+    public static WorldGameObject last_build_desk;
+#pragma warning disable 0169
+    private ObjectCraftDefinition _cd;
+    private MultiInventory _multi_inventory;
+#pragma warning restore 0169
+    private void DoPlace() { }
+}
+public class FloatingWorldGameObject : MonoBehaviour
+{
+    public static FloatingWorldGameObject cur_floating { get { return null; } }
+    public WorldGameObject wobj { get { return null; } }
+}
 public class MainGame : MonoBehaviour
 {
     public static MainGame me;

@@ -211,3 +211,9 @@ READY before mutation, with user-visible checkpoints. The returned screenshots/l
 Returned format9 exports preserve ordinary material29/0 and cost material46/0, native cost24/-1, shared menu17/1 and arrow fine-X8/-9. 0.1.19 defaults retain both snapshots rather than treating the last whole export as universally applicable.
 
 The second change is visibility only: PlannerGoalState.CanIncrease supplies the same limit rule to actual increment and both plus-arrow consumers (PlannerRowControls and PlannerCard). Hide at repeatable20/one-off1, show below the bound, preserve horizontal gamepad consumption and number placement. State/predicate tests cover0,19,20 and20->19, plus the one-off0/1 boundary. Native menu/HUD disappearance/reappearance remains a rendering/input check; no new placement probe is required.
+
+## 0.1.19 visual acceptance and0.1.20 preservation — 2026-10-17
+
+User confirms independent settings no longer affect one another, the right arrow disappears at20 and returns at19, and explicitly accepts the current visuals. Frozen0.1.19 source/hash remain unchanged. Preserved private snapshot `.local/evidence/accept-0.1.19-visual/LogOutput.log`, SHA256 `023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a`, loads0.1.19 with no planner exception/disable found. This is bounded visual acceptance, not exhaustive gamepad/language/functional or stable-release acceptance. Preserve the tuned defaults and close visual iteration unless a new defect/request appears. The user explicitly resumes automatic successful-placement reduction.
+
+0.1.20 changes goal state after successful repeatable placement and refreshes existing row/HUD consumers at LateUpdate, after the native operation completes. No visual geometry, defaults or calibration changes are included.

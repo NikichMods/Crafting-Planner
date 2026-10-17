@@ -6,9 +6,9 @@ Updated: 2026-10-17
 
 The complete 0.1.16 visual presentation is user-accepted as of 2026-10-17. Preserve it unless a new defect/request reopens visual work. Exercised core functionality is recorded in [TEST_LOG.md](TEST_LOG.md); this is not full functional or stable-release acceptance. Exact installed artifact and recovery are in [DEVELOPMENT.md](DEVELOPMENT.md).
 
-The user reports the 0.1.17 multi-line native-cost separation technically works and adopts one shared cost-block format for both single-energy and multi-line costs. The rightmost menu column belongs exclusively to planner quantity, centred horizontally/vertically by default. Native cost text/width/height remain host-owned; F2 independently moves its whole block in X/Y and adjusts materials relative to it. The earlier stacked single-energy arrangement is superseded. Recovered tuning below now owns the candidate defaults; final cross-context acceptance remains pending.
+The user reports the 0.1.17 multi-line native-cost separation technically works and adopts one shared cost-block format for both single-energy and multi-line costs. The rightmost menu column belongs exclusively to planner quantity, centred horizontally/vertically by default. Native cost text/width/height remain host-owned; F2 independently moves its whole block in X/Y and adjusts materials relative to it. The earlier stacked single-energy arrangement is superseded. Recovered tuning below owns the defaults; the user accepts0.1.19 cross-context visual behavior, independent settings and20/19 arrow behavior on2026-10-17.
 
-The 0.1.18 return supplies separate tuned layouts: ordinary rows need material X/Y 29/0; rows with native costs need 46/0, with cost-block 24/-1. Shared counter settings are X/Y 17/1 and arrow fine-X 8/-9. Preserve both sets independently based on visible native cost-block presence in each row, including mixed menus; changing repair/cost-row materials must not move ordinary builder rows. Use these recovered settings as candidate defaults. The right arrow disappears at the repeatable cap20 in both menu and HUD, reappears below20, and retains the one-off0/1 behavior.
+The 0.1.18 return supplies separate tuned layouts: ordinary rows need material X/Y 29/0; rows with native costs need 46/0, with cost-block 24/-1. Shared counter settings are X/Y 17/1 and arrow fine-X 8/-9. Preserve both sets independently based on visible native cost-block presence in each row, including mixed menus; changing repair/cost-row materials must not move ordinary builder rows. These recovered settings are the accepted visual defaults. The right arrow disappears at the repeatable cap20 in both menu and HUD, reappears below20, and retains the one-off0/1 behavior.
 
 ## Product model
 
@@ -48,9 +48,9 @@ P0 does not expand dependencies. If a bench needs planks, the planner asks for p
 
 ## Required next milestone: successful-operation reduction
 
-Automatic reduction is required follow-up and absent from 0.1.16. For repeatable placeables, decrement exactly one at verified successful placement/material commitment, not at later physical construction completion. Failed/cancelled/rejected placement removes none. Remove a goal at zero and recompute derived aggregate requirements; native code alone spends materials. Do not introduce an in-progress tracker.
+Automatic reduction is required follow-up, absent through0.1.19, and implemented in the0.1.20 candidate pending native acceptance. For repeatable placeables, decrement exactly one at verified successful placement/material commitment, not at later physical construction completion. Failed/cancelled/rejected placement removes none. Remove a goal at zero and recompute derived aggregate requirements; native code alone spends materials. Do not introduce an in-progress tracker.
 
-One-time upgrade/repair/clearing actions need their own verified success boundary and exact goal identity. Menu selection and inventory changes alone are not success evidence. Existing static `DoPlace` inspection does not close the success/exactly-once gate; verify before relying on a production hook.
+One-time upgrade/repair/clearing actions need their own verified success boundary and exact goal identity. Menu selection and inventory changes alone are not success evidence. Returned probe evidence and the0.1.20 production gate are owned by PLACEMENT_COMMIT_RESEARCH.md; compilation/state tests do not close native decrement acceptance.
 
 ## Materials
 

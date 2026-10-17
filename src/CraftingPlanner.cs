@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Building Planner";
-        public const string PluginVersion = "0.1.19";
+        public const string PluginVersion = "0.1.20";
 
         private Harmony _harmony;
 
@@ -23,6 +23,7 @@ namespace CraftingPlanner
             Planner.Log = Logger;
             _harmony = new Harmony(PluginGuid);
             _harmony.PatchAll();
+            PlannerPlacement.Install();
             LazyInput.on_input_changed += PlannerInputHints.OnInputChanged;
             BaseGUI.on_window_opened += PlannerInputHints.OnWindowChanged;
             BaseGUI.on_window_closed += PlannerInputHints.OnWindowChanged;
@@ -31,6 +32,7 @@ namespace CraftingPlanner
 
         private void OnDestroy()
         {
+            PlannerPlacement.Stop();
             PlannerCalibration.Close();
             PlannerEditing.Reset();
             PlannerInventoryRefresh.Reset();
@@ -51,7 +53,7 @@ namespace CraftingPlanner
 
         private void Update() { PlannerCalibration.Update(); }
         private void OnGUI() { PlannerCalibration.Draw(); }
-        private void LateUpdate() { PlannerInventoryRefresh.Flush(); }
+        private void LateUpdate() { PlannerPlacement.Flush(); PlannerInventoryRefresh.Flush(); }
     }
 
     internal enum ProjectContextKind
@@ -93,6 +95,7 @@ namespace CraftingPlanner
 
         internal static void ResetSession()
         {
+            PlannerPlacement.Reset();
             PlannerCalibration.Close();
             PlannerEditing.Reset();
             PlannerRowControls.RestoreAll();
@@ -197,6 +200,17 @@ namespace CraftingPlanner
         {
             var goal = Goals.FirstOrDefault(x => x.Key == BuildGoalKey(definition));
             return goal != null ? goal.Quantity : 0;
+        }
+        internal static ProjectGoal FindPlacement(ObjectCraftDefinition definition, string builder)
+        { return PlannerGoalState.FindPlacement(Goals, definition, builder); }
+        internal static bool CompletePlacement(PlacementAttempt attempt, bool nativeCompleted, bool becameBuilt)
+        {
+            ProjectGoal updated;
+            if (!attempt.Complete(Goals, nativeCompleted, becameBuilt, out updated)) return false;
+            // A logging failure must not lose the pending refresh after state was changed.
+            try { LogLine("event=goal_placed key=" + Safe(updated.Key) + " quantity=" + updated.Quantity +
+                " object_uid=" + (attempt.Object != null ? attempt.Object.unique_id : 0)); } catch { }
+            return true;
         }
         internal static bool AdjustProject(CraftDefinition definition, int delta)
         {
@@ -444,7 +458,7 @@ namespace CraftingPlanner
         private static string BuildGoalKey(CraftDefinition definition)
         {
             string owner = _contextOwner != null ? _contextOwner.obj_id : "";
-            return ((int)_context).ToString() + "|" + owner + "|" + definition.id;
+            return PlannerGoalState.Key(_context, owner, definition.id);
         }
 
         internal static string GetProjectName(CraftDefinition definition)

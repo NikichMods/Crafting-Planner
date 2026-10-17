@@ -5,6 +5,16 @@ namespace CraftingPlanner
     internal static class PlannerGoalState
     {
         internal const int MaxQuantity = 20;
+        internal static string Key(ProjectContextKind context, string owner, string definition)
+        { return ((int)context).ToString() + "|" + (owner ?? "") + "|" + definition; }
+        internal static ProjectGoal FindPlacement(IList<ProjectGoal> goals, ObjectCraftDefinition definition, string builder)
+        {
+            if (definition == null || definition.build_type != ObjectCraftDefinition.BuildType.Put || definition.one_time_craft ||
+                string.IsNullOrEmpty(builder) || string.IsNullOrEmpty(definition.id)) return null;
+            string key = Key(ProjectContextKind.Builder, builder, definition.id);
+            foreach (ProjectGoal goal in goals) if (goal.Repeatable && goal.Key == key) return goal;
+            return null;
+        }
         internal static bool CanIncrease(int quantity, bool repeatable)
         { return quantity < (repeatable ? MaxQuantity : 1); }
         internal static bool AdjustPinned(IList<ProjectGoal> goals, ProjectGoal pinned, int delta, out ProjectGoal updated)

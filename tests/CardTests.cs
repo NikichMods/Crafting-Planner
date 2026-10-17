@@ -147,11 +147,71 @@ class CardTests
             MethodInfo normalize = localization.GetMethod("Normalize", BindingFlags.Static | BindingFlags.NonPublic);
             Require((string)normalize.Invoke(null, new object[] {"zh_CN"}) == "zh-cn", "Native Chinese code not normalized");
             Require((string)normalize.Invoke(null, new object[] {"pt_BR"}) == "pt-br", "Native Portuguese code not normalized");
-            if (Array.IndexOf(args, "--state") >= 0) CheckPinnedState(candidate);
+            if (Array.IndexOf(args, "--state") >= 0) { CheckPinnedState(candidate); CheckPlacement(candidate); }
             Console.WriteLine("PASS: centred rounded backing, feather/bounds/top-row coverage, quantity slot and 11-language schema. Native visual and input acceptance require the game.");
             return 0;
         }
         catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
+    }
+    static void CheckPlacement(Assembly candidate)
+    {
+        BindingFlags methods = BindingFlags.Static | BindingFlags.NonPublic;
+        Type planner = candidate.GetType("CraftingPlanner.Planner", true), state = candidate.GetType("CraftingPlanner.PlannerGoalState", true);
+        Type goalType = candidate.GetType("CraftingPlanner.ProjectGoal", true), receiptType = candidate.GetType("CraftingPlanner.PlacementAttempt", true);
+        IList goals = (IList)planner.GetField("Goals", methods).GetValue(null); goals.Clear();
+        MethodInfo find = state.GetMethod("FindPlacement", methods), aggregate = planner.GetMethod("AggregateRequirements", methods);
+        Type definitionType = find.GetParameters()[1].ParameterType;
+        object definition = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(definitionType);
+        Field(definition, "id", "bench");
+        Field(definition, "build_type", Enum.Parse(definitionType.GetField("build_type").FieldType, "Put"));
+        Type needsType = definitionType.GetField("needs").FieldType;
+        IList needs = (IList)Activator.CreateInstance(needsType);
+        object material = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(needsType.GetGenericArguments()[0]);
+        Field(material, "id", "placement_material"); Field(material, "value", 4); needs.Add(material); Field(definition, "needs", needs);
+        Func<string,int,bool,object> goal = delegate(string key, int quantity, bool repeatable) {
+            object result = Activator.CreateInstance(goalType, true);
+            Field(result, "Key", key); Field(result, "Definition", definition); Field(result, "Quantity", quantity); Field(result, "Repeatable", repeatable); return result;
+        };
+        Func<object,int> quantityOf = value => (int)goalType.GetField("Quantity", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(value);
+        object tracked = goal("1|builder_a|bench", 3, true), otherOwner = goal("1|builder_b|bench", 5, true), otherCraft = goal("1|builder_a|other", 7, true), world = goal("2|builder_a|bench", 1, false);
+        goals.Add(tracked); goals.Add(otherOwner); goals.Add(otherCraft); goals.Add(world);
+        Require(ReferenceEquals(find.Invoke(null, new object[] {goals, definition, "builder_a"}), tracked), "Placement must match the original builder/definition key after menus close");
+        Require(find.Invoke(null, new object[] {goals, definition, "missing"}) == null, "Unknown builders must not consume any goal");
+        Field(definition, "one_time_craft", true); Require(find.Invoke(null, new object[] {goals, definition, "builder_a"}) == null, "One-time upgrades are a separate success path"); Field(definition, "one_time_craft", false);
+        Field(definition, "build_type", Enum.Parse(definitionType.GetField("build_type").FieldType, "Remove"));
+        Require(find.Invoke(null, new object[] {goals, definition, "builder_a"}) == null, "Removal controls must not fulfil construction goals");
+        Field(definition, "build_type", Enum.Parse(definitionType.GetField("build_type").FieldType, "Put"));
+        Type inventoryType = receiptType.GetField("Inventory", BindingFlags.Instance | BindingFlags.NonPublic).FieldType;
+        object inventory = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(inventoryType);
+        object unrelated = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(inventoryType);
+        MethodInfo spend = receiptType.GetMethod("ObserveSpend", BindingFlags.Instance | BindingFlags.NonPublic), complete = receiptType.GetMethod("Complete", BindingFlags.Instance | BindingFlags.NonPublic);
+        Func<object,object> receipt = capturedGoal => {
+            object result = Activator.CreateInstance(receiptType, true); Field(result, "Goal", capturedGoal); Field(result, "Definition", definition); Field(result, "Inventory", inventory); return result;
+        };
+        Action<object,object,object,bool> observe = (value, inv, items, success) => spend.Invoke(value, new object[] {inv,items,success});
+        Func<object,bool,bool,bool> finish = (value, normal, built) => (bool)complete.Invoke(value, new object[] {goals,normal,built,null});
+        int before = (int)((IDictionary)aggregate.Invoke(null,null))["placement_material"];
+        object first = receipt(tracked);
+        observe(first, unrelated, needs, true); observe(first, inventory, Activator.CreateInstance(needsType), true); observe(first, inventory, needs, true);
+        Require(finish(first,true,true) && quantityOf(tracked) == 2, "Only the exact operation's native spend may fulfil one unit");
+        Require(!finish(first,true,true) && quantityOf(tracked) == 2, "A receipt must apply at most once");
+        Require((int)((IDictionary)aggregate.Invoke(null,null))["placement_material"] == before - 4, "Derived requirements must fall by one project's exact needs");
+        Require(quantityOf(otherOwner) == 5 && quantityOf(otherCraft) == 7 && quantityOf(world) == 1, "Other owner/recipe/world goals must be unchanged");
+        foreach (int failure in new[] {0,1,2,3,4,5})
+        {
+            object value = receipt(tracked);
+            if (failure != 0) observe(value, inventory, needs, failure != 1);
+            if (failure == 2) observe(value, inventory, needs, true);
+            Require(!finish(value, failure != 3, failure != 4 && failure != 5), "No-spend/failed-spend/duplicate-spend/exception/cancel/rejection must not reduce the plan");
+            Require(quantityOf(tracked) == 2, "A failed attempt changed quantity");
+        }
+        object stale = receipt(tracked); observe(stale, inventory, needs, true); goals.Remove(tracked);
+        object replacement = goal("1|builder_a|bench",2,true); goals.Add(replacement);
+        Require(!finish(stale,true,true) && quantityOf(replacement) == 2, "Removed/re-added goals must not inherit an old captured placement");
+        for (int i = 0; i < 2; i++) { object value=receipt(replacement); observe(value,inventory,needs,true); Require(finish(value,true,true), "Repeated placements must each consume one unit"); }
+        Require(!goals.Contains(replacement), "Last successful placement must remove the goal at zero");
+        goals.Clear();
+        Console.WriteLine("PASS: placement key isolation, matching native spend, once-only receipts, failure preservation, exact requirements and zero removal. Native placement/patch acceptance still requires the game.");
     }
     static void Field(object target, string name, object value)
     {
