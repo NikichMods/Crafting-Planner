@@ -48,7 +48,7 @@ P0 does not expand dependencies. If a bench needs planks, the planner asks for p
 
 ## Required next milestone: successful-operation reduction
 
-Automatic reduction is required follow-up, absent through0.1.19, and implemented in the0.1.20 candidate pending native acceptance. For repeatable placeables, decrement exactly one at verified successful placement/material commitment, not at later physical construction completion. Failed/cancelled/rejected placement removes none. Remove a goal at zero and recompute derived aggregate requirements; native code alone spends materials. Do not introduce an in-progress tracker.
+Automatic reduction is required follow-up, absent through0.1.19, and implemented in0.1.20 with bounded native success/failure/identity/zero-removal verification recorded in TEST_LOG.md. For repeatable placeables, decrement exactly one at verified successful placement/material commitment, not at later physical construction completion. Failed/cancelled/rejected placement removes none. Remove a goal at zero and recompute derived aggregate requirements; native code alone spends materials. Do not introduce an in-progress tracker.
 
 One-time upgrade/repair/clearing actions need their own verified success boundary and exact goal identity. Menu selection and inventory changes alone are not success evidence. Returned probe evidence and the0.1.20 production gate are owned by PLACEMENT_COMMIT_RESEARCH.md; compilation/state tests do not close native decrement acceptance.
 
