@@ -15,6 +15,7 @@ namespace NikichMods.YardUpgradeResearch
         private const string CraftId = "mf_wood_builddesk::upgrade_player_buildzone";
         private Rect _window = new Rect(20,60,470,330);
         private bool _visible, _issued, _failed;
+        private GUIStyle _label;
         private string _message = "F8: открыть/закрыть. Выполните улучшение обычной кнопкой игры.";
         private GameSave _grantSave;
         private long _grantPlayer;
@@ -29,16 +30,17 @@ namespace NikichMods.YardUpgradeResearch
         }
         private void Draw(int id)
         {
-            GUILayout.Label("Только подготовка ресурсов. Улучшение выполняется через обычное меню двора.");
-            GUILayout.Label("Выданные ресурсы и улучшение могут попасть в сохранение. Для отката используйте сейв до теста.");
-            GUILayout.Label("Ожидаемые затраты: 10 сложных железных деталей, 8 досок, 4 гвоздя. Кнопка читает фактическую цену игры.");
+            if (_label==null) _label=new GUIStyle(GUI.skin.label) {wordWrap=true};
+            GUILayout.Label("Только подготовка ресурсов. Улучшение выполняется через обычное меню двора.",_label);
+            GUILayout.Label("Выданные ресурсы и улучшение могут попасть в сохранение. Для отката используйте сейв до теста.",_label);
+            GUILayout.Label("Ожидаемые затраты: 10 сложных железных деталей, 8 досок, 4 гвоздя. Кнопка читает фактическую цену игры.",_label);
             bool enabled = GUI.enabled;
             GUI.enabled = enabled && !_failed && !_issued;
             if (GUILayout.Button("Выдать недостающее для улучшения двора",GUILayout.Height(35))) Execute(Grant);
             GUI.enabled = enabled && !_failed && _issued && _added.Count>0;
             if (GUILayout.Button("Убрать выданное до улучшения",GUILayout.Height(30))) Execute(Cleanup);
             GUI.enabled = enabled;
-            GUILayout.Label(_message);
+            GUILayout.Label(_message,_label);
             if (GUILayout.Button("Закрыть")) _visible=false;
             GUI.DragWindow(new Rect(0,0,470,25));
         }
