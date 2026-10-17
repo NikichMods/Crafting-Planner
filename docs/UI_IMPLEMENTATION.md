@@ -221,3 +221,5 @@ User confirms independent settings no longer affect one another, the right arrow
 ## 0.1.21 redraw existence gate
 
 READY before mutation: the returned Max Buttons Redux gamepad maximum-amount stacks fail at our unguarded PlannerRowRedrawPatch.Prefix/GetComponent. Add the same Unity existence check already used by Ensure before looking up controls; preserve native and other-mod execution. Real-Unity-metadata tests call the actual prefix with CLR-null and a detached row and pass; live repeated maximum/minimum gamepad input, menu close/reopen and technology tabs remain required. No geometry/defaults/calibration change. ONEOFF_COMPLETION_RESEARCH.md owns exact evidence and bounds.
+
+0.1.21 returned runtime: the old explicit PlannerRowRedrawPatch/GetComponent stack is absent, but9 dynamic Redraw exceptions via Max Buttons maximum-amount input persist during technology tabs. The guard is not a full compatibility fix. Input-window/cache ownership upstream of Redraw is the next narrower target; exact null field remains unproved. See TEST_LOG.md and ONEOFF_COMPLETION_RESEARCH.md.
