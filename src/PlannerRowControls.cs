@@ -140,8 +140,9 @@ namespace CraftingPlanner
                 _ingredients.ResetAndUpdateAnchors();
                 _row.ingredients_table.Reposition();
                 AlignIngredients();
-                _ingredients.leftAnchor.absolute += (int)style.IngredientsX; _ingredients.rightAnchor.absolute += (int)style.IngredientsX;
-                _ingredients.topAnchor.absolute = _top + (int)style.IngredientsY; _ingredients.bottomAnchor.absolute = _bottom + (int)style.IngredientsY;
+                int ingredientX = (int)style.IngredientX(_spendSeparated), ingredientY = (int)style.IngredientY(_spendSeparated);
+                _ingredients.leftAnchor.absolute += ingredientX; _ingredients.rightAnchor.absolute += ingredientX;
+                _ingredients.topAnchor.absolute = _top + ingredientY; _ingredients.bottomAnchor.absolute = _bottom + ingredientY;
                 _ingredients.ResetAndUpdateAnchors(); _row.label_name.ResetAndUpdateAnchors();
                 int quantity = Planner.QuantityFor(_row.current_craft);
                 foreach (UILabel label in _texts) PlannerCard.ApplyNativeFont(label, _row.label_name);
@@ -164,7 +165,7 @@ namespace CraftingPlanner
                     _background.rightType = UIBasicSprite.AdvancedType.Invisible; _background.MarkAsChanged();
                 }
                 else RestoreBorder();
-                _plus.gameObject.SetActive(quantity == 0 || Planner.IsRepeatable(_row.current_craft));
+                _plus.gameObject.SetActive(PlannerGoalState.CanIncrease(quantity, Planner.IsRepeatable(_row.current_craft)));
                 _column.gameObject.SetActive(true);
                 UIEventListener.Get(_minus.gameObject).onHover(_minus.gameObject, UICamera.hoveredObject == _minus.gameObject);
                 UIEventListener.Get(_plus.gameObject).onHover(_plus.gameObject, UICamera.hoveredObject == _plus.gameObject);

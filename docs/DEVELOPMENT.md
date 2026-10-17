@@ -4,6 +4,8 @@ Updated: 2026-10-17. This is the current resume entry point; dated design and te
 
 ## Current state
 
+The 0.1.18 return confirms cap20 and bare quantities, but reveals shared ingredient tuning affects ordinary builder rows after repair adjustment. Active implementation is `dev/0.1.19`: independent no-cost/cost-row material offsets using both recovered exports, common user-tuned counter/cost positions, and hidden right arrow at the upper bound. Native-reference compilation/policy/state tests pass; hosted artifact/install and native context-switch/arrow acceptance are pending. The exact installed table below remains0.1.18 until replacement is recorded.
+
 **Building Planner** is the adopted display name and English HUD title. Stable technical identity remains CraftingPlanner: GUID, namespace, installed filename, package and repository identity.
 
 The **0.1.16** visual baseline is user-accepted. The user reports installed **0.1.17** technically separates the multi-line native costs and requests a unified adjustable block, including single energy, plus bare centred quantities, measured arrow gaps and cap20 per repeatable goal. Implementation is on `dev/0.1.18`; final positions await user calibration. Core actions have been exercised with mouse/keyboard and gamepad; ordinary HUD appearance across all 11 host languages is user-reported from 0.1.11. This is bounded runtime evidence, not exhaustive functional coverage or stable-release acceptance.

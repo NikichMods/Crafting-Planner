@@ -127,9 +127,12 @@ namespace CraftingPlanner
             GUILayout.Label("Меню — энергия / игровые затраты");
             s.MenuSpendX = Slider(nameof(s.MenuSpendX), "Игровые затраты: вправо", s.MenuSpendX, -300, 300);
             s.MenuSpendY = Slider(nameof(s.MenuSpendY), "Игровые затраты: вверх", s.MenuSpendY, -300, 300);
-            GUILayout.Label("Меню — материалы относительно игровых затрат");
-            s.IngredientsX = Slider(nameof(s.IngredientsX), "Ингредиенты меню: вправо", s.IngredientsX, -300, 300);
-            s.IngredientsY = Slider(nameof(s.IngredientsY), "Ингредиенты меню: вверх", s.IngredientsY, -300, 300);
+            GUILayout.Label("Меню — материалы в строках БЕЗ игровых затрат");
+            s.IngredientsX = Slider(nameof(s.IngredientsX), "Материалы без затрат: вправо", s.IngredientsX, -300, 300);
+            s.IngredientsY = Slider(nameof(s.IngredientsY), "Материалы без затрат: вверх", s.IngredientsY, -300, 300);
+            GUILayout.Label("Меню — материалы в строках С игровыми затратами");
+            s.CostIngredientsX = Slider(nameof(s.CostIngredientsX), "Материалы рядом с затратами: вправо", s.CostIngredientsX, -300, 300);
+            s.CostIngredientsY = Slider(nameof(s.CostIngredientsY), "Материалы рядом с затратами: вверх", s.CostIngredientsY, -300, 300);
             GUILayout.Label("Меню — общий ряд управления внизу");
             s.MenuCaptionX = Slider(nameof(s.MenuCaptionX), "Весь ряд: вправо", s.MenuCaptionX, -300, 300);
             s.MenuCaptionY = Slider(nameof(s.MenuCaptionY), "Весь ряд: вверх", s.MenuCaptionY, -300, 300);

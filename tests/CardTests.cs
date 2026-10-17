@@ -81,12 +81,19 @@ class CardTests
             Require((float)baseline.Invoke(null, new object[] {"MenuX"}) == 17 && (float)baseline.Invoke(null, new object[] {"FeedbackY"}) == -5, "Individual resets must use the returned candidate baseline");
             Require(Math.Abs((float)baseline.Invoke(null, new object[] {"Opacity"}) - 39) < .001f && Math.Abs((float)baseline.Invoke(null, new object[] {"FooterShadowOpacity"}) - 80) < .001f, "Percent controls must reset in display units");
             Require((float)baseline.Invoke(null, new object[] {"MenuCaptionFont"}) == 16 && (float)baseline.Invoke(null, new object[] {"ChestActionGap"}) == 10 && (float)baseline.Invoke(null, new object[] {"MenuActionGap"}) == 10, "Caption and action-row resets must use their own baselines");
-            Require((float)baseline.Invoke(null, new object[] {"MenuSpendX"}) == 0 && (float)baseline.Invoke(null, new object[] {"MenuSpendY"}) == 0 && (float)baseline.Invoke(null, new object[] {"QuantityArrowGap"}) == 13, "Cost-block and actual arrow-gap resets must use new defaults");
-            Require((float)baseline.Invoke(null, new object[] {"MenuMinusX"}) == 0 && (float)baseline.Invoke(null, new object[] {"MenuPlusX"}) == 0, "Old fixed-arrow offsets must not bias measured gaps");
+            Require((float)baseline.Invoke(null, new object[] {"MenuSpendX"}) == 24 && (float)baseline.Invoke(null, new object[] {"MenuSpendY"}) == -1 && (float)baseline.Invoke(null, new object[] {"QuantityArrowGap"}) == 13, "Cost-block resets must retain returned settings");
+            Require((float)baseline.Invoke(null, new object[] {"MenuY"}) == 1 && (float)baseline.Invoke(null, new object[] {"MenuMinusX"}) == 8 && (float)baseline.Invoke(null, new object[] {"MenuPlusX"}) == -9, "Counter resets must retain the first returned calibration");
             object style = Activator.CreateInstance(styleType, true);
             BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic;
             string tuningRecord = (string)styleType.GetMethod("Record", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(style, null);
-            Require(tuningRecord.Contains(" menu_spend_x=0") && tuningRecord.Contains(" menu_spend_y=0") && tuningRecord.Contains(" quantity_arrow_gap=13"), "Calibration export must retain cost offsets and measured arrow spacing");
+            Require(tuningRecord.Contains(" menu_spend_x=24") && tuningRecord.Contains(" menu_spend_y=-1") && tuningRecord.Contains(" quantity_arrow_gap=13"), "Calibration export must retain cost offsets and measured arrow spacing");
+            Require(tuningRecord.Contains(" ingredients_x=29") && tuningRecord.Contains(" cost_ingredients_x=46"), "Export must preserve both independently recovered material profiles");
+            MethodInfo ingredientX = styleType.GetMethod("IngredientX", BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo ingredientY = styleType.GetMethod("IngredientY", BindingFlags.Instance | BindingFlags.NonPublic);
+            styleType.GetField("CostIngredientsX", fieldFlags).SetValue(style, 53f); styleType.GetField("CostIngredientsY", fieldFlags).SetValue(style, -8f);
+            Require((float)ingredientX.Invoke(style, new object[] {false}) == 29 && (float)ingredientY.Invoke(style, new object[] {false}) == 0, "Repair-cost tuning must not move ordinary builder materials");
+            styleType.GetField("IngredientsX", fieldFlags).SetValue(style, 11f); styleType.GetField("IngredientsY", fieldFlags).SetValue(style, 5f);
+            Require((float)ingredientX.Invoke(style, new object[] {true}) == 53 && (float)ingredientY.Invoke(style, new object[] {true}) == -8, "Ordinary builder tuning must not move cost-row materials");
             styleType.GetField("Right", fieldFlags).SetValue(style, 12.955f);
             styleType.GetField("IconX", fieldFlags).SetValue(style, -2.5f);
             styleType.GetField("Scale", fieldFlags).SetValue(style, .647f);
@@ -183,6 +190,10 @@ class CardTests
         goals.Clear();
         Field(goal, "Quantity", 19); Field(goal, "Repeatable", true); goals.Add(goal);
         Type state = candidate.GetType("CraftingPlanner.PlannerGoalState", true);
+        MethodInfo canIncrease = state.GetMethod("CanIncrease", BindingFlags.Static | BindingFlags.NonPublic);
+        Require((bool)canIncrease.Invoke(null, new object[] {0, true}) && (bool)canIncrease.Invoke(null, new object[] {19, true}), "Repeatable right arrow must be available below20");
+        Require(!(bool)canIncrease.Invoke(null, new object[] {20, true}), "Repeatable right arrow must disappear at20 in both views");
+        Require((bool)canIncrease.Invoke(null, new object[] {0, false}) && !(bool)canIncrease.Invoke(null, new object[] {1, false}), "One-off right arrow must retain its0/1 boundary");
         MethodInfo menuAdjust = state.GetMethod("Adjust", BindingFlags.Static | BindingFlags.NonPublic);
         Require((bool)menuAdjust.Invoke(null, new object[] {goals, definition, "1|original_builder|test_project", true, 1, null}), "19 must increase to20 through the menu path");
         for (int i = 0; i < 25; i++)
@@ -194,6 +205,7 @@ class CardTests
         aggregate = (IDictionary)planner.GetMethod("AggregateRequirements", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, null);
         Require((int)aggregate["test_material"] == 80, "No-op increases at20 must retain exact aggregate materials");
         Require((bool)adjust.Invoke(null, new object[] {goals, goal, -1, null}), "20 must still decrement");
+        Require((bool)canIncrease.Invoke(null, new object[] {19, true}), "Decrementing20->19 must make the right arrow available again");
         Require((bool)adjust.Invoke(null, new object[] {goals, goal, 1, null}), "19 must return to20 through the HUD path");
         for (int i = 0; i < 20; i++) adjust.Invoke(null, new object[] {goals, goal, -1, null});
         Require(goals.Count == 0, "A capped goal must still remove at zero");

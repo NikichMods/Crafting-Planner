@@ -145,7 +145,7 @@ namespace CraftingPlanner
                 if (!LazyInput.gamepad_active || PlannerEditing.Active)
                 {
                     Arrow(goal, -1, quantity, line);
-                    if (goal.Repeatable) Arrow(goal, 1, quantity, line);
+                    if (PlannerGoalState.CanIncrease(goal.Quantity, goal.Repeatable)) Arrow(goal, 1, quantity, line);
                 }
                 y += rowHeight;
             }
@@ -413,7 +413,7 @@ namespace CraftingPlanner
         }
         internal void Export(Camera camera)
         {
-            Planner.LogLine("event=calibration_export format=9 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
+            Planner.LogLine("event=calibration_export format=10 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
                 " actual_width=" + _width + " actual_height=" + _height + " screen=" + Screen.width + "x" + Screen.height +
                 " card_px=" + Rectangle(_root, camera) + " back_px=" + Rectangle(_back, camera) +
                 " font_asset=" + (_measure.bitmapFont != null ? _measure.bitmapFont.name : "dynamic") + " arrows=" + _arrowCursor + " focus_rows=" + _focusCursor + " language=" + PlannerLocalization.CurrentLanguage);

@@ -8,6 +8,8 @@ The complete 0.1.16 visual presentation is user-accepted as of 2026-10-17. Prese
 
 The user reports the 0.1.17 multi-line native-cost separation technically works and adopts one shared cost-block format for both single-energy and multi-line costs. The rightmost menu column belongs exclusively to planner quantity, centred horizontally/vertically by default. Native cost text/width/height remain host-owned; F2 independently moves its whole block in X/Y and adjusts materials relative to it. The earlier stacked single-energy arrangement is superseded. The user will tune these positions for later adoption as defaults; current tunable values are candidate defaults, not the result of that future tuning.
 
+The 0.1.18 return supplies separate tuned layouts: ordinary rows need material X/Y 29/0; rows with native costs need 46/0, with cost-block 24/-1. Shared counter settings are X/Y 17/1 and arrow fine-X 8/-9. Preserve both sets independently based on visible native cost-block presence in each row, including mixed menus; changing repair/cost-row materials must not move ordinary builder rows. Use these recovered settings as candidate defaults. The right arrow disappears at the repeatable cap20 in both menu and HUD, reappears below20, and retains the one-off0/1 behavior.
+
 ## Product model
 
 Building Planner is a functional replacement/superset for the Recipe Pin idea, but its P0 focus is **projects**, not arbitrary production recipes.
