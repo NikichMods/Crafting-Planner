@@ -4,29 +4,25 @@ Updated: 2026-10-17. This is the current resume entry point; dated design and te
 
 ## Current state
 
-The 0.1.18 return confirms cap20 and bare quantities, but reveals shared ingredient tuning affects ordinary builder rows after repair adjustment. Active implementation is `dev/0.1.19`: independent no-cost/cost-row material offsets using both recovered exports, common user-tuned counter/cost positions, and hidden right arrow at the upper bound. Native-reference compilation/policy/state tests pass; hosted artifact/install and native context-switch/arrow acceptance are pending. The exact installed table below remains0.1.18 until replacement is recorded.
+Building Planner keeps stable technical identity CraftingPlanner. Installed **0.1.19** restores both user-tuned 0.1.18 layouts independently: materials without native costs29/0, with native costs46/0; common native cost24/-1, counter17/1 and fine-arrow X8/-9. Profile choice follows actual visible native cost-block presence per row, including mixed menus. Right increase arrows hide at repeatable20/one-off1 in menu and shared HUD, and return below the bound without moving the numeral.
 
-**Building Planner** is the adopted display name and English HUD title. Stable technical identity remains CraftingPlanner: GUID, namespace, installed filename, package and repository identity.
+F2 format 10 has 60 individually resettable sliders and exports both material pairs. Both native-reference modes, clean hosted build and exact downloaded-DLL profile/policy/state tests pass. Installed digest matches the frozen CI artifact. Native acceptance still needs builder -> repair -> builder/reopen stability and menu/HUD arrow disappearance/reappearance at20/19; no placement probe repetition is needed. Game was closed at installation. Previous0.1.18 DLL/log and receipt are private under .local/evidence/pre-0.1.19/ and .local/installation-backups/pre-0.1.19/.
 
-The **0.1.16** visual baseline is user-accepted. The user reports installed **0.1.17** technically separates the multi-line native costs and requests a unified adjustable block, including single energy, plus bare centred quantities, measured arrow gaps and cap20 per repeatable goal. Implementation is on `dev/0.1.18`; final positions await user calibration. Core actions have been exercised with mouse/keyboard and gamepad; ordinary HUD appearance across all 11 host languages is user-reported from 0.1.11. This is bounded runtime evidence, not exhaustive functional coverage or stable-release acceptance.
-
-The passive PlacementCommitProbe returned its native attempt evidence and was removed from loading after exact backup. Building Planner 0.1.18 is installed with the game closed; previous 0.1.17/log are preserved privately. Installation receipt is `.local/evidence/pre-0.1.18/installation.json`. Goals remain session-local.
-
-0.1.18 adds F2 cost-block X/Y, real signed material offsets relative to that block and common glyph-edge arrow gap(default13). Single-energy stacking is deliberately superseded; the rightmost menu column is exclusively the centred numeral. Quantity is bare in menu and shared card; all edit paths use a central repeatable maximum20/one-off maximum1. F2 format 9 has 58 resettable sliders and may open in supported Build with no pinned goals. Native-reference calibration/production builds, clean hosted build, compiled policy/state checks and exact downloaded-DLL tests pass. Real rendering/tuning remain pending: user adjusts cost/material X/Y, checks number/arrow centring at0/1/9/10/20 and menu/HUD cap20, then exports format 9. Adopt returned positions as defaults only after that user tuning; handed0.1.18 is immutable.
+The last complete visual baseline is0.1.16; later UI acceptance is bounded by TEST_LOG.md. Ordinary HUD across all 11 languages is user-reported from 0.1.11. Gamepad/all 11 languages remain required. Session-local goals and native action ownership are preserved; automatic successful-operation reduction remains absent. This is not full functional or stable-release acceptance.
 
 ## Exact installed artifact
 
 | Identity | Value |
 | --- | --- |
-| Development branch | `dev/0.1.18` |
-| Frozen runtime source | `23910f94bc1118dbb64a4b55fa466584981f1419` |
-| Version | `0.1.18` / assembly `0.1.18.0` |
-| CI run / artifact | `39024756811` / `12098465914` |
-| DLL SHA256 | `faeba2d7538196b8975d61344268d8dc03293d01874231c01154832a4721a7ef` |
-| ZIP SHA256 | `6da6855bfca73f7606809723d1e19429e0e7aedff2a94ed6d90b9ea388f3f45e` |
-| Calibration | enabled; F2 format 9, 58 individually resettable sliders |
+| Development branch | `dev/0.1.19` |
+| Frozen runtime source | `0a1fd467e3684905682eb95a1cd71061227610f7` |
+| Version | 0.1.19 / assembly0.1.19.0 |
+| CI run / artifact | `39027094562` / `12099300030` |
+| DLL SHA256 | `6b98f886ffa64791306cc9334419a5f4b358f51dd32a429779cbb1511ab56382` |
+| ZIP SHA256 | `8b03b83f052cc8f72a36c4d5c5434ea5d987d795e7fba01acf4de60bd4cabcdd` |
+| Calibration | enabled; F2 format 10, 60 individually resettable sliders |
 
-Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.18/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. No 0.1.18 installed-runtime log is claimed yet; 0.1.17's technical separation return is recorded in TEST_LOG.md.
+Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.19/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. No 0.1.19 installed-runtime log is claimed yet; 0.1.17's technical separation return is recorded in TEST_LOG.md.
 
 Both native-reference configurations, clean hosted build, state/geometry/font/calibration/localization/invalidation/energy-layout checks, exact-DLL tests and package boundaries passed. Accepted cases and limits are owned by [TEST_LOG.md](TEST_LOG.md). The live acceptance snapshot is `.local/evidence/accept-0.1.16-visual/LogOutput.log`, SHA256 `96ae57df373be5e2137e26f9e87678ddac37a51ecdccccde85c7a66570c5316d`: it loads 0.1.16 with no planner exception/disable found. It is a partial running-session snapshot, not a completed shutdown log.
 
