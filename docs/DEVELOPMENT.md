@@ -4,31 +4,31 @@ Updated: 2026-10-17. This is the current resume entry point; dated design and te
 
 ## Current state
 
-Building Planner keeps stable technical identity CraftingPlanner. Installed **0.1.19** restores both user-tuned 0.1.18 layouts independently: materials without native costs29/0, with native costs46/0; common native cost24/-1, counter17/1 and fine-arrow X8/-9. Profile choice follows actual visible native cost-block presence per row, including mixed menus. Right increase arrows hide at repeatable20/one-off1 in menu and shared HUD, and return below the bound without moving the numeral.
+Building Planner keeps stable technical identity CraftingPlanner. Visual baseline **0.1.19**, explicitly accepted, restores both user-tuned 0.1.18 layouts independently: materials without native costs29/0, with native costs46/0; common native cost24/-1, counter17/1 and fine-arrow X8/-9. Profile choice follows actual visible native cost-block presence per row, including mixed menus. Right increase arrows hide at repeatable20/one-off1 in menu and shared HUD, and return below the bound without moving the numeral.
 
 F2 format10 retains60 individually resettable sliders. The user accepts0.1.19 independent settings,20/19 arrow behavior and visuals. TEST_LOG.md owns the bounded acceptance and log identity; no further visual tuning is requested. Ordinary HUD across all11 languages is user-reported from0.1.11; gamepad/all11-language functional acceptance remains open. This is not stable-release acceptance.
 
-Active branch dev/0.1.20 implements repeatable-placement decrement; the installed0.1.19 below remains unchanged until exact candidate verification/installation. No repairs/upgrades/clearing completion is inferred.
+Installed dev/0.1.20 implements repeatable-placement decrement and preserves the accepted visual baseline. Exact candidate build/installation checks pass; native activation/decrement acceptance is pending. No repairs/upgrades/clearing completion is inferred.
 
 ## Exact installed artifact
 
 | Identity | Value |
 | --- | --- |
-| Development branch | `dev/0.1.19` |
-| Frozen runtime source | `0a1fd467e3684905682eb95a1cd71061227610f7` |
-| Version | 0.1.19 / assembly0.1.19.0 |
-| CI run / artifact | `39027094562` / `12099300030` |
-| DLL SHA256 | `6b98f886ffa64791306cc9334419a5f4b358f51dd32a429779cbb1511ab56382` |
-| ZIP SHA256 | `8b03b83f052cc8f72a36c4d5c5434ea5d987d795e7fba01acf4de60bd4cabcdd` |
+| Development branch | `dev/0.1.20` |
+| Frozen runtime source | `db04213bfed06560fc4cc188f1ca2d73e2b884df` |
+| Version | 0.1.20 / assembly0.1.20.0 |
+| CI run / artifact | `39053843624` / `12108657880` |
+| DLL SHA256 | `e45dd14fa6a301e7d887811a7008aa107edca1e5bc7bafdd0cb71839d9396058` |
+| ZIP SHA256 | `466f5862e50463d2f88b579a87f3f6b0969080d643edb7b7360ec32e05b26961` |
 | Calibration | enabled; F2 format 10, 60 individually resettable sliders |
 
-Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.19/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
+Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.20/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
 
 Both native-reference configurations, clean hosted build, state/geometry/font/calibration/localization/invalidation/energy-layout checks, exact-DLL tests and package boundaries passed. Accepted cases and limits are owned by [TEST_LOG.md](TEST_LOG.md). The live acceptance snapshot is `.local/evidence/accept-0.1.16-visual/LogOutput.log`, SHA256 `96ae57df373be5e2137e26f9e87678ddac37a51ecdccccde85c7a66570c5316d`: it loads 0.1.16 with no planner exception/disable found. It is a partial running-session snapshot, not a completed shutdown log.
 
 ## Next development step
 
-Repeatable-placeable reduction is implemented in dev/0.1.20, pending exact candidate build/installation and native acceptance. The selected READY mechanism captures the original goal/definition/inventory/WGO at DoPlace entry, requires exactly one successful matching native RemoveItems call and normal completion with the captured WGO becoming just_built, then reduces1/removes0 and refreshes existing consumers at LateUpdate. Planner-only state tests verify key isolation, rejected/cancelled/error attempts, once-only receipts, stale membership, derived requirements and zero removal. Native code alone spends materials.
+Repeatable-placeable reduction is implemented in dev/0.1.20, pending native acceptance after exact CI build/installation. The selected READY mechanism captures the original goal/definition/inventory/WGO at DoPlace entry, requires exactly one successful matching native RemoveItems call and normal completion with the captured WGO becoming just_built, then reduces1/removes0 and refreshes existing consumers at LateUpdate. Planner-only state tests verify key isolation, rejected/cancelled/error attempts, once-only receipts, stale membership, derived requirements and zero removal. Native code alone spends materials.
 
 [PLACEMENT_COMMIT_RESEARCH.md](PLACEMENT_COMMIT_RESEARCH.md) owns the returned passive probe evidence and production gate. Reuse it; no probe reinstall is needed. Next is the production candidate's actual ready marker and placement/decrement/removal/refresh check, including cancellation/rejection and unrelated-goal preservation. Repairs/upgrades/clearing have separate unclosed success boundaries; do not infer completion from menu selection or arbitrary inventory changes.
 
@@ -57,4 +57,4 @@ dotnet build CraftingPlanner.csproj -c Release --no-restore --nologo
 
 Temporary calibration requires `-p:PlannerCalibration=true`; otherwise the F2 editor and its guards compile out. Hosted candidate CI explicitly records this flag. Output is `bin/Release/CraftingPlanner.dll`; compilation alone does not establish runtime acceptance or exact handed artifact identity.
 
-Private `.local/compile-native.ps1` verifies against installed host references (default calibration, `-Production` without it). `.local/REFERENCE_BUILD_NOTE.md` records an unresolved local full-SDK/cache issue: stale reference outputs must not be treated as fresh success. Native-reference compilation and clean hosted builds are the established verification paths. Private reflection helpers, logs, proprietary inputs and machine installation configuration stay ignored; consult existing `.local/` evidence before recreating them. The current workstream is the0.1.20 production candidate; exact installed identity above must be updated after verified installation.
+Private `.local/compile-native.ps1` verifies against installed host references (default calibration, `-Production` without it). `.local/REFERENCE_BUILD_NOTE.md` records an unresolved local full-SDK/cache issue: stale reference outputs must not be treated as fresh success. Native-reference compilation and clean hosted builds are the established verification paths. Private reflection helpers, logs, proprietary inputs and machine installation configuration stay ignored; consult existing `.local/` evidence before recreating them. Previous0.1.19 DLL/log/receipt are preserved under private .local/evidence/pre-0.1.20/ and .local/installation-backups/pre-0.1.20/. Host was closed at installation; no new game launch or runtime acceptance is asserted.
