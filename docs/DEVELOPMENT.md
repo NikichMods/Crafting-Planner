@@ -8,21 +8,21 @@ Building Planner keeps stable technical identity CraftingPlanner. Visual baselin
 
 F2 format10 retains60 individually resettable sliders. The user accepts0.1.19 independent settings,20/19 arrow behavior and visuals. TEST_LOG.md owns the bounded acceptance and log identity; no further visual tuning is requested. Ordinary HUD across all11 languages is user-reported from0.1.11; gamepad/all11-language functional acceptance remains open. This is not stable-release acceptance.
 
-Installed dev/0.1.20 implements repeatable-placement decrement and preserves the accepted visual baseline. Exact candidate build/installation checks and the returned bounded native placement pass are verified (TEST_LOG.md). No repairs/upgrades/clearing completion is inferred.
+Installed dev/0.1.21 preserves accepted repeatable placement and visuals, adds repair/clearing WorldChange removal and guards our row Redraw prefix against Unity-null. Exact CI/downloaded-byte/native-reference/state/absent-row checks pass; real0.1.21 removal and Max Buttons Redux input acceptance remain pending. Builder upgrades stay excluded.
 
 ## Exact installed artifact
 
 | Identity | Value |
 | --- | --- |
-| Development branch | `dev/0.1.20` |
-| Frozen runtime source | `db04213bfed06560fc4cc188f1ca2d73e2b884df` |
-| Version | 0.1.20 / assembly0.1.20.0 |
-| CI run / artifact | `39053843624` / `12108657880` |
-| DLL SHA256 | `e45dd14fa6a301e7d887811a7008aa107edca1e5bc7bafdd0cb71839d9396058` |
-| ZIP SHA256 | `466f5862e50463d2f88b579a87f3f6b0969080d643edb7b7360ec32e05b26961` |
+| Development branch | `dev/0.1.21` |
+| Frozen runtime source | `25fd3181091492b20735d52e1b2ccc16c09a7405` |
+| Version | 0.1.21 / assembly0.1.21.0 |
+| CI run / artifact | `39061707706` / `12111662358` |
+| DLL SHA256 | `90177d2662daf51eb87858884ea8f93878b3cd9d90d993c1b52006fd7ed102da` |
+| ZIP SHA256 | `4b5d445e78b4fb92197d221793ce5fc5d8318595fd00b37b8c708ba2234cb166` |
 | Calibration | enabled; F2 format 10, 60 individually resettable sliders |
 
-Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.20/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
+Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.21/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
 
 Both native-reference configurations, clean hosted build, state/geometry/font/calibration/localization/invalidation/energy-layout checks, exact-DLL tests and package boundaries passed. Accepted cases and limits are owned by [TEST_LOG.md](TEST_LOG.md). The live acceptance snapshot is `.local/evidence/accept-0.1.16-visual/LogOutput.log`, SHA256 `96ae57df373be5e2137e26f9e87678ddac37a51ecdccccde85c7a66570c5316d`: it loads 0.1.16 with no planner exception/disable found. It is a partial running-session snapshot, not a completed shutdown log.
 
@@ -30,7 +30,7 @@ Both native-reference configurations, clean hosted build, state/geometry/font/ca
 
 Repeatable-placeable reduction is implemented in dev/0.1.20, verified for the exercised native0.1.20 cases after exact CI build/installation. The selected READY mechanism captures the original goal/definition/inventory/WGO at DoPlace entry, requires exactly one successful matching native RemoveItems call and normal completion with the captured WGO becoming just_built, then reduces1/removes0 and refreshes existing consumers at LateUpdate. Planner-only state tests verify key isolation, rejected/cancelled/error attempts, once-only receipts, stale membership, derived requirements and zero removal. Native code alone spends materials.
 
-[PLACEMENT_COMMIT_RESEARCH.md](PLACEMENT_COMMIT_RESEARCH.md) owns the returned passive probe evidence and production gate. Reuse it; no probe reinstall is needed. Returned0.1.20 evidence confirms ready activation,9 once-only decrements, zero removal, unrelated goal preservation and4 busy failures without decrement; standalone cancellation and upstream resource refusal likewise add none. Actual material totals/rendering are not asserted from the log. Next required functional work is the separate upgrade/repair/clearing boundary investigation. Repairs/upgrades/clearing have separate unclosed success boundaries; do not infer completion from menu selection or arbitrary inventory changes.
+[PLACEMENT_COMMIT_RESEARCH.md](PLACEMENT_COMMIT_RESEARCH.md) owns the returned passive probe evidence and production gate. Reuse it; no probe reinstall is needed. Returned0.1.20 evidence confirms ready activation,9 once-only decrements, zero removal, unrelated goal preservation and4 busy failures without decrement; standalone cancellation and upstream resource refusal likewise add none. Actual material totals/rendering are not asserted from the log. The returned repair/clearing correlation now supports the installed0.1.21 implementation; its actual pinned-goal removal and Max Buttons input pass are next. One-time builder upgrade success remains a separate open investigation. Do not infer completion from menu selection or arbitrary inventory changes.
 
 After this milestone, perform a focused functional/release pass, including carried-bag and capacity edges only where correctness remains unproven. The fate of temporary F2 calibration in a public build is still a product decision; neither removing it nor building a permanent settings system is adopted. Per-save persistence, reserve protection, recursive material planning and remote/multiple-storage logistics remain deferred. Main/stable promotion needs separate explicit acceptance.
 
@@ -59,10 +59,8 @@ Temporary calibration requires `-p:PlannerCalibration=true`; otherwise the F2 ed
 
 Private `.local/compile-native.ps1` verifies against installed host references (default calibration, `-Production` without it). `.local/REFERENCE_BUILD_NOTE.md` records an unresolved local full-SDK/cache issue: stale reference outputs must not be treated as fresh success. Native-reference compilation and clean hosted builds are the established verification paths. Private reflection helpers, logs, proprietary inputs and machine installation configuration stay ignored; consult existing `.local/` evidence before recreating them. Previous0.1.19 DLL/log/receipt are preserved under private .local/evidence/pre-0.1.20/ and .local/installation-backups/pre-0.1.20/. Host was closed at installation. Returned production evidence is private under .local/evidence/return-0.1.20-placement/; exact hash and bounded findings are in TEST_LOG.md.
 
-## Active one-off completion research
+## Current world-completion and redraw work
 
-User authorized repair/upgrade/clearing follow-up. Separate research/oneoff-completion has installed the passive OneOffCompletionProbe0.1.0 beside unchanged production0.1.20. Read ONEOFF_COMPLETION_RESEARCH.md for retrieved evidence, static boundaries, observational filter and the minimal normal-gameplay pass. Returned probe evidence now establishes separate repair and clearing success correlation; production removal remains absent, and builder upgrade/cancel/refusal observations are not returned. The performed clearing was unpinned, so actual pinned-goal removal still needs the production candidate. Four earlier PlannerRowRedrawPatch/GetComponent exceptions reached via Max Buttons Redux are a separate open defect. Research does not consume a production version. TEST_LOG.md owns exact installed/returned identities and ONEOFF_COMPLETION_RESEARCH.md owns readiness/limits.
+User requests repair/clearing removal and the Max Buttons redraw fix, with upgrades separate. Installed0.1.21 uses normal scoped ProcessFinishedCraft + exactly one matching successful OnFinishedCraft and original captured goal identity. A Unity-null guard protects our Redraw prefix before GetComponent; the exact invalid-reference origin in the Max Buttons chain is not asserted. Both native-reference modes, hosted CI/state tests and real-metadata null/detached-prefix tests pass, including the exact downloaded DLL. Actual production removal, unchanged unrelated goals and repeated native gamepad maximum/minimum input remain pending. ONEOFF_COMPLETION_RESEARCH.md owns two READY gates and acceptance bounds.
 
-## Prepared0.1.21 candidate
-
-Active dev/0.1.21 implements repair/clearing removal using scoped normal ProcessFinishedCraft + one matching successful OnFinishedCraft and original captured goal identity. Builder upgrades remain excluded. A Unity-null guard protects our Redraw prefix before GetComponent; actual invalid-reference origin in the Max Buttons chain is not asserted. Both native-reference modes, state tests and real-metadata null/detached-prefix tests pass. Installed identity above stays0.1.20 until exact CI artifact verification/installation. Read ONEOFF_COMPLETION_RESEARCH.md for the two READY gates and required production acceptance.
+The passive OneOffCompletionProbe0.1.0 was hash-verified, backed up outside loading and removed at0.1.21 installation, with the game closed. Prior0.1.20 DLL/probe are private under .local/installation-backups/pre-0.1.21/; log/install receipt under .local/evidence/pre-0.1.21/. Its frozen artifact remains available for later builder-upgrade observation. TEST_LOG.md owns exact installed identities. No new game launch or runtime acceptance is asserted.
