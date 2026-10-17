@@ -24,6 +24,10 @@ namespace CraftingPlanner
         private UILabel _quantity;
         private UILabel _spend;
         private int _spendBottom;
+        private Transform _spendLeftTarget, _spendRightTarget;
+        private float _spendLeftRelative, _spendRightRelative;
+        private int _spendLeft, _spendRight;
+        private bool _spendSeparated;
         private readonly List<UILabel> _texts = new List<UILabel>();
         private bool _failed, _rendering;
         internal static void Ensure(CraftItemGUI row)
@@ -132,6 +136,7 @@ namespace CraftingPlanner
                 PlannerStyle style = PlannerStyle.Current;
                 _column.SetAnchor(_row.selection_frame.gameObject, 1, -Reserve + (int)style.MenuX, 0, 4 + (int)style.MenuY, 1, -4 + (int)style.MenuX, 1, -5 + (int)style.MenuY);
                 _column.ResetAndUpdateAnchors();
+                int energyShift = SeparateSpend();
                 _ingredients.ResetAndUpdateAnchors();
                 _row.ingredients_table.Reposition();
                 AlignIngredients();
@@ -146,7 +151,6 @@ namespace CraftingPlanner
                     label.fontSize = (int)style.MenuFont; label.effectStyle = style.MenuOutline ? UILabel.Effect.Outline : UILabel.Effect.Shadow;
                     label.effectColor = new Color(.06f, .06f, .05f, style.MenuShadowOpacity); label.effectDistance = new Vector2(style.MenuShadowSize, style.MenuShadowSize);
                 }
-                int energyShift = SeparateEnergy();
                 _quantity.transform.localPosition = new Vector3(-38 + style.MenuQuantityX, -28 + style.MenuQuantityY - energyShift, 0);
                 _quantity.text = "×" + quantity;
                 _minus.transform.localPosition = new Vector3(-63 + style.MenuMinusX, -28 + style.MenuMinusY - energyShift, 0);
@@ -172,18 +176,42 @@ namespace CraftingPlanner
         }
         private void RestoreSpend()
         {
-            if (_spend != null) { _spend.bottomAnchor.absolute = _spendBottom; _spend.ResetAndUpdateAnchors(); }
-            _spend = null;
+            if (_spend != null)
+            {
+                _spend.bottomAnchor.absolute = _spendBottom;
+                _spend.leftAnchor.target = _spendLeftTarget; _spend.leftAnchor.relative = _spendLeftRelative; _spend.leftAnchor.absolute = _spendLeft;
+                _spend.rightAnchor.target = _spendRightTarget; _spend.rightAnchor.relative = _spendRightRelative; _spend.rightAnchor.absolute = _spendRight;
+                _spend.ResetAndUpdateAnchors();
+            }
+            _spend = null; _spendSeparated = false;
         }
-        private int SeparateEnergy()
+        private void CaptureSpend(UILabel spend)
+        {
+            _spend = spend; _spendBottom = spend.bottomAnchor.absolute;
+            _spendLeftTarget = spend.leftAnchor.target; _spendLeftRelative = spend.leftAnchor.relative; _spendLeft = spend.leftAnchor.absolute;
+            _spendRightTarget = spend.rightAnchor.target; _spendRightRelative = spend.rightAnchor.relative; _spendRight = spend.rightAnchor.absolute;
+        }
+        private int SeparateSpend()
         {
             RestoreSpend();
             UILabel spend = _row.txt_spend;
-            if (spend == null || !spend.gameObject.activeInHierarchy || !PlannerLayout.SingleLineEnergy(spend.text)) return 0;
+            if (spend == null || !spend.gameObject.activeInHierarchy) return 0;
+            if (PlannerLayout.MultiLineSpend(spend.text))
+            {
+                spend.ResetAndUpdateAnchors();
+                int width = spend.width;
+                CaptureSpend(spend);
+                // Keep native vertical bounds/text/width; only reserve a column before the plan controls.
+                spend.leftAnchor.target = _column.transform; spend.leftAnchor.relative = 0; spend.leftAnchor.absolute = -7 - width;
+                spend.rightAnchor.target = _column.transform; spend.rightAnchor.relative = 0; spend.rightAnchor.absolute = -7;
+                spend.ResetAndUpdateAnchors(); _spendSeparated = true;
+                return 0;
+            }
+            if (!PlannerLayout.SingleLineEnergy(spend.text)) return 0;
             spend.ResetAndUpdateAnchors();
             int shift = PlannerLayout.EnergyRowShift(spend.height, (int)Math.Ceiling(spend.printedSize.y));
             if (shift == 0) return 0;
-            _spend = spend; _spendBottom = spend.bottomAnchor.absolute;
+            CaptureSpend(spend);
             spend.bottomAnchor.absolute = _spendBottom + 2 * shift; spend.ResetAndUpdateAnchors();
             return shift;
         }
@@ -203,7 +231,10 @@ namespace CraftingPlanner
                 foreach (Vector3 corner in widget.worldCorners) right = Math.Max(right, transform.InverseTransformPoint(corner).x);
             }
             if (right == float.MinValue) return;
-            float target = transform.InverseTransformPoint(_column.worldCorners[0]).x - 7;
+            UIWidget boundary = _spendSeparated ? _spend : _column;
+            float target = transform.InverseTransformPoint(boundary.worldCorners[0]).x - 7;
+            // Existing positive ingredient calibration must not move icons back into native costs.
+            if (_spendSeparated) target -= Math.Max(0, PlannerStyle.Current.IngredientsX);
             int delta = (int)Math.Round(target - right);
             _ingredients.leftAnchor.absolute += delta; _ingredients.rightAnchor.absolute += delta;
             _ingredients.ResetAndUpdateAnchors(); _row.label_name.ResetAndUpdateAnchors();

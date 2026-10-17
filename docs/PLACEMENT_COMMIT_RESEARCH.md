@@ -52,3 +52,17 @@ Frozen observer source: `874383e27dc4ceeea7d00fc7a1bd2708046bc121`; research ver
 Checks passed: native-reference Roslyn SDK 6.0.406 compilation, C# 7.3, warnings as errors; binary version; metadata-only VerifySeams against exact host private fields/static ownership and public method overloads, MVID `6f50b8e7-156b-49ac-bbe8-7505894b2364`; source diff excludes all production/stub/test/workflow inputs. Package directory contains only the original probe DLL and its identity receipt, no host/reference DLLs. This is a local native-reference build, not hosted CI or proof of Harmony activation/Unity behavior. The actual installed baseline hash remains `74f612880574d90a53d771a925f8cbc56bbb69f3e5b1acad8ffa7de189d2d37f`.
 
 Installed at `2026-10-16T23:56:54.8265939Z` (2026-10-17 Moscow): sidecar version `0.1.0.0`, installed SHA256 `d900518477ece2f807fa657d106383e13cacdba843020e6cb1fbb682ac45be4f`. Preserved baseline log SHA256 `3cc6b607f6a19c21bd85640953b332552796a19cfd53f9a39c045e40e3931851`; private `installation.json` owns machine paths/receipt. No game launch or runtime attempt was performed by the agent.
+
+## Returned native observation — 2026-10-17
+
+Preserved log `.local/evidence/placement-probe-return/LogOutput.log`, SHA256 `64e9a562de8baa072cc4d9c27c7aae2b817797b88c5a7c8a6a64cfeef0a0267a`, loads exact probe0.1.0 with the verified host MVID and unchanged planner0.1.16. Installed payload hashes match the identities above. No observer_error is present. No completed-shutdown marker is asserted from this snapshot.
+
+| Observation | Exact evidence |
+| --- | --- |
+| Two successful repeatable placements | Attempts1/2: `mf_wood_builddesk:p:mf_box_stuff_place`, builder `mf_wood_builddesk` UID182, placed WGO UIDs215333/215349; both before=false/after=true, one matching successful spend, one leave, one built redraw, no exception |
+| Material commitment | Each placement removes4 flitch,4 nails,4 detail_1: totals18/51/31 ->14/47/27 ->10/43/23 |
+| Busy-space rejection | Attempt3, WGO UID215381: place_allowed=false, native busy log, zero spend/leave/built redraw, built_after=false, no exception |
+| Cancellation | Three independent cancel events seq0, without another committed attempt |
+| Insufficient resources | Garden build UI logs `OnCraftPressed ... can_craft=False`; no DoPlace attempt follows. This proves upstream menu rejection, not the CanBuild early-return branch inside DoPlace |
+
+The observed repeatable-placement success/cancel/busy paths are now separated and native identity is captured before another preview. This is not evidence of actual planner decrement (still absent), another-project isolation, arbitrary modded/scripted actions or upgrade/repair/clearing success. Before production choose the smallest predicate from these facts and verify goal matching, exactly-once decrement/zero removal and derived refresh on its meaningful candidate. The separate multi-line cost correction adopted in the same user return does not modify this execution path.

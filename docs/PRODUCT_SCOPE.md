@@ -6,7 +6,7 @@ Updated: 2026-10-17
 
 The complete 0.1.16 visual presentation is user-accepted as of 2026-10-17. Preserve it unless a new defect/request reopens visual work. Exercised core functionality is recorded in [TEST_LOG.md](TEST_LOG.md); this is not full functional or stable-release acceptance. Exact installed artifact and recovery are in [DEVELOPMENT.md](DEVELOPMENT.md).
 
-Subsequent user screenshot reopens a bounded defect: multi-line native spend in a clearing row overlaps planner quantity. Preserve the accepted ordinary/single-energy presentation while deciding this correction. A dedicated native-cost column before the planner controls is proposed, not yet adopted or implemented; exact width/ingredient/name tradeoff still requires design and host-layout evidence.
+Subsequent user screenshot reopens a bounded defect: multi-line native spend in a clearing row overlaps planner quantity. The user adopted a dedicated native-cost column to the left of planner quantity on 2026-10-17. Shift ingredients left as needed and preserve row height/native cost text. Ordinary rows and the accepted single-energy presentation must remain unchanged; real host layout acceptance of the correction remains pending.
 
 ## Product model
 

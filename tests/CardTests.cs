@@ -80,7 +80,12 @@ class CardTests
             MethodInfo energyLine = layout.GetMethod("SingleLineEnergy", BindingFlags.Static | BindingFlags.NonPublic);
             Require((bool)energyLine.Invoke(null, new object[] {"[c](en)[/c]10"}), "Native formatted energy must be detected");
             foreach (string text in new[] {"", " ", "(time)2:30", "(en)10\n(time)2:30"})
-                Require(!(bool)energyLine.Invoke(null, new object[] {text}), "Unrelated or multiline costs must retain native geometry");
+                Require(!(bool)energyLine.Invoke(null, new object[] {text}), "Unrelated or multiline costs must bypass single-energy displacement");
+            MethodInfo multilineSpend = layout.GetMethod("MultiLineSpend", BindingFlags.Static | BindingFlags.NonPublic);
+            foreach (string text in new[] {"[c](en)[/c]25\n[c](pickaxe_s)[/c]\n70%", "(en)25\r\n(tool)\r\n70%", "(en)25\r(tool)"})
+                Require((bool)multilineSpend.Invoke(null, new object[] {text}), "Native multiline costs must get their separate column");
+            foreach (string text in new[] {null, "", " \r\n ", "(en)25", "(time)2:30", "\n(en)25\r\n"})
+                Require(!(bool)multilineSpend.Invoke(null, new object[] {text}), "Empty/ordinary/single-energy rows must keep their accepted column geometry");
             Type styleType = candidate.GetType("CraftingPlanner.PlannerStyle", true);
             MethodInfo baseline = styleType.GetMethod("BaselineValue", BindingFlags.Static | BindingFlags.NonPublic);
             Require((float)baseline.Invoke(null, new object[] {"MenuX"}) == 17 && (float)baseline.Invoke(null, new object[] {"FeedbackY"}) == -5, "Individual resets must use the returned candidate baseline");
