@@ -47,3 +47,5 @@ One successful example per family suffices for this correlation question. Do not
 ## Verification and handoff
 
 Native-reference Roslyn SDK6.0.406 compilation, C#7.3, optimization/deterministic/warnings-as-errors passes. VerifySeams checks all eight exact targets plus public component owner/state against the pinned installed assembly without executing native methods. These checks do not prove live Harmony activation or completion behavior. Exact frozen source/artifact/install identities are recorded in TEST_LOG.md once prepared. No production reference stub changes or UI edits are included.
+
+Installed research0.1.0 at2026-10-17T18:30:03Z beside unchanged0.1.20, with the host closed. Frozen source8c82c7dbe93b0018ab97cb1c1d594402fa759205; DLL SHA25663eb7439581d5e4824765aaf8c1e7cc1bd3ae0b1ba3ecd79d0e78d212cdfe8e3. TEST_LOG.md records exact baseline/build/evidence and open acceptance. No live activation or result is claimed yet.

@@ -61,4 +61,4 @@ Private `.local/compile-native.ps1` verifies against installed host references (
 
 ## Active one-off completion research
 
-User authorized repair/upgrade/clearing follow-up. Separate research/oneoff-completion prepares the passive OneOffCompletionProbe0.1.0 beside unchanged production0.1.20. Read ONEOFF_COMPLETION_RESEARCH.md for retrieved evidence, static boundaries, observational filter and the minimal normal-gameplay pass. Production one-off removal remains absent; research does not consume a production version. TEST_LOG.md owns exact prepared/installed sidecar identity.
+User authorized repair/upgrade/clearing follow-up. Separate research/oneoff-completion has installed the passive OneOffCompletionProbe0.1.0 beside unchanged production0.1.20. Read ONEOFF_COMPLETION_RESEARCH.md for retrieved evidence, static boundaries, observational filter and the minimal normal-gameplay pass. Production one-off removal remains absent; research does not consume a production version. TEST_LOG.md owns exact prepared/installed sidecar identity.
