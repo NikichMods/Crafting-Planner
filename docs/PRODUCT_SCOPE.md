@@ -39,7 +39,7 @@ P0 does not expand dependencies. If a bench needs planks, the planner asks for p
 
 ## Quantity semantics
 
-- Repeatable placeable/build projects have quantity1..20; the limit is per goal counter and applies to every menu/HUD/mouse/gamepad entry path.
+- Repeatable placeable/build projects have quantity 1..20; the limit is per goal counter and applies to every menu/HUD/mouse/gamepad entry path.
 - One-off repair/upgrade/clearing projects are quantity 1.
 - Quantity belongs to the planner goal, not to a workstation craft queue or private amount widget.
 - Display bare quantities without an `×` prefix in both menu and shared HUD/card counters. Keep the numeral centred; arrow glyphs default to a13-unit gap from the measured visible numeral edges, with common gap tuning and existing menu fine offsets. Zero is shown for unpinned menu projects; decrementing an existing goal to zero removes it.
