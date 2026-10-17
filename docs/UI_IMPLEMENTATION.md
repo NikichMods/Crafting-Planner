@@ -1,8 +1,10 @@
 # Building Planner — UI implementation
 
-## Current accepted implementation — 2026-10-17
+## Last accepted visual baseline — 2026-10-17
 
 The user accepts the complete 0.1.16 visual presentation, including single-line repair-energy separation. Visual iteration is closed unless a new defect/request reopens it. [PRODUCT_SCOPE.md](PRODUCT_SCOPE.md) owns active UX requirements; [TEST_LOG.md](TEST_LOG.md) owns bounded runtime acceptance; [DEVELOPMENT.md](DEVELOPMENT.md) identifies the exact installed artifact and next functional milestone. A READY static gate below is not by itself runtime acceptance.
+
+The subsequently reported multi-line native-cost overlap is corrected in installed 0.1.17 and awaits native acceptance. Its dedicated gate is recorded below; ordinary/single-energy presentation remains the accepted invariant.
 
 Current source ownership:
 

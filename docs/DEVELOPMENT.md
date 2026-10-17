@@ -6,25 +6,25 @@ Updated: 2026-10-17. This is the current resume entry point; dated design and te
 
 **Building Planner** is the adopted display name and English HUD title. Stable technical identity remains CraftingPlanner: GUID, namespace, installed filename, package and repository identity.
 
-The installed **0.1.16** candidate's complete visual presentation is user-accepted, including repair energy above the planner quantity/arrows. Visual iteration is closed unless a new defect/request reopens it. Core actions have been exercised with mouse/keyboard and gamepad; ordinary HUD appearance across all 11 host languages is user-reported from 0.1.11. This is bounded runtime evidence, not exhaustive functional coverage or stable-release acceptance.
+The **0.1.16** visual baseline is user-accepted, including repair energy above the planner quantity/arrows. Installed **0.1.17** corrects only the subsequently reported multi-line native-cost overlap and awaits game acceptance. Core actions have been exercised with mouse/keyboard and gamepad; ordinary HUD appearance across all 11 host languages is user-reported from 0.1.11. This is bounded runtime evidence, not exhaustive functional coverage or stable-release acceptance.
 
-The user closed the game and authorized the passive PlacementCommitProbe installation on 2026-10-17. The exact sidecar is installed alongside unchanged Building Planner 0.1.16; activation/native attempt evidence awaits the next launch. Installation identity is in [PLACEMENT_COMMIT_RESEARCH.md](PLACEMENT_COMMIT_RESEARCH.md) and TEST_LOG.md. Goals remain session-local.
+The passive PlacementCommitProbe returned its native attempt evidence and was removed from loading after exact backup. Building Planner 0.1.17 was installed with the game closed; previous 0.1.16/log and observer payload are preserved privately. Installation receipt is `.local/evidence/pre-0.1.17/installation.json`. Goals remain session-local.
 
-A new screenshot reopens only multi-line native spend overlap in a world-clearing row: the native cost block already occupies the quantity column. The user adopted a separate native-cost column to the left of planner quantity on 2026-10-17, shifting ingredients left while preserving row height and accepted ordinary/single-energy rows. Implementation is on dev/0.1.17; native-reference compilation in both modes and compiled-policy checks pass. Exact hosted candidate/install and native acceptance are pending; 0.1.16 below remains the installed baseline until its recorded replacement.
+A new screenshot reopens only multi-line native spend overlap in a world-clearing row. The user adopted a separate native-cost column to the left of planner quantity on 2026-10-17, shifting ingredients left while preserving row height and accepted ordinary/single-energy rows. Implementation is on dev/0.1.17; native-reference compilation in both modes, clean hosted build and exact downloaded-DLL policy checks pass. Verify the reported clearing row, ordinary/single-energy rows and reopen/quantity edits for drift; native visual acceptance remains pending.
 
 ## Exact installed artifact
 
 | Identity | Value |
 | --- | --- |
-| Development branch | `dev/0.1.16` |
-| Frozen runtime source | `a8bda9eeb0f4829ff5eaf2fbec0dfbbaa213c25b` |
-| Version | `0.1.16` / assembly `0.1.16.0` |
-| CI run / artifact | `38977362668` / `12079323553` |
-| DLL SHA256 | `74f612880574d90a53d771a925f8cbc56bbb69f3e5b1acad8ffa7de189d2d37f` |
-| ZIP SHA256 | `b7c9c3883da0cb031a855bb3ef34d9f016e1bd5a1f0f8de966229ff88b155fb7` |
+| Development branch | `dev/0.1.17` |
+| Frozen runtime source | `50652ee3e8ecc3afbabc26ae06f407228e28b6ce` |
+| Version | `0.1.17` / assembly `0.1.17.0` |
+| CI run / artifact | `39022244129` / `12096483899` |
+| DLL SHA256 | `5db81e4f0ecdf7527399564135790be8aa64887890dd6986fa0893f229b81343` |
+| ZIP SHA256 | `0c0f96ba23bb12c9af3f9d8a6221befe62706dae150c0f47689c6baf8577113a` |
 | Calibration | enabled; F2 format 8, 55 individually resettable sliders |
 
-Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.16/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity.
+Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.17/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. No 0.1.17 installed-runtime log is claimed yet.
 
 Both native-reference configurations, clean hosted build, state/geometry/font/calibration/localization/invalidation/energy-layout checks, exact-DLL tests and package boundaries passed. Accepted cases and limits are owned by [TEST_LOG.md](TEST_LOG.md). The live acceptance snapshot is `.local/evidence/accept-0.1.16-visual/LogOutput.log`, SHA256 `96ae57df373be5e2137e26f9e87678ddac37a51ecdccccde85c7a66570c5316d`: it loads 0.1.16 with no planner exception/disable found. It is a partial running-session snapshot, not a completed shutdown log.
 

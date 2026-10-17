@@ -4,7 +4,7 @@ Updated: 2026-10-17. Research branch: `research/placement-commit`, based on `637
 
 ## Question and readiness
 
-**Production gate: BLOCKED pending installed observation.** For a repeatable placeable, identify exactly one successful native placement/material commitment and the exact existing planner key. Cancelled/rejected actions must produce none. Native code alone spends materials; the planner later decrements one, removes at zero and derives new requirements. This does not concern completion of physical construction.
+**Production gate: not yet READY; bounded native observation has returned below.** Before production mutation select the smallest success predicate and prove its existing-goal matching/exactly-once reduction. For a repeatable placeable, identify exactly one successful native placement/material commitment and the exact existing planner key. Cancelled/rejected actions must produce none. Native code alone spends materials; the planner later decrements one, removes at zero and derives new requirements. This does not concern completion of physical construction.
 
 Owner: `BuildModeLogics.DoPlace`; native commit pipeline: resource check/removal, floating-object retention, optional `_place` replacement, scripts/one-time bookkeeping, `just_built=true`, redraw, optional preparation of another preview. The changed production surface would be session-local goal quantity and derived UI only. Existing manual transfer, UI/input, localization and host placement behavior are preserved invariants. Success/identity/exactly-once acceptance remains open; compilation is insufficient.
 
@@ -66,3 +66,5 @@ Preserved log `.local/evidence/placement-probe-return/LogOutput.log`, SHA256 `64
 | Insufficient resources | Garden build UI logs `OnCraftPressed ... can_craft=False`; no DoPlace attempt follows. This proves upstream menu rejection, not the CanBuild early-return branch inside DoPlace |
 
 The observed repeatable-placement success/cancel/busy paths are now separated and native identity is captured before another preview. This is not evidence of actual planner decrement (still absent), another-project isolation, arbitrary modded/scripted actions or upgrade/repair/clearing success. Before production choose the smallest predicate from these facts and verify goal matching, exactly-once decrement/zero removal and derived refresh on its meaningful candidate. The separate multi-line cost correction adopted in the same user return does not modify this execution path.
+
+Reusable native facts were promoted to shared GraveyardKeeperResearch commit `8a8aef1`. After preserving the return, the exact observer payload was backed up outside the plugin directory and removed from loading during the 0.1.17 installation. Its immutable artifact/source remain available; no probe repetition is needed merely to recover these facts.
