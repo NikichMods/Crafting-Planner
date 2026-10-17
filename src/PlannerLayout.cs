@@ -17,7 +17,11 @@ namespace CraftingPlanner
         { return width - padding - QuantitySlotWidth + ArrowWidth + QuantityWidth / 2 - inset; }
         internal const int ArrowWidth = 20, QuantityWidth = 30;
         internal const int QuantitySlotWidth = ArrowWidth * 2 + QuantityWidth;
-        internal static int QuantityX(int slotLeft) { return slotLeft + ArrowWidth; }
+        internal const int MenuIngredientsOrigin = 29;
+        internal static float QuantityArrowOffset(float numberWidth, float arrowWidth, float gap)
+        { return numberWidth / 2 + Math.Max(0, gap) + arrowWidth / 2; }
+        internal static int QuantityHalfSlot(float gap)
+        { return Math.Max(QuantitySlotWidth / 2, (int)Math.Ceiling(QuantityWidth / 2f + gap + ArrowWidth)); }
         internal static int ClampSelection(int index, int count) { return Math.Max(0, Math.Min(index, count - 1)); }
 
         internal static int[] RightAlignedStarts(int[] widths, int right, int gap)
@@ -36,21 +40,6 @@ namespace CraftingPlanner
                 else occupied += gap + widths[i];
             }
             return rows.ToArray();
-        }
-
-        internal static bool SingleLineEnergy(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text)) return false;
-            string visible = text.Trim();
-            return visible.IndexOf("(en)", StringComparison.Ordinal) >= 0 && visible.IndexOf('\n') < 0 && visible.IndexOf('\r') < 0;
-        }
-        internal static int EnergyRowShift(int boxHeight, int printedHeight)
-        { return Math.Max(0, Math.Min(8, (boxHeight - printedHeight - 2) / 2)); }
-        internal static bool MultiLineSpend(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text)) return false;
-            string visible = text.Trim();
-            return visible.IndexOf('\n') >= 0 || visible.IndexOf('\r') >= 0;
         }
 
         internal static float BackingAlpha(float x, float y, float width, float height, float radius, float feather)

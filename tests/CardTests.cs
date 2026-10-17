@@ -37,8 +37,15 @@ class CardTests
                 Require(Math.Abs(current - value(240 - x, y)) < .00001f && Math.Abs(current - value(x, 200 - y)) < .00001f, "Backing is off-centre");
                 if (x < 120) Require(current <= value(x + 10, y), "Backing weakens toward centre");
             }
-            MethodInfo quantityX = layout.GetMethod("QuantityX", BindingFlags.Static | BindingFlags.NonPublic);
-            Require((int)quantityX.Invoke(null, new object[] {100}) == 120, "Quantity must reserve its left arrow slot");
+            MethodInfo arrowOffset = layout.GetMethod("QuantityArrowOffset", BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo halfSlot = layout.GetMethod("QuantityHalfSlot", BindingFlags.Static | BindingFlags.NonPublic);
+            foreach (float digits in new[] {6f, 12f, 18f, 30f}) foreach (float arrow in new[] {4f, 9f, 20f}) foreach (float gap in new[] {0f, 13f, 40f})
+            {
+                float offset = (float)arrowOffset.Invoke(null, new object[] {digits, arrow, gap});
+                Require(Math.Abs(offset - arrow / 2 - digits / 2 - gap) < .001f, "Arrow gap must start at the visible digit edge for one/two-digit counters");
+                int reserve = (int)halfSlot.Invoke(null, new object[] {gap});
+                Require(reserve >= offset + 10, "HUD names must reserve the arrow hitbox as well as the glyph");
+            }
             MethodInfo centre = layout.GetMethod("QuantityCenter", BindingFlags.Static | BindingFlags.NonPublic);
             int centreDefault = (int)centre.Invoke(null, new object[] {240, 4, 0});
             int centreInset = (int)centre.Invoke(null, new object[] {240, 4, 12});
@@ -69,30 +76,17 @@ class CardTests
             mark.Invoke(null, null); mark.Invoke(null, null); mark.Invoke(null, null);
             Require((bool)consume.Invoke(null, null) && !(bool)consume.Invoke(null, null), "A transfer batch must request only one refresh");
             mark.Invoke(null, null); reset.Invoke(null, null); Require(!(bool)consume.Invoke(null, null), "Unload must clear pending transfer work");
-            MethodInfo energyShift = layout.GetMethod("EnergyRowShift", BindingFlags.Static | BindingFlags.NonPublic);
-            Require((int)energyShift.Invoke(null, new object[] {36,16}) == 8, "Repair energy and planner need matching separation");
-            for (int height = 16; height <= 60; height++) for (int printed = 12; printed <= 48; printed++)
-            {
-                int shift = (int)energyShift.Invoke(null, new object[] {height,printed});
-                Require(shift >= 0 && shift <= 8, "Energy displacement must remain bounded");
-                if (shift > 0) Require(height - 2 * shift >= printed + 2, "Energy content must keep its full height");
-            }
-            MethodInfo energyLine = layout.GetMethod("SingleLineEnergy", BindingFlags.Static | BindingFlags.NonPublic);
-            Require((bool)energyLine.Invoke(null, new object[] {"[c](en)[/c]10"}), "Native formatted energy must be detected");
-            foreach (string text in new[] {"", " ", "(time)2:30", "(en)10\n(time)2:30"})
-                Require(!(bool)energyLine.Invoke(null, new object[] {text}), "Unrelated or multiline costs must bypass single-energy displacement");
-            MethodInfo multilineSpend = layout.GetMethod("MultiLineSpend", BindingFlags.Static | BindingFlags.NonPublic);
-            foreach (string text in new[] {"[c](en)[/c]25\n[c](pickaxe_s)[/c]\n70%", "(en)25\r\n(tool)\r\n70%", "(en)25\r(tool)"})
-                Require((bool)multilineSpend.Invoke(null, new object[] {text}), "Native multiline costs must get their separate column");
-            foreach (string text in new[] {null, "", " \r\n ", "(en)25", "(time)2:30", "\n(en)25\r\n"})
-                Require(!(bool)multilineSpend.Invoke(null, new object[] {text}), "Empty/ordinary/single-energy rows must keep their accepted column geometry");
             Type styleType = candidate.GetType("CraftingPlanner.PlannerStyle", true);
             MethodInfo baseline = styleType.GetMethod("BaselineValue", BindingFlags.Static | BindingFlags.NonPublic);
             Require((float)baseline.Invoke(null, new object[] {"MenuX"}) == 17 && (float)baseline.Invoke(null, new object[] {"FeedbackY"}) == -5, "Individual resets must use the returned candidate baseline");
             Require(Math.Abs((float)baseline.Invoke(null, new object[] {"Opacity"}) - 39) < .001f && Math.Abs((float)baseline.Invoke(null, new object[] {"FooterShadowOpacity"}) - 80) < .001f, "Percent controls must reset in display units");
             Require((float)baseline.Invoke(null, new object[] {"MenuCaptionFont"}) == 16 && (float)baseline.Invoke(null, new object[] {"ChestActionGap"}) == 10 && (float)baseline.Invoke(null, new object[] {"MenuActionGap"}) == 10, "Caption and action-row resets must use their own baselines");
+            Require((float)baseline.Invoke(null, new object[] {"MenuSpendX"}) == 0 && (float)baseline.Invoke(null, new object[] {"MenuSpendY"}) == 0 && (float)baseline.Invoke(null, new object[] {"QuantityArrowGap"}) == 13, "Cost-block and actual arrow-gap resets must use new defaults");
+            Require((float)baseline.Invoke(null, new object[] {"MenuMinusX"}) == 0 && (float)baseline.Invoke(null, new object[] {"MenuPlusX"}) == 0, "Old fixed-arrow offsets must not bias measured gaps");
             object style = Activator.CreateInstance(styleType, true);
             BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+            string tuningRecord = (string)styleType.GetMethod("Record", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(style, null);
+            Require(tuningRecord.Contains(" menu_spend_x=0") && tuningRecord.Contains(" menu_spend_y=0") && tuningRecord.Contains(" quantity_arrow_gap=13"), "Calibration export must retain cost offsets and measured arrow spacing");
             styleType.GetField("Right", fieldFlags).SetValue(style, 12.955f);
             styleType.GetField("IconX", fieldFlags).SetValue(style, -2.5f);
             styleType.GetField("Scale", fieldFlags).SetValue(style, .647f);
@@ -167,7 +161,9 @@ class CardTests
         Field(definition, "id", "test_project");
         var needsField = definitionType.GetField("needs");
         IList needs = (IList)Activator.CreateInstance(needsField.FieldType);
-        needs.Add(Activator.CreateInstance(needsField.FieldType.GetGenericArguments()[0], new object[] { "test_material", 4 }));
+        // Project arithmetic fixture: native Item constructors load Unity resources/bag definitions.
+        object ingredient = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(needsField.FieldType.GetGenericArguments()[0]);
+        Field(ingredient, "id", "test_material"); Field(ingredient, "value", 4); needs.Add(ingredient);
         needsField.SetValue(definition, needs);
         object goal = Activator.CreateInstance(goalType, true);
         Field(goal, "Key", "1|original_builder|test_project"); Field(goal, "Definition", definition);
@@ -185,6 +181,22 @@ class CardTests
         adjust.Invoke(null, new object[] {goals, goal, 1, null});
         Require((int)goalType.GetField("Quantity", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(goal) == 1, "One-off goal multiplied");
         goals.Clear();
-        Console.WriteLine("PASS: stored-goal identity outside its original context, aggregation, zero removal, stale callback and one-off bound.");
+        Field(goal, "Quantity", 19); Field(goal, "Repeatable", true); goals.Add(goal);
+        Type state = candidate.GetType("CraftingPlanner.PlannerGoalState", true);
+        MethodInfo menuAdjust = state.GetMethod("Adjust", BindingFlags.Static | BindingFlags.NonPublic);
+        Require((bool)menuAdjust.Invoke(null, new object[] {goals, definition, "1|original_builder|test_project", true, 1, null}), "19 must increase to20 through the menu path");
+        for (int i = 0; i < 25; i++)
+        {
+            Require(!(bool)adjust.Invoke(null, new object[] {goals, goal, 1, null}), "HUD repeat input must stop at20");
+            Require(!(bool)menuAdjust.Invoke(null, new object[] {goals, definition, "1|original_builder|test_project", true, int.MaxValue, null}), "Menu input must not bypass20");
+        }
+        Require((int)goalType.GetField("Quantity", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(goal) == 20 && goals.Count == 1, "Cap must neither overflow nor duplicate the goal");
+        aggregate = (IDictionary)planner.GetMethod("AggregateRequirements", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, null);
+        Require((int)aggregate["test_material"] == 80, "No-op increases at20 must retain exact aggregate materials");
+        Require((bool)adjust.Invoke(null, new object[] {goals, goal, -1, null}), "20 must still decrement");
+        Require((bool)adjust.Invoke(null, new object[] {goals, goal, 1, null}), "19 must return to20 through the HUD path");
+        for (int i = 0; i < 20; i++) adjust.Invoke(null, new object[] {goals, goal, -1, null});
+        Require(goals.Count == 0, "A capped goal must still remove at zero");
+        Console.WriteLine("PASS: stored-goal identity, aggregation, zero removal, stale callback, one-off bound and shared menu/HUD cap20.");
     }
 }

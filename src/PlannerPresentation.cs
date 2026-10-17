@@ -135,16 +135,17 @@ namespace CraftingPlanner
             foreach (ProjectGoal goal in Planner.GetGoals())
             {
                 int nameX = pad + PlannerLayout.IconSlotWidth + 4;
-                int slotX = quantityCenter - PlannerLayout.QuantityWidth / 2 - PlannerLayout.ArrowWidth;
+                int slotX = quantityCenter - PlannerLayout.QuantityHalfSlot(Style.QuantityArrowGap);
                 UILabel name = Label(Planner.GetProjectName(goal.Definition), nameX, y, slotX - nameX - 4, line, false, true);
                 int rowHeight = PlannerLayout.TextRowHeight((int)Style.Row, (int)Style.Font, (int)Math.Ceiling(name.printedSize.y));
                 SpriteIcon(goal.Definition.icon, IconLeft(pad), IconTop(y, rowHeight, goalIndex++, true));
-                Number("×" + goal.Quantity, PlannerLayout.QuantityX(slotX), y + (rowHeight - line) / 2, PlannerLayout.QuantityWidth, line, true).overflowMethod = UILabel.Overflow.ShrinkContent;
+                UILabel quantity = Number(goal.Quantity.ToString(), quantityCenter - PlannerLayout.QuantityWidth / 2, y + (rowHeight - line) / 2, PlannerLayout.QuantityWidth, line, true);
+                quantity.overflowMethod = UILabel.Overflow.ShrinkContent;
                 FocusRow(goal, name, pad, y, _width - 2 * pad, rowHeight);
                 if (!LazyInput.gamepad_active || PlannerEditing.Active)
                 {
-                    Arrow(goal, -1, slotX, y + (rowHeight - line) / 2, line);
-                    if (goal.Repeatable) Arrow(goal, 1, slotX + PlannerLayout.ArrowWidth + PlannerLayout.QuantityWidth, y + (rowHeight - line) / 2, line);
+                    Arrow(goal, -1, quantity, line);
+                    if (goal.Repeatable) Arrow(goal, 1, quantity, line);
                 }
                 y += rowHeight;
             }
@@ -246,7 +247,7 @@ namespace CraftingPlanner
             label.effectColor = new Color(.065f, .065f, .055f, .8f); label.effectDistance = new Vector2(1, 1);
             return label;
         }
-        private void Arrow(ProjectGoal goal, int delta, int x, int y, int height)
+        private void Arrow(ProjectGoal goal, int delta, UILabel quantity, int height)
         {
             if (_arrowCursor == _arrows.Count)
             {
@@ -256,8 +257,10 @@ namespace CraftingPlanner
             UILabel glyph = _arrows[_arrowCursor++];
             Configure(glyph, NumericTemplate(true), PlannerLayout.ArrowWidth, height, false, false);
             glyph.pivot = UIWidget.Pivot.Center; glyph.alignment = NGUIText.Alignment.Center;
-            glyph.transform.localPosition = new Vector3(-_width + x + glyph.width / 2f, -y - height / 2f, 0);
             glyph.text = delta < 0 ? "<" : ">"; glyph.gameObject.SetActive(true);
+            float offset = PlannerLayout.QuantityArrowOffset(Math.Min(quantity.width, quantity.printedSize.x), glyph.printedSize.x, Style.QuantityArrowGap);
+            Vector3 centre = quantity.transform.localPosition;
+            glyph.transform.localPosition = new Vector3(centre.x + delta * offset, centre.y, 0);
             BoxCollider2D collider = glyph.GetComponent<BoxCollider2D>();
             collider.size = new Vector2(glyph.width, height); collider.offset = Vector2.zero;
             Color muted = new Color(.70f, .70f, .65f, Style.TextOpacity); glyph.color = muted;
@@ -410,7 +413,7 @@ namespace CraftingPlanner
         }
         internal void Export(Camera camera)
         {
-            Planner.LogLine("event=calibration_export format=8 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
+            Planner.LogLine("event=calibration_export format=9 version=" + Plugin.PluginVersion + " view=" + _view + " " + Style.Record() +
                 " actual_width=" + _width + " actual_height=" + _height + " screen=" + Screen.width + "x" + Screen.height +
                 " card_px=" + Rectangle(_root, camera) + " back_px=" + Rectangle(_back, camera) +
                 " font_asset=" + (_measure.bitmapFont != null ? _measure.bitmapFont.name : "dynamic") + " arrows=" + _arrowCursor + " focus_rows=" + _focusCursor + " language=" + PlannerLocalization.CurrentLanguage);

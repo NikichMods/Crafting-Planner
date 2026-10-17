@@ -4,6 +4,7 @@ namespace CraftingPlanner
 {
     internal static class PlannerGoalState
     {
+        internal const int MaxQuantity = 20;
         internal static bool AdjustPinned(IList<ProjectGoal> goals, ProjectGoal pinned, int delta, out ProjectGoal updated)
         {
             updated = null;
@@ -22,7 +23,8 @@ namespace CraftingPlanner
                     updated = new ProjectGoal { Key = key, Definition = definition, Quantity = 1, Repeatable = repeatable };
                     goals.Add(updated);
                 }
-                else if (updated.Repeatable && updated.Quantity < int.MaxValue) updated.Quantity++;
+                else if (updated.Repeatable && updated.Quantity < MaxQuantity) updated.Quantity++;
+                else return false;
             }
             else
             {

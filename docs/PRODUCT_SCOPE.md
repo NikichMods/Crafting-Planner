@@ -6,7 +6,7 @@ Updated: 2026-10-17
 
 The complete 0.1.16 visual presentation is user-accepted as of 2026-10-17. Preserve it unless a new defect/request reopens visual work. Exercised core functionality is recorded in [TEST_LOG.md](TEST_LOG.md); this is not full functional or stable-release acceptance. Exact installed artifact and recovery are in [DEVELOPMENT.md](DEVELOPMENT.md).
 
-Subsequent user screenshot reopens a bounded defect: multi-line native spend in a clearing row overlaps planner quantity. The user adopted a dedicated native-cost column to the left of planner quantity on 2026-10-17. Shift ingredients left as needed and preserve row height/native cost text. Ordinary rows and the accepted single-energy presentation must remain unchanged; real host layout acceptance of the correction remains pending.
+The user reports the 0.1.17 multi-line native-cost separation technically works and adopts one shared cost-block format for both single-energy and multi-line costs. The rightmost menu column belongs exclusively to planner quantity, centred horizontally/vertically by default. Native cost text/width/height remain host-owned; F2 independently moves its whole block in X/Y and adjusts materials relative to it. The earlier stacked single-energy arrangement is superseded. The user will tune these positions for later adoption as defaults; current tunable values are candidate defaults, not the result of that future tuning.
 
 ## Product model
 
@@ -39,9 +39,10 @@ P0 does not expand dependencies. If a bench needs planks, the planner asks for p
 
 ## Quantity semantics
 
-- Repeatable placeable/build projects may have quantity > 1, e.g. `Church Bench x3`.
+- Repeatable placeable/build projects have quantity1..20; the limit is per goal counter and applies to every menu/HUD/mouse/gamepad entry path.
 - One-off repair/upgrade/clearing projects are quantity 1.
 - Quantity belongs to the planner goal, not to a workstation craft queue or private amount widget.
+- Display bare quantities without an `×` prefix in both menu and shared HUD/card counters. Keep the numeral centred; arrow glyphs default to a13-unit gap from the measured visible numeral edges, with common gap tuning and existing menu fine offsets. Zero is shown for unpinned menu projects; decrementing an existing goal to zero removes it.
 
 ## Required next milestone: successful-operation reduction
 
@@ -115,11 +116,11 @@ The ordinary HUD shows project names/icons and fixed quantity slots above aggreg
 
 The shared card stays in the same apparent position across ordinary HUD, supported build/world-project menus, character Inventory tab and chest. The native location banner is replaced by the planner title while shown and restored when hidden. English title/display name is **Building Planner**; host project/item names and owned labels follow the live language.
 
-Supported-menu help is ONE right-aligned row: round native left/right arrow symbols plus localized Add to planner first, followed by original native action blocks in native order, with final Close at the frame edge. Measured equal gaps and leftward growth accommodate translations. Planner help copies the native cream-to-brown label gradient/font/effect and round arrow sprites. Keyboard/mouse shows only planner help. Do not restore the rejected Add to planner header: it misleadingly made planning look like the window's primary build action. Visible single-line repair energy sits above quantity/arrows inside the existing row; arbitrary multiline costs are not generalized.
+Supported-menu help is ONE right-aligned row: round native left/right arrow symbols plus localized Add to planner first, followed by original native action blocks in native order, with final Close at the frame edge. Measured equal gaps and leftward growth accommodate translations. Planner help copies the native cream-to-brown label gradient/font/effect and round arrow sprites. Keyboard/mouse shows only planner help. Do not restore the rejected Add to planner header: it misleadingly made planning look like the window's primary build action. Single-energy and multi-line native costs share one separately movable block to the left of planner quantity; row height and native cost formatting remain unchanged.
 
 Chest gamepad hints are one right-aligned **A / X / B / Y** row, preserving native omitted/disabled actions. Y Take Needed ends at the chest's right edge, equal measured gaps expand leftward; keyboard F uses that edge. Results/notices right-align to the same edge and report actual transferred item icons/counts, with compact measured spacing. A guaranteed pre-action transfer manifest is not adopted. Quick Stack's world transfer now immediately refreshes Have/Missing through a scoped native transfer observer; reserve protection and gesture takeover remain outside scope.
 
-F2 is temporary live calibration (format 8): individually resettable sliders, labels above controls, separate text/numeric/quantity styles, title and footer controls, independent icon visual size/offsets, grouped row/column placement and soft backing controls. Logical dimensions use integer steps with deliberate scale/opacity steps. Current accepted defaults are owned by source; calibration logs are recovery evidence, not a second settings database. The final public-build fate of F2 remains unresolved.
+F2 is temporary live calibration (format 9): individually resettable sliders, labels above controls, separate text/numeric/quantity styles, title and footer controls, independent icon visual size/offsets, grouped row/column placement, cost-block X/Y, relative material X/Y, shared measured arrow gap and soft backing controls. Supported Build calibration is available with an empty plan. Logical dimensions use integer steps with deliberate scale/opacity steps. Current accepted defaults are owned by source; calibration logs are recovery evidence, not a second settings database. The final public-build fate of F2 remains unresolved.
 
 ## Localization requirement
 

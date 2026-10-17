@@ -24,7 +24,8 @@ namespace CraftingPlanner
         {
             if (!Input.GetKeyDown(KeyCode.F2)) return;
             if (_open) { Close(); return; }
-            if (PlannerPresentation.GetView() == PlannerView.Hidden || !Planner.HasGoals) return;
+            PlannerView view = PlannerPresentation.GetView();
+            if (view == PlannerView.Hidden || (!Planner.HasGoals && view != PlannerView.Build)) return;
             try
             {
                 WorldGameObject player = MainGame.me != null ? MainGame.me.player : null;
@@ -82,7 +83,8 @@ namespace CraftingPlanner
             s.Outline = GUILayout.Toggle(s.Outline, "Обводка текста (выкл. — мягкая тень)");
             s.Font = Slider(nameof(s.Font), "Размер основного текста", s.Font, 10, 32);
             s.AlternateNumbers = GUILayout.Toggle(s.AlternateNumbers, "Другой родной шрифт для всех чисел");
-            s.AlternateQuantity = GUILayout.Toggle(s.AlternateQuantity, "Другой родной шрифт для ×количества и стрелок");
+            s.AlternateQuantity = GUILayout.Toggle(s.AlternateQuantity, "Другой родной шрифт для количества и стрелок");
+            s.QuantityArrowGap = Slider(nameof(s.QuantityArrowGap), "Счётчики везде: отступ стрелок от числа", s.QuantityArrowGap, 0, 40);
             s.Row = Slider(nameof(s.Row), "Высота строки (минимальная)", s.Row, 18, 48);
             s.Padding = Slider(nameof(s.Padding), "Внутренние отступы", s.Padding, 4, 24);
             s.Column = Slider(nameof(s.Column), "Ширина числовых столбцов", s.Column, 32, 110);
@@ -122,6 +124,10 @@ namespace CraftingPlanner
             s.MenuShadowSize = Slider(nameof(s.MenuShadowSize), "Размер тени столбца", s.MenuShadowSize, 0, 4);
             s.MenuShadowOpacity = Slider(nameof(s.MenuShadowOpacity), "Плотность тени столбца (%)", s.MenuShadowOpacity * 100, 0, 100) / 100;
             s.MenuHideBorder = GUILayout.Toggle(s.MenuHideBorder, "Убрать внутреннюю правую границу родных строк");
+            GUILayout.Label("Меню — энергия / игровые затраты");
+            s.MenuSpendX = Slider(nameof(s.MenuSpendX), "Игровые затраты: вправо", s.MenuSpendX, -300, 300);
+            s.MenuSpendY = Slider(nameof(s.MenuSpendY), "Игровые затраты: вверх", s.MenuSpendY, -300, 300);
+            GUILayout.Label("Меню — материалы относительно игровых затрат");
             s.IngredientsX = Slider(nameof(s.IngredientsX), "Ингредиенты меню: вправо", s.IngredientsX, -300, 300);
             s.IngredientsY = Slider(nameof(s.IngredientsY), "Ингредиенты меню: вверх", s.IngredientsY, -300, 300);
             GUILayout.Label("Меню — общий ряд управления внизу");
