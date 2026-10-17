@@ -263,6 +263,7 @@ namespace CraftingPlanner
     {
         private static void Prefix(CraftItemGUI __instance)
         {
+            if (__instance == null) return;
             var controls = __instance.GetComponent<PlannerRowControls>(); if (controls != null) controls.Restore();
         }
         private static void Postfix(CraftItemGUI __instance) { PlannerRowControls.Ensure(__instance); }

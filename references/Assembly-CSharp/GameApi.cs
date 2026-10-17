@@ -156,6 +156,21 @@ public class FloatingWorldGameObject : MonoBehaviour
     public static FloatingWorldGameObject cur_floating { get { return null; } }
     public WorldGameObject wobj { get { return null; } }
 }
+public class WorldGameObjectComponentBase
+{
+    public WorldGameObject wgo { get { return null; } }
+}
+public class WorldGameObjectComponent : WorldGameObjectComponentBase { }
+public class CraftComponent : WorldGameObjectComponent
+{
+    public CraftDefinition current_craft;
+    public bool is_crafting;
+    private void ProcessFinishedCraft() { }
+}
+public class GameSave
+{
+    public void OnFinishedCraft(CraftDefinition definition) { }
+}
 public class MainGame : MonoBehaviour
 {
     public static MainGame me;

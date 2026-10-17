@@ -147,11 +147,69 @@ class CardTests
             MethodInfo normalize = localization.GetMethod("Normalize", BindingFlags.Static | BindingFlags.NonPublic);
             Require((string)normalize.Invoke(null, new object[] {"zh_CN"}) == "zh-cn", "Native Chinese code not normalized");
             Require((string)normalize.Invoke(null, new object[] {"pt_BR"}) == "pt-br", "Native Portuguese code not normalized");
-            if (Array.IndexOf(args, "--state") >= 0) { CheckPinnedState(candidate); CheckPlacement(candidate); }
+            if (Array.IndexOf(args, "--state") >= 0) { CheckPinnedState(candidate); CheckPlacement(candidate); CheckWorldCompletion(candidate); }
+            if (Array.IndexOf(args, "--native-rows") >= 0) CheckAbsentRows(candidate);
             Console.WriteLine("PASS: centred rounded backing, feather/bounds/top-row coverage, quantity slot and 11-language schema. Native visual and input acceptance require the game.");
             return 0;
         }
         catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
+    }
+    static void CheckAbsentRows(Assembly candidate)
+    {
+        var patch = candidate.GetType("CraftingPlanner.PlannerRowRedrawPatch", true);
+        var prefix = patch.GetMethod("Prefix", BindingFlags.Static | BindingFlags.NonPublic);
+        prefix.Invoke(null, new object[] {null});
+        // Real Unity MonoBehaviour metadata, no constructor or native GameObject allocation.
+        object detached = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(prefix.GetParameters()[0].ParameterType);
+        prefix.Invoke(null, new[] {detached});
+        Console.WriteLine("PASS: actual redraw prefix accepts CLR-null and detached Unity row without GetComponent; live Max Buttons input remains a game check.");
+    }
+    static void CheckWorldCompletion(Assembly candidate)
+    {
+        const BindingFlags methods = BindingFlags.Static | BindingFlags.NonPublic;
+        const BindingFlags fields = BindingFlags.Instance | BindingFlags.NonPublic;
+        Type planner=candidate.GetType("CraftingPlanner.Planner",true), goalType=candidate.GetType("CraftingPlanner.ProjectGoal",true);
+        Type state=candidate.GetType("CraftingPlanner.PlannerGoalState",true), receiptType=candidate.GetType("CraftingPlanner.WorldCompletionAttempt",true);
+        IList goals=(IList)planner.GetField("Goals",methods).GetValue(null); goals.Clear();
+        MethodInfo find=state.GetMethod("FindWorldCompletion",methods), aggregate=planner.GetMethod("AggregateRequirements",methods);
+        Type definitionType=find.GetParameters()[1].ParameterType;
+        object definition=Activator.CreateInstance(definitionType); Field(definition,"id","repair"); Field(definition,"change_wgo","repaired");
+        Type needsType=definitionType.GetField("needs").FieldType;
+        IList needs=(IList)Activator.CreateInstance(needsType);
+        object item=System.Runtime.Serialization.FormatterServices.GetUninitializedObject(needsType.GetGenericArguments()[0]);
+        Field(item,"id","completion_material"); Field(item,"value",4); needs.Add(item); Field(definition,"needs",needs);
+        Func<string,bool,object> goal=delegate(string key,bool repeatable) {object result=Activator.CreateInstance(goalType,true); Field(result,"Key",key); Field(result,"Definition",definition); Field(result,"Quantity",1); Field(result,"Repeatable",repeatable); return result;};
+        object tracked=goal("2|broken_owner|repair",false), otherOwner=goal("2|other_owner|repair",false), otherRecipe=goal("2|broken_owner|other",false), builder=goal("1|broken_owner|repair",false);
+        goals.Add(tracked); goals.Add(otherOwner); goals.Add(otherRecipe); goals.Add(builder);
+        Require(ReferenceEquals(find.Invoke(null,new[]{(object)goals,definition,"broken_owner"}),tracked),"World completion must match original owner/definition/context");
+        Require(find.Invoke(null,new[]{(object)goals,definition,"repaired_owner"})==null,"Replacement owner must not be substituted into the original key");
+        Field(tracked,"Repeatable",true); Require(find.Invoke(null,new[]{(object)goals,definition,"broken_owner"})==null,"World completion excludes repeatable goals"); Field(tracked,"Repeatable",false);
+        Field(definition,"change_wgo",null); Require(find.Invoke(null,new[]{(object)goals,definition,"broken_owner"})==null,"Ordinary production is excluded"); Field(definition,"change_wgo","0");
+        object objectCraft=System.Runtime.Serialization.FormatterServices.GetUninitializedObject(state.GetMethod("FindPlacement",methods).GetParameters()[1].ParameterType);
+        Field(objectCraft,"id","repair"); Field(objectCraft,"needs",needs); Field(objectCraft,"change_wgo","repaired"); Field(objectCraft,"one_time_craft",true);
+        Require(find.Invoke(null,new[]{(object)goals,objectCraft,"broken_owner"})==null,"Builder upgrades must remain excluded");
+        var observe=receiptType.GetMethod("ObserveCompletion",fields); var complete=receiptType.GetMethod("Complete",fields);
+        Func<object,object> receipt=captured=>{object r=Activator.CreateInstance(receiptType,true);Field(r,"Goal",captured);Field(r,"Definition",definition);return r;};
+        Func<object,bool,bool> finish=(r,normal)=>(bool)complete.Invoke(r,new object[]{goals,normal,null});
+        foreach(int failure in new[]{0,1,2,3,4})
+        {
+            object r=receipt(tracked);
+            if(failure==4) observe.Invoke(r,new[]{Activator.CreateInstance(definitionType),(object)true});
+            else if(failure!=0) observe.Invoke(r,new[]{definition,(object)(failure!=1)});
+            if(failure==2) observe.Invoke(r,new[]{definition,(object)true});
+            Require(!finish(r,failure!=3) && goals.Contains(tracked),"Absent/failed/duplicate/wrong marker or native exception must preserve goal");
+        }
+        int before=(int)((IDictionary)aggregate.Invoke(null,null))["completion_material"];
+        object success=receipt(tracked); observe.Invoke(success,new[]{definition,(object)true});
+        Require(finish(success,true) && !goals.Contains(tracked),"Successful clearing/repair must remove the original one-off goal at zero");
+        Require(!finish(success,true),"Completion receipt must be consumed once");
+        Require(goals.Contains(otherOwner) && goals.Contains(otherRecipe) && goals.Contains(builder),"Unrelated owner/recipe/builder goals changed");
+        Require((int)((IDictionary)aggregate.Invoke(null,null))["completion_material"]==before-4,"Completion must update derived exact material requirements");
+        object stale=receipt(otherOwner); observe.Invoke(stale,new[]{definition,(object)true}); goals.Remove(otherOwner);
+        object replacement=goal("2|other_owner|repair",false); goals.Add(replacement);
+        Require(!finish(stale,true) && goals.Contains(replacement),"Removed/re-added goal must not inherit an old completion receipt");
+        goals.Clear();
+        Console.WriteLine("PASS: original world key, upgrade/production exclusion, exact completion marker, failures, once-only removal, unrelated goals and derived requirements.");
     }
     static void CheckPlacement(Assembly candidate)
     {

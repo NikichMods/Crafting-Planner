@@ -15,6 +15,14 @@ namespace CraftingPlanner
             foreach (ProjectGoal goal in goals) if (goal.Repeatable && goal.Key == key) return goal;
             return null;
         }
+        internal static ProjectGoal FindWorldCompletion(IList<ProjectGoal> goals, CraftDefinition definition, string owner)
+        {
+            if (definition is ObjectCraftDefinition || !Planner.HasPlainNeeds(definition) || string.IsNullOrEmpty(definition.change_wgo) ||
+                string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(definition.id)) return null;
+            string key = Key(ProjectContextKind.WorldChange, owner, definition.id);
+            foreach (ProjectGoal goal in goals) if (!goal.Repeatable && goal.Key == key) return goal;
+            return null;
+        }
         internal static bool CanIncrease(int quantity, bool repeatable)
         { return quantity < (repeatable ? MaxQuantity : 1); }
         internal static bool AdjustPinned(IList<ProjectGoal> goals, ProjectGoal pinned, int delta, out ProjectGoal updated)

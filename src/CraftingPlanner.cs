@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Building Planner";
-        public const string PluginVersion = "0.1.20";
+        public const string PluginVersion = "0.1.21";
 
         private Harmony _harmony;
 
@@ -24,6 +24,7 @@ namespace CraftingPlanner
             _harmony = new Harmony(PluginGuid);
             _harmony.PatchAll();
             PlannerPlacement.Install();
+            PlannerWorldCompletion.Install();
             LazyInput.on_input_changed += PlannerInputHints.OnInputChanged;
             BaseGUI.on_window_opened += PlannerInputHints.OnWindowChanged;
             BaseGUI.on_window_closed += PlannerInputHints.OnWindowChanged;
@@ -33,6 +34,7 @@ namespace CraftingPlanner
         private void OnDestroy()
         {
             PlannerPlacement.Stop();
+            PlannerWorldCompletion.Stop();
             PlannerCalibration.Close();
             PlannerEditing.Reset();
             PlannerInventoryRefresh.Reset();
@@ -53,7 +55,7 @@ namespace CraftingPlanner
 
         private void Update() { PlannerCalibration.Update(); }
         private void OnGUI() { PlannerCalibration.Draw(); }
-        private void LateUpdate() { PlannerPlacement.Flush(); PlannerInventoryRefresh.Flush(); }
+        private void LateUpdate() { PlannerPlacement.Flush(); PlannerWorldCompletion.Flush(); PlannerInventoryRefresh.Flush(); }
     }
 
     internal enum ProjectContextKind
@@ -96,6 +98,7 @@ namespace CraftingPlanner
         internal static void ResetSession()
         {
             PlannerPlacement.Reset();
+            PlannerWorldCompletion.Reset();
             PlannerCalibration.Close();
             PlannerEditing.Reset();
             PlannerRowControls.RestoreAll();
@@ -210,6 +213,16 @@ namespace CraftingPlanner
             // A logging failure must not lose the pending refresh after state was changed.
             try { LogLine("event=goal_placed key=" + Safe(updated.Key) + " quantity=" + updated.Quantity +
                 " object_uid=" + (attempt.Object != null ? attempt.Object.unique_id : 0)); } catch { }
+            return true;
+        }
+        internal static ProjectGoal FindWorldCompletion(CraftDefinition definition, string owner)
+        { return PlannerGoalState.FindWorldCompletion(Goals, definition, owner); }
+        internal static bool CompleteWorldProject(WorldCompletionAttempt attempt, bool nativeCompleted)
+        {
+            ProjectGoal updated;
+            if (!attempt.Complete(Goals, nativeCompleted, out updated)) return false;
+            try { LogLine("event=goal_completed key=" + Safe(updated.Key) + " quantity=" + updated.Quantity +
+                " object_uid=" + attempt.ObjectUid); } catch { }
             return true;
         }
         internal static bool AdjustProject(CraftDefinition definition, int delta)
@@ -418,7 +431,7 @@ namespace CraftingPlanner
             return false;
         }
 
-        private static bool HasPlainNeeds(CraftDefinition definition)
+        internal static bool HasPlainNeeds(CraftDefinition definition)
         {
             if (definition == null || definition.needs == null || definition.needs.Count == 0)
             {
