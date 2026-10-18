@@ -77,9 +77,11 @@ namespace CraftingPlanner
                 Vector3 position = _group.localPosition;
                 float native = Translation.Clear(position.x);
                 bool moved = Math.Abs(native - position.x) > .001f;
-                position.x = native; _group.localPosition = position;
-                if (moved && _anchors != null)
-                    foreach (UIWidget anchor in _anchors) if (anchor != null) anchor.ResetAndUpdateAnchors();
+                if (moved)
+                {
+                    position.x = native; _group.localPosition = position;
+                    if (_anchors != null) foreach (UIWidget anchor in _anchors) if (anchor != null) anchor.ResetAndUpdateAnchors();
+                }
             }
         }
         private static void Restore()
@@ -100,6 +102,7 @@ namespace CraftingPlanner
             try
             {
                 float offset = Translation.Owned(_group.localPosition.x);
+                if (Math.Abs(offset) <= .001f) return float.NaN;
                 RestoreOffset();
                 return offset;
             }
@@ -163,7 +166,8 @@ namespace CraftingPlanner
                 float offset = PlannerNpcLayout.Offset(plan, primary, additional, screen.Left, out limited);
                 bool shifted = offset < -.01f;
                 int visible = (primary.Valid ? 1 : 0) | (additional.Valid ? 2 : 0);
-                position.x = Translation.Place(position.x, offset); group.localPosition = position;
+                float nextX = Translation.Place(position.x, offset);
+                if (Math.Abs(nextX - position.x) > .001f) { position.x = nextX; group.localPosition = position; }
                 if (shifted != _shifted || limited != _limited || visible != _visible)
                     Planner.LogLine("event=npc_cards state=" + (shifted ? "shifted" : "native") + " visible_mask=" + visible +
                         " offset_ui=" + offset.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) + " screen_limited=" + limited);
