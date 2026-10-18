@@ -1,6 +1,22 @@
 # Development and recovery
 
-Updated:2026-10-19. Current release preparation is **1.0.0**, preserving the accepted0.1.28 behavior. Historical candidate details and bounded native results are owned by TEST_LOG.md; dated pending instructions there describe their original stage.
+Updated:2026-10-19. Current installed candidate is **1.0.1**, adding coordinated NPC-card avoidance; native visual acceptance is pending. Frozen1.0.0 remains the prepared release baseline. Historical candidate details and bounded native results are owned by TEST_LOG.md; dated pending instructions there describe their original stage.
+
+## Current installed candidate —1.0.1
+
+User adopts conditional leftward movement of both native NPC information cards as one group while Planner stays fixed. NPC_CARD_AVOIDANCE.md owns the verified anchors, revised READY gate, independent feature hooks and screen-width limitation. No helper or gameplay change.
+
+| Identity | Value |
+| --- | --- |
+| Branch / frozen runtime source | dev/1.0.1 / 3959b594c1bc41f7669e93de41352a27de79d962 |
+| Version / calibration | 1.0.1 / excluded |
+| Successful CI / artifact | 39177763484 / 12155151713 |
+| DLL SHA256 | 4253a1ae60caf1045bb8cdd5dceaa2e44c0ec12a95f4fe51667858e03c8e7dc8 |
+| Player ZIP SHA256 | 2fa587f7324f61f183a46ee14878a10404b0b5a26be32d872964452ff2766698 |
+| Installed UTC | 2026-10-18T23:46:35Z |
+| Acceptance | compiled checks passed; native visual return pending |
+
+Exact CI payload is under artifacts/CraftingPlanner-1.0.1/. Installation receipt .local/evidence/pre-1.0.1/installation.json; previous1.0.0 backed up/hash-verified outside plugins at .local/installation-backups/pre-1.0.1/. Installed hash matches. No save/config/other-mod changes. Subsequent documentation commits do not rebuild handed bytes; no1.0.1 tag, stable promotion or publication.
 
 ## Prepared release build
 
@@ -26,7 +42,7 @@ Exact CI DLL installed2026-10-18T22:59:23Z with host closed. Receipt .local/evid
 
 ## Accepted behavior and remaining boundary
 
-Post-freeze report2026-10-19: native NPC relation/name/quest card overlaps Planner (Inquisitor screenshot). UI_IMPLEMENTATION.md owns the inspected RelationGUI owner/position loop, alternatives and proposed conditional left placement. Design is not yet adopted and no production gate/build change is made. Keep1.0.0 immutable; a later fix requires a new version. Exact native1.0.0 startup is now observed in .local/evidence/npc-overlap-1.0.0/LogOutput.log, hashacd057dbe50d489b62c10dc205df89f17ccf8e2d56d555b17cb21e4ef66a30f3, installed hash matches and all trackers/persistence bind ready. Prior statements about unobserved startup below describe the preparation handoff, not current startup evidence. Overlap remains open; no publication occurred.
+Post-freeze report2026-10-19: native NPC relation/name/quest card overlaps Planner (Inquisitor screenshot). Adopted conditional common-group movement is implemented in current1.0.1 candidate above; native acceptance remains open. Exact native1.0.0 startup is observed in .local/evidence/npc-overlap-1.0.0/LogOutput.log, hashacd057dbe50d489b62c10dc205df89f17ccf8e2d56d555b17cb21e4ef66a30f3, installed hash matches and all trackers/persistence bind ready. Historical unobserved-startup statements describe the earlier preparation handoff. No publication occurred.
 
 - Completion: representative repeatable placement/cancel/failure/exactly-once decrement; repair/clearing; yard upgrade; one-time receiver; home cupboard Cancel/Apply. Authored57 builder and39 interior dispatch checks are static compiled coverage, not all definitions executed live. Dedicated lamp2->1 replay was declined; no all-world-script generalization.
 - Persistence: per-save/version goals/quantities, save/load/restart/two-slot/deletion/empty plans/unsaved rollback accepted. Local mod snapshots are keyed by save path and native-byte digest; Steam Cloud/copied/renamed slots do not automatically carry/rebind plans. Native save bytes are unchanged.
@@ -34,7 +50,7 @@ Post-freeze report2026-10-19: native NPC relation/name/quest card overlaps Plann
 - UI: accepted0.1.19 independent construction row defaults, bare centred quantities, cap20/one-off1 arrows; no-F2; all11 languages/chest; longest-word growth in0.1.28 and accepted overflow below screen. Do not reopen visual tuning or add scrolling/caps.
 - Compatibility: Quick Stack outbound refresh exercised; Max Buttons redraw failure also reproduced without Planner, repair deferred. No exhaustive mod-set guarantee.
 
-RELEASE_1.0.0.md owns support-log/documentation/licensing/package review and proof of version-only parity. A native1.0.0 launch is not yet observed and must not be reported as such. Accepted gameplay evidence is inherited through the verified unchanged implementation; no full replay is required for a metadata-only build. Any future behavior change requires its own gate and a new numbered artifact.
+RELEASE_1.0.0.md owns the frozen baseline support-log/documentation/licensing/package review and proof of version-only parity. Native1.0.0 startup was subsequently observed as recorded above. Accepted gameplay evidence is inherited through the verified unchanged implementation. Candidate1.0.1 has its own gate and needs its targeted native visual check.
 
 ## Source/build/package
 
