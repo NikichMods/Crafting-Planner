@@ -1,6 +1,6 @@
 # Development and recovery
 
-Updated: 2026-10-17. This is the current resume entry point; dated design and test records describe their own candidate, not competing current instructions.
+Updated: 2026-10-18. This is the current resume entry point; dated design and test records describe their own candidate, not competing current instructions.
 
 ## Current state
 
@@ -8,21 +8,21 @@ Building Planner keeps stable technical identity CraftingPlanner. Visual baselin
 
 F2 format10 retains60 individually resettable sliders. The user accepts0.1.19 independent settings,20/19 arrow behavior and visuals. TEST_LOG.md owns the bounded acceptance and log identity; no further visual tuning is requested. Ordinary HUD across all11 languages is user-reported from0.1.11; gamepad/all11-language functional acceptance remains open. This is not stable-release acceptance.
 
-Installed dev/0.1.21 preserves accepted repeatable placement and visuals, adds repair/clearing WorldChange removal and guards our row Redraw prefix against Unity-null. Exact CI/downloaded-byte/native-reference/state/absent-row checks pass; returned0.1.21 pinned repair/clearing removal and unrelated-goal preservation now pass; Max Buttons Redux input still fails with9 redraw exceptions during technology tabs. Builder upgrades stay excluded.
+Installed dev/0.1.22 preserves accepted repeatable/world completion and visuals, adds one-time scripted builder upgrade removal and one-time Put removal. Exact CI/downloaded-byte/native-reference/state/absent-row/catalogue checks pass. New0.1.22 runtime acceptance remains pending. The returned0.1.21 repair/clearing pass remains bounded evidence; Max Buttons is deferred with unresolved ownership. Home callback furniture placement is separately excluded.
 
 ## Exact installed artifact
 
 | Identity | Value |
 | --- | --- |
-| Development branch | `dev/0.1.21` |
-| Frozen runtime source | `25fd3181091492b20735d52e1b2ccc16c09a7405` |
-| Version | 0.1.21 / assembly0.1.21.0 |
-| CI run / artifact | `39061707706` / `12111662358` |
-| DLL SHA256 | `90177d2662daf51eb87858884ea8f93878b3cd9d90d993c1b52006fd7ed102da` |
-| ZIP SHA256 | `4b5d445e78b4fb92197d221793ce5fc5d8318595fd00b37b8c708ba2234cb166` |
+| Development branch | `dev/0.1.22` |
+| Frozen runtime source | `c5a48b283d5bf3a572ac49feb8abd8b968d65093` |
+| Version | 0.1.22 / assembly0.1.22.0 |
+| CI run / artifact | `39083281426` / `12119389208` |
+| DLL SHA256 | `e26b74274b9a7157aab9e111442506abcfc117dcbfbacfe257a95e3c6ef2bdec` |
+| ZIP SHA256 | `4098c91a8af03c7539421b54e036a8c040cfcc0941469838b30b718956638548` |
 | Calibration | enabled; F2 format 10, 60 individually resettable sliders |
 
-Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.21/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
+Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.22/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
 
 Both native-reference configurations, clean hosted build, state/geometry/font/calibration/localization/invalidation/energy-layout checks, exact-DLL tests and package boundaries passed. Accepted cases and limits are owned by [TEST_LOG.md](TEST_LOG.md). The live acceptance snapshot is `.local/evidence/accept-0.1.16-visual/LogOutput.log`, SHA256 `96ae57df373be5e2137e26f9e87678ddac37a51ecdccccde85c7a66570c5316d`: it loads 0.1.16 with no planner exception/disable found. It is a partial running-session snapshot, not a completed shutdown log.
 
@@ -73,4 +73,8 @@ Yard research is complete for the observed native path as of2026-10-18. Exact0.1
 
 Both sidecars were verified/backed up and removed after return preservation with host closed; only production0.1.21 remains installed. Artifacts remain available for any needed acceptance setup. Private return snapshot SHA2561d696f78b8b921e694dd353e392d078a8d587cb75786fc71e2ee0c1fafe94ad1 and cleanup receipt are under .local/evidence/yard-upgrade-return/. No new production code/build or save/inventory change in this review. Max Buttons remains deferred until compatibility/release work.
 
-Active dev/0.1.22 implements the observed yard completion family across39 equivalent authored one-time builder actions, plus17 one-time Put placements. Host flags route already eligible goals without recipe ID tables. All57 one-time authored definitions pass compiled dispatch checks (39/17/1 no-needs exclusion), existing state/geometry/native-absent-row regressions pass, and both native-reference modes compile. Actual0.1.22 candidate behavior remains pending. Home furniture/decor uses a separate callback-placement path and is intentionally not claimed covered. Installed artifact above stays0.1.21 until verified CI installation; both research sidecars remain absent.
+Installed0.1.22 implements the observed yard completion family across39 equivalent authored one-time builder actions, plus17 one-time Put placements. Host flags route already eligible goals without recipe ID tables. All57 authored one-time definitions pass compiled dispatch checks (39/17/1 no-needs exclusion); existing state/geometry/native-absent-row regressions pass, both native-reference modes and clean CI pass. Actual0.1.22 goal removal still needs the user/native pass. Home furniture/decor uses separate callback placement and is not claimed covered.
+
+Installed with host closed at2026-10-18T00:36:54Z after exact artifact verification; prior0.1.21 DLL/log and receipt are private under .local/installation-backups/pre-0.1.22/ and .local/evidence/pre-0.1.22/. Exact existing YardUpgradeSetup0.1.0 (F8) is temporarily restored to avoid resource gathering for acceptance on an unupgraded save; source5e14e3d, DLL051fcb8a4202a32b692f3b7a92fc289d11939670bc42b74c02f82b227fd41e30. Its synthetic resources/native upgrade may be saved; same existing undo/pre-test-save contract applies. Passive OneOffCompletionProbe stays absent. Remove resource helper after the return. No new game launch, runtime acceptance or stable promotion is claimed.
+
+Next native pass: pin yard upgrade (or another available39-family action), leave another goal pinned, perform normally and confirm exactly one goal_completed/removal plus remaining goal/material refresh. If available exercise one-time Put (for example a soul totem) for exactly one goal_placed/removal and no decrement on cancellation/busy refusal. Do not ask for57 live tests; static corpus coverage is distinct from representative native acceptance. Shared native audit promoted to GraveyardKeeperResearche8eabd8f1eb812eb49de0a6296b1ecd5ed0c32bd. Max Buttons stays deferred; callback furniture requires its own later boundary, not instant-upgrade inclusion.
