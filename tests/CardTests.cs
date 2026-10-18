@@ -148,6 +148,7 @@ class CardTests
             Require((string)normalize.Invoke(null, new object[] {"zh_CN"}) == "zh-cn", "Native Chinese code not normalized");
             Require((string)normalize.Invoke(null, new object[] {"pt_BR"}) == "pt-br", "Native Portuguese code not normalized");
             if (Array.IndexOf(args, "--state") >= 0) { CheckPinnedState(candidate); CheckPlacement(candidate); CheckWorldCompletion(candidate); CheckBuilderCompletion(candidate); CheckLighting(candidate); CheckInterior(candidate); CheckPersistence(candidate); }
+            if (Array.IndexOf(args, "--no-calibration") >= 0) CheckNoCalibration(candidate);
             if (Array.IndexOf(args, "--native-rows") >= 0) CheckAbsentRows(candidate);
             int catalogue = Array.IndexOf(args, "--builder-catalog");
             if (catalogue >= 0) CheckBuilderCatalog(candidate, args[catalogue + 1]);
@@ -157,6 +158,21 @@ class CardTests
             return 0;
         }
         catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
+    }
+    static void CheckNoCalibration(Assembly candidate)
+    {
+        const BindingFlags methods = BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+        Type plugin = candidate.GetType("CraftingPlanner.Plugin", true), calibration = candidate.GetType("CraftingPlanner.PlannerCalibration", true);
+        Require(plugin.GetMethod("Update", methods) == null && plugin.GetMethod("OnGUI", methods) == null, "Public candidate must not register F2 update/IMGUI callbacks");
+        Require(candidate.GetType("CraftingPlanner.CalibrationKeyGuard") == null && candidate.GetType("CraftingPlanner.CalibrationDirectionGuard") == null, "Calibration input patches must not ship");
+        Require(!(bool)calibration.GetProperty("IsOpen", methods).GetValue(null, null) && !(bool)calibration.GetProperty("PreviewDone", methods).GetValue(null, null), "Public calibration flags must remain inactive");
+        foreach (string name in new[] {"Update", "Draw", "Close"})
+        {
+            byte[] code = calibration.GetMethod(name, methods).GetMethodBody().GetILAsByteArray();
+            Require(code.Length == 1 && code[0] == 0x2a, "Calibration entry must be a compiled no-op: " + name);
+        }
+        Require(calibration.GetFields(methods).Length == 0, "Temporary editor state must not ship");
+        Console.WriteLine("PASS: public candidate has no F2/IMGUI callbacks, calibration input patches or editor state; inactive compatibility calls are no-ops.");
     }
     static void CheckAbsentRows(Assembly candidate)
     {

@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Building Planner";
-        public const string PluginVersion = "0.1.25";
+        public const string PluginVersion = "0.1.26";
 
         private Harmony _harmony;
 
@@ -57,8 +57,10 @@ namespace CraftingPlanner
             }
         }
 
+#if PLANNER_CALIBRATION
         private void Update() { PlannerCalibration.Update(); }
         private void OnGUI() { PlannerCalibration.Draw(); }
+#endif
         private void LateUpdate() { PlannerPlacement.Flush(); PlannerWorldCompletion.Flush(); PlannerInteriorCompletion.Flush(); PlannerInventoryRefresh.Flush(); }
     }
 
