@@ -1,6 +1,6 @@
 # Building Planner — Product Scope
 
-Updated: 2026-10-17
+Updated: 2026-10-18
 
 ## Current milestone
 
