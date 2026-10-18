@@ -125,6 +125,7 @@ namespace CraftingPlanner
             int columnGap = (int)Style.ColumnGap;
             _width = Math.Max((int)Style.Width, PlannerLayout.MinimumWidth(pad, col, columnGap));
             int quantityCenter = PlannerLayout.QuantityCenter(_width, pad, (int)Style.ColumnInset);
+            int quantityArrowWidth = Measure("<", 0, true, true);
             int firstCountX = quantityCenter - col / 2 - 2 * (col + columnGap);
             int y = pad;
             int titleHeight = Math.Max(22, (int)Style.Font + 6);
@@ -135,12 +136,13 @@ namespace CraftingPlanner
             foreach (ProjectGoal goal in Planner.GetGoals())
             {
                 int nameX = pad + PlannerLayout.IconSlotWidth + 4;
-                int slotX = quantityCenter - PlannerLayout.QuantityHalfSlot(Style.QuantityArrowGap);
-                UILabel name = Label(Planner.GetProjectName(goal.Definition), nameX, y, slotX - nameX - 4, line, false, true);
+                UILabel quantity = Number(goal.Quantity.ToString(), quantityCenter - PlannerLayout.QuantityWidth / 2, y, PlannerLayout.QuantityWidth, line, true);
+                quantity.overflowMethod = UILabel.Overflow.ShrinkContent;
+                int nameRight = PlannerLayout.GoalNameRight(quantityCenter, Math.Min(quantity.width, quantity.printedSize.x), quantityArrowWidth, Style.QuantityArrowGap);
+                UILabel name = Label(Planner.GetProjectName(goal.Definition), nameX, y, nameRight - nameX, line, false, true);
                 int rowHeight = PlannerLayout.TextRowHeight((int)Style.Row, (int)Style.Font, (int)Math.Ceiling(name.printedSize.y));
                 SpriteIcon(goal.Definition.icon, IconLeft(pad), IconTop(y, rowHeight, goalIndex++, true));
-                UILabel quantity = Number(goal.Quantity.ToString(), quantityCenter - PlannerLayout.QuantityWidth / 2, y + (rowHeight - line) / 2, PlannerLayout.QuantityWidth, line, true);
-                quantity.overflowMethod = UILabel.Overflow.ShrinkContent;
+                quantity.transform.localPosition += new Vector3(0, -((rowHeight - line) / 2), 0);
                 FocusRow(goal, name, pad, y, _width - 2 * pad, rowHeight);
                 if (!LazyInput.gamepad_active || PlannerEditing.Active)
                 {
@@ -313,9 +315,9 @@ namespace CraftingPlanner
             }
             return false;
         }
-        private int Measure(string text, int font = 0, bool number = false)
+        private int Measure(string text, int font = 0, bool number = false, bool quantity = false)
         {
-            ApplyNativeFont(_measure, number ? NumericTemplate(false) : FontTemplate); _measure.fontSize = font > 0 ? font : (int)Style.Font;
+            ApplyNativeFont(_measure, number ? NumericTemplate(quantity) : FontTemplate); _measure.fontSize = font > 0 ? font : (int)Style.Font;
             _measure.multiLine = false; _measure.maxLineCount = 1;
             _measure.overflowMethod = UILabel.Overflow.ResizeFreely; _measure.text = text;
             return (int)Math.Ceiling(_measure.printedSize.x);

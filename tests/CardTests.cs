@@ -38,14 +38,16 @@ class CardTests
                 if (x < 120) Require(current <= value(x + 10, y), "Backing weakens toward centre");
             }
             MethodInfo arrowOffset = layout.GetMethod("QuantityArrowOffset", BindingFlags.Static | BindingFlags.NonPublic);
-            MethodInfo halfSlot = layout.GetMethod("QuantityHalfSlot", BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo nameRight = layout.GetMethod("GoalNameRight", BindingFlags.Static | BindingFlags.NonPublic);
             foreach (float digits in new[] {6f, 12f, 18f, 30f}) foreach (float arrow in new[] {4f, 9f, 20f}) foreach (float gap in new[] {0f, 13f, 40f})
             {
                 float offset = (float)arrowOffset.Invoke(null, new object[] {digits, arrow, gap});
                 Require(Math.Abs(offset - arrow / 2 - digits / 2 - gap) < .001f, "Arrow gap must start at the visible digit edge for one/two-digit counters");
-                int reserve = (int)halfSlot.Invoke(null, new object[] {gap});
-                Require(reserve >= offset + 10, "HUD names must reserve the arrow hitbox as well as the glyph");
+                int edge = (int)nameRight.Invoke(null, new object[] {200, digits, arrow, gap});
+                Require(edge + 4 <= 200 - offset - 10 && edge + 4 <= 200 - offset - arrow / 2, "Goal text must clear both the actual arrow collider and visible ink");
             }
+            Require((int)nameRight.Invoke(null, new object[] {200, 12f, 9f, 13f}) > 200 - 48 - 4, "Measured controls must reclaim the excess nominal name reserve");
+            Require((int)nameRight.Invoke(null, new object[] {200, 30f, 40f, 13f}) + 4 <= 200 - 15 - 13 - 40, "Wide-language glyphs must retain ink separation");
             MethodInfo centre = layout.GetMethod("QuantityCenter", BindingFlags.Static | BindingFlags.NonPublic);
             int centreDefault = (int)centre.Invoke(null, new object[] {240, 4, 0});
             int centreInset = (int)centre.Invoke(null, new object[] {240, 4, 12});

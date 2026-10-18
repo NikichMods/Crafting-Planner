@@ -20,8 +20,12 @@ namespace CraftingPlanner
         internal const int MenuIngredientsOrigin = 29;
         internal static float QuantityArrowOffset(float numberWidth, float arrowWidth, float gap)
         { return numberWidth / 2 + Math.Max(0, gap) + arrowWidth / 2; }
-        internal static int QuantityHalfSlot(float gap)
-        { return Math.Max(QuantitySlotWidth / 2, (int)Math.Ceiling(QuantityWidth / 2f + gap + ArrowWidth)); }
+        internal static int GoalNameRight(int centre, float numberWidth, float arrowWidth, float gap)
+        {
+            float offset = QuantityArrowOffset(numberWidth, arrowWidth, gap);
+            // Separate text from both visible ink and the larger clickable widget.
+            return (int)Math.Floor(centre - offset - Math.Max(ArrowWidth, arrowWidth) / 2f - 4);
+        }
         internal static int ClampSelection(int index, int count) { return Math.Max(0, Math.Min(index, count - 1)); }
 
         internal static int[] RightAlignedStarts(int[] widths, int right, int gap)
