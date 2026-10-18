@@ -148,6 +148,10 @@ public class WorldGameObject : MonoBehaviour
 public class BuildModeLogics
 {
     public static WorldGameObject last_build_desk;
+    public static event System.Action on_apply_while_script_building { add { } remove { } }
+    public static event System.Action on_cancel_while_script_building { add { } remove { } }
+    public void CraftBuilding(CraftDefinition definition) { }
+    private void UpdateWhileScriptBuilding() { }
 #pragma warning disable 0169
     private ObjectCraftDefinition _cd;
     private MultiInventory _multi_inventory;
@@ -170,6 +174,13 @@ public class CraftComponent : WorldGameObjectComponent
     public bool is_crafting;
     private void ProcessFinishedCraft() { }
 }
+// Verified public script identity and callback signatures only.
+public class CustomScript : MonoBehaviour { public string script_name; }
+public class CustomFlowScript : CustomScript
+{
+    public void FireEvent(string name, string payload) { }
+    public void TerminateMe() { }
+}
 public class GameSave
 {
     public void OnFinishedCraft(CraftDefinition definition) { }
@@ -178,6 +189,7 @@ public class MainGame : MonoBehaviour
 {
     public static MainGame me;
     public WorldGameObject player;
+    public GameSave save;
 }
 
 public class BaseGUI : MonoBehaviour

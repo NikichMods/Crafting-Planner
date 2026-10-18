@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Building Planner";
-        public const string PluginVersion = "0.1.23";
+        public const string PluginVersion = "0.1.24";
 
         private Harmony _harmony;
 
@@ -25,6 +25,7 @@ namespace CraftingPlanner
             _harmony.PatchAll();
             PlannerPlacement.Install();
             PlannerWorldCompletion.Install();
+            PlannerInteriorCompletion.Install();
             LazyInput.on_input_changed += PlannerInputHints.OnInputChanged;
             BaseGUI.on_window_opened += PlannerInputHints.OnWindowChanged;
             BaseGUI.on_window_closed += PlannerInputHints.OnWindowChanged;
@@ -35,6 +36,7 @@ namespace CraftingPlanner
         {
             PlannerPlacement.Stop();
             PlannerWorldCompletion.Stop();
+            PlannerInteriorCompletion.Stop();
             PlannerCalibration.Close();
             PlannerEditing.Reset();
             PlannerInventoryRefresh.Reset();
@@ -55,7 +57,7 @@ namespace CraftingPlanner
 
         private void Update() { PlannerCalibration.Update(); }
         private void OnGUI() { PlannerCalibration.Draw(); }
-        private void LateUpdate() { PlannerPlacement.Flush(); PlannerWorldCompletion.Flush(); PlannerInventoryRefresh.Flush(); }
+        private void LateUpdate() { PlannerPlacement.Flush(); PlannerWorldCompletion.Flush(); PlannerInteriorCompletion.Flush(); PlannerInventoryRefresh.Flush(); }
     }
 
     internal enum ProjectContextKind
@@ -99,6 +101,7 @@ namespace CraftingPlanner
         {
             PlannerPlacement.Reset();
             PlannerWorldCompletion.Reset();
+            PlannerInteriorCompletion.Reset();
             PlannerCalibration.Close();
             PlannerEditing.Reset();
             PlannerRowControls.RestoreAll();
@@ -217,6 +220,15 @@ namespace CraftingPlanner
         }
         internal static ProjectGoal FindWorldCompletion(CraftDefinition definition, string owner)
         { return PlannerGoalState.FindWorldCompletion(Goals, definition, owner) ?? PlannerGoalState.FindBuilderCompletion(Goals, definition, owner); }
+        internal static ProjectGoal FindInteriorCompletion(CraftDefinition definition, string owner)
+        { return PlannerGoalState.FindInteriorCompletion(Goals, definition, owner); }
+        internal static bool CompleteInteriorProject(InteriorCompletionAttempt attempt)
+        {
+            ProjectGoal updated;
+            if (!attempt.Complete(Goals, out updated)) return false;
+            try { LogLine("event=goal_completed family=interior key=" + Safe(updated.Key) + " quantity=" + updated.Quantity + " object_uid=" + attempt.ObjectUid); } catch { }
+            return true;
+        }
         internal static bool CompleteWorldProject(WorldCompletionAttempt attempt, bool nativeCompleted)
         {
             ProjectGoal updated;

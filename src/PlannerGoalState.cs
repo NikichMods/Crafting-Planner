@@ -43,6 +43,20 @@ namespace CraftingPlanner
             foreach (ProjectGoal goal in goals) if (!goal.Repeatable && goal.Key == key) return goal;
             return null;
         }
+        internal static ProjectGoal FindInteriorCompletion(IList<ProjectGoal> goals, CraftDefinition definition, string owner)
+        {
+            var build = definition as ObjectCraftDefinition;
+            if (build == null || owner != "keeper_room_builddesk" || !Planner.HasPlainNeeds(build) || build.one_time_craft ||
+                build.build_type != ObjectCraftDefinition.BuildType.None || !build.wait_script_callback || !build.is_auto ||
+                string.IsNullOrEmpty(build.id) || !build.id.StartsWith(owner + "::", System.StringComparison.Ordinal) || string.IsNullOrEmpty(build.end_script)) return null;
+            string[] script = build.end_script.Split(':');
+            if (script.Length != 3 || script[1] != "place" || string.IsNullOrEmpty(script[2]) ||
+                (script[0] != "keeper_bed_place" && script[0] != "keeper_cupboard_place" && script[0] != "keeper_table_place" &&
+                 script[0] != "keeper_walls_place" && script[0] != "keeper_ornament_place")) return null;
+            string key = Key(ProjectContextKind.Builder, owner, build.id);
+            foreach (ProjectGoal goal in goals) if (!goal.Repeatable && goal.Key == key) return goal;
+            return null;
+        }
         internal static bool CanIncrease(int quantity, bool repeatable)
         { return quantity < (repeatable ? MaxQuantity : 1); }
         internal static bool AdjustPinned(IList<ProjectGoal> goals, ProjectGoal pinned, int delta, out ProjectGoal updated)

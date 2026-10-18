@@ -147,10 +147,12 @@ class CardTests
             MethodInfo normalize = localization.GetMethod("Normalize", BindingFlags.Static | BindingFlags.NonPublic);
             Require((string)normalize.Invoke(null, new object[] {"zh_CN"}) == "zh-cn", "Native Chinese code not normalized");
             Require((string)normalize.Invoke(null, new object[] {"pt_BR"}) == "pt-br", "Native Portuguese code not normalized");
-            if (Array.IndexOf(args, "--state") >= 0) { CheckPinnedState(candidate); CheckPlacement(candidate); CheckWorldCompletion(candidate); CheckBuilderCompletion(candidate); CheckLighting(candidate); }
+            if (Array.IndexOf(args, "--state") >= 0) { CheckPinnedState(candidate); CheckPlacement(candidate); CheckWorldCompletion(candidate); CheckBuilderCompletion(candidate); CheckLighting(candidate); CheckInterior(candidate); }
             if (Array.IndexOf(args, "--native-rows") >= 0) CheckAbsentRows(candidate);
             int catalogue = Array.IndexOf(args, "--builder-catalog");
             if (catalogue >= 0) CheckBuilderCatalog(candidate, args[catalogue + 1]);
+            int interiors = Array.IndexOf(args, "--interior-catalog");
+            if (interiors >= 0) CheckInteriorCatalog(candidate, args[interiors + 1]);
             Console.WriteLine("PASS: centred rounded backing, feather/bounds/top-row coverage, quantity slot and 11-language schema. Native visual and input acceptance require the game.");
             return 0;
         }
@@ -165,6 +167,73 @@ class CardTests
         object detached = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(prefix.GetParameters()[0].ParameterType);
         prefix.Invoke(null, new[] {detached});
         Console.WriteLine("PASS: actual redraw prefix accepts CLR-null and detached Unity row without GetComponent; live Max Buttons input remains a game check.");
+    }
+    static void CheckInterior(Assembly candidate)
+    {
+        const BindingFlags methods=BindingFlags.Static|BindingFlags.NonPublic, fields=BindingFlags.Instance|BindingFlags.NonPublic;
+        Type planner=candidate.GetType("CraftingPlanner.Planner",true),state=candidate.GetType("CraftingPlanner.PlannerGoalState",true),goalType=candidate.GetType("CraftingPlanner.ProjectGoal",true);
+        Type receiptType=candidate.GetType("CraftingPlanner.InteriorCompletionAttempt",true),defType=state.GetMethod("FindPlacement",methods).GetParameters()[1].ParameterType;
+        IList goals=(IList)planner.GetField("Goals",methods).GetValue(null);goals.Clear();
+        object definition=Activator.CreateInstance(defType);Field(definition,"id","keeper_room_builddesk::test");Field(definition,"build_type",Enum.Parse(defType.GetField("build_type").FieldType,"None"));Field(definition,"is_auto",true);Field(definition,"wait_script_callback",true);Field(definition,"end_script","keeper_table_place:place:table+stand");
+        Type needsType=defType.GetField("needs").FieldType;IList needs=(IList)Activator.CreateInstance(needsType);object need=System.Runtime.Serialization.FormatterServices.GetUninitializedObject(needsType.GetGenericArguments()[0]);Field(need,"id","interior_material");Field(need,"value",3);needs.Add(need);Field(definition,"needs",needs);
+        Func<string,object> goal=key=>{object g=Activator.CreateInstance(goalType,true);Field(g,"Key",key);Field(g,"Definition",definition);Field(g,"Quantity",1);Field(g,"Repeatable",false);return g;};
+        object tracked=goal("1|keeper_room_builddesk|keeper_room_builddesk::test"),other=goal("1|keeper_room_builddesk|other");goals.Add(tracked);goals.Add(other);
+        var find=state.GetMethod("FindInteriorCompletion",methods);Func<object> match=()=>find.Invoke(null,new[]{(object)goals,definition,"keeper_room_builddesk"});
+        Require(ReferenceEquals(match(),tracked),"Interior must match original builder goal");
+        Require(ReferenceEquals(planner.GetMethod("FindInteriorCompletion",methods).Invoke(null,new[]{definition,(object)"keeper_room_builddesk"}),tracked),"Actual interior router must select the goal");
+        Require(find.Invoke(null,new[]{(object)goals,definition,"other"})==null,"Other builder cannot match interior goal");
+        foreach(string family in new[]{"keeper_bed_place","keeper_cupboard_place","keeper_table_place","keeper_walls_place","keeper_ornament_place"}) {Field(definition,"end_script",family+":place:item");Require(match()!=null,"Verified interior script family excluded");}
+        foreach(string script in new[]{"unknown:place:item","keeper_table_place:apply:item","keeper_table_place:place:","keeper_table_place:place:item:extra","keeper_table_place"}) {Field(definition,"end_script",script);Require(match()==null,"Unsupported callback payload accepted");}Field(definition,"end_script","keeper_table_place:place:table+stand");
+        foreach(string flag in new[]{"is_auto","wait_script_callback"}) {Field(definition,flag,false);Require(match()==null,"Required callback flag missing");Field(definition,flag,true);}
+        Field(definition,"one_time_craft",true);Require(match()==null,"Immediate one-off upgrade must be excluded");Field(definition,"one_time_craft",false);
+        Field(definition,"build_type",Enum.Parse(defType.GetField("build_type").FieldType,"Put"));Require(match()==null,"Free placement must be excluded");Field(definition,"build_type",Enum.Parse(defType.GetField("build_type").FieldType,"None"));
+        Field(definition,"needs",null);Require(match()==null,"No-needs interior must be excluded");Field(definition,"needs",needs);
+        Field(tracked,"Repeatable",true);Require(match()==null,"Interior goal stays quantity1");Field(tracked,"Repeatable",false);
+        Func<object> make=()=>{object a=Activator.CreateInstance(receiptType,true);Field(a,"Goal",tracked);Field(a,"Definition",definition);return a;};
+        Action<object,string,object[]> call=(a,name,args)=>receiptType.GetMethod(name,fields).Invoke(a,args);
+        Func<object,bool> complete=a=>(bool)receiptType.GetMethod("Complete",fields).Invoke(a,new object[]{goals,null});
+        foreach(int failure in new[]{-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19})
+        {
+            object a=make(),script=new object();
+            if(failure!=0)call(a,"ObserveDispatch",new object[]{failure!=1});
+            if(failure!=2)call(a,"ObserveFinish",new object[]{failure!=3});
+            call(a,"ObserveMarker",new[]{failure==4?Activator.CreateInstance(defType):definition,(object)(failure!=5)});
+            if(failure==6)call(a,"ObserveMarker",new[]{definition,(object)true});
+            call(a,"CaptureScript",new[]{script});if(failure==19)call(a,"CaptureScript",new[]{new object()});
+            if(failure!=7)call(a,"ObserveScriptCall",new object[]{failure!=8});
+            if(failure==9)call(a,"ObserveScriptCall",new object[]{true});
+            Require(!complete(a)&&goals.Contains(tracked),"Early craft/preview must never consume goal");
+            if(failure!=13)call(a,"ObserveDecision",new object[]{failure!=14});
+            if(failure==15||failure==16)call(a,"ObserveDecision",new object[]{failure!=16});
+            call(a,"ObserveTermination",new[]{failure==10?new object():script,(object)(failure!=11)});
+            if(failure==12)call(a,"ObserveTermination",new[]{script,(object)true});
+            Require(!complete(a)&&goals.Contains(tracked),"Script end alone must wait for decision return");
+            if(failure!=18)call(a,"ObserveDecisionReturn",new object[]{failure!=17});
+            bool success=complete(a);Require(success==(failure==-1),"Interior failure/duplicate/missing latch misclassified:"+failure);
+            if(success){Require(!complete(a)&&!goals.Contains(tracked)&&goals.Contains(other),"Interior once-only/control preservation failed");goals.Add(tracked);Field(tracked,"Quantity",1);}
+            else Require(goals.Contains(tracked),"Cancelled/failed attempt removed goal");
+        }
+        // Asynchronous script end may follow normal Apply-handler return.
+        object late=make(),lateScript=new object();call(late,"ObserveDispatch",new object[]{true});call(late,"ObserveFinish",new object[]{true});call(late,"ObserveMarker",new[]{definition,(object)true});call(late,"CaptureScript",new[]{lateScript});call(late,"ObserveScriptCall",new object[]{true});call(late,"ObserveDecision",new object[]{true});call(late,"ObserveDecisionReturn",new object[]{true});Require(!complete(late),"Apply must wait for its script");
+        goals.Remove(tracked);object replacement=goal("1|keeper_room_builddesk|keeper_room_builddesk::test");goals.Add(replacement);call(late,"ObserveTermination",new[]{lateScript,(object)true});Require(!complete(late)&&goals.Contains(replacement),"Stale preview consumed re-added goal");
+        goals.Remove(replacement);goals.Add(tracked);Field(tracked,"Quantity",1);object asyncAttempt=make();call(asyncAttempt,"ObserveDispatch",new object[]{true});call(asyncAttempt,"ObserveFinish",new object[]{true});call(asyncAttempt,"ObserveMarker",new[]{definition,(object)true});call(asyncAttempt,"CaptureScript",new[]{lateScript});call(asyncAttempt,"ObserveScriptCall",new object[]{true});call(asyncAttempt,"ObserveDecision",new object[]{true});call(asyncAttempt,"ObserveDecisionReturn",new object[]{true});call(asyncAttempt,"ObserveTermination",new[]{lateScript,(object)true});Require(complete(asyncAttempt),"Late normal script end must complete captured goal");
+        Require((int)((IDictionary)planner.GetMethod("AggregateRequirements",methods).Invoke(null,null))["interior_material"]==3,"Interior completion must update derived requirements only for its own goal");
+        Type integration=candidate.GetType("CraftingPlanner.PlannerInteriorCompletion",true);integration.GetField("_pending",methods).SetValue(null,make());integration.GetMethod("Reset",methods).Invoke(null,null);Require(integration.GetField("_pending",methods).GetValue(null)==null,"Session reset must invalidate captured preview");
+        goals.Clear();Console.WriteLine("PASS: interior five-family routing, preview/cancel/error/duplicate preservation, exact async commitment, stale re-add, reset, control and derived requirements.");
+    }
+    static void CheckInteriorCatalog(Assembly candidate,string path)
+    {
+        const BindingFlags methods=BindingFlags.Static|BindingFlags.NonPublic;
+        Type state=candidate.GetType("CraftingPlanner.PlannerGoalState",true),goalType=candidate.GetType("CraftingPlanner.ProjectGoal",true),defType=state.GetMethod("FindPlacement",methods).GetParameters()[1].ParameterType;
+        var find=state.GetMethod("FindInteriorCompletion",methods);int count=0;
+        foreach(string row in File.ReadAllLines(path))
+        {
+            string[] parts=row.Split('\t');object definition=Activator.CreateInstance(defType);Field(definition,"id",parts[0]);Field(definition,"end_script",parts[1]);Field(definition,"is_auto",true);Field(definition,"wait_script_callback",true);Field(definition,"build_type",Enum.Parse(defType.GetField("build_type").FieldType,"None"));
+            Type needsType=defType.GetField("needs").FieldType;IList needs=(IList)Activator.CreateInstance(needsType);object need=System.Runtime.Serialization.FormatterServices.GetUninitializedObject(needsType.GetGenericArguments()[0]);Field(need,"id","fixture_need");Field(need,"value",1);needs.Add(need);Field(definition,"needs",needs);
+            IList goals=(IList)Activator.CreateInstance(typeof(System.Collections.Generic.List<>).MakeGenericType(goalType));object g=Activator.CreateInstance(goalType,true);Field(g,"Key","1|keeper_room_builddesk|"+parts[0]);Field(g,"Definition",definition);Field(g,"Quantity",1);goals.Add(g);
+            Require(ReferenceEquals(find.Invoke(null,new[]{(object)goals,definition,"keeper_room_builddesk"}),g),"Authored interior excluded:"+parts[0]);count++;
+        }
+        Require(count==39,"Interior corpus must contain39 definitions");Console.WriteLine("PASS: actual compiled production dispatch accepts all39 authored callback identities/scripts; not39 live acceptances.");
     }
     static void CheckLighting(Assembly candidate)
     {
