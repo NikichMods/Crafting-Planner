@@ -8,21 +8,21 @@ Building Planner keeps stable technical identity CraftingPlanner. Visual baselin
 
 F2 format10 retains60 individually resettable sliders. The user accepts0.1.19 independent settings,20/19 arrow behavior and visuals. TEST_LOG.md owns the bounded acceptance and log identity; no further visual tuning is requested. Ordinary HUD across all11 languages is user-reported from0.1.11; gamepad/all11-language functional acceptance remains open. This is not stable-release acceptance.
 
-Installed dev/0.1.22 preserves accepted repeatable/world completion and visuals, adds one-time scripted builder upgrade removal and one-time Put removal. Exact CI/downloaded-byte/native-reference/state/absent-row/catalogue checks pass. The0.1.22 yard return verifies exactly one native goal removal1->0 with no duplicate or tracker error; one-time Put native acceptance remains pending. The F8 resource helper has been backed up/removed with the host closed; passive probe is absent. The returned0.1.21 repair/clearing pass remains bounded evidence; Max Buttons is deferred with unresolved ownership. Home callback furniture placement is separately excluded.
+Installed dev/0.1.23 preserves accepted repeatable/world completion and visuals, adds one-time scripted builder upgrade removal and one-time Put removal. Exact CI/downloaded-byte/native-reference/state/absent-row/catalogue checks pass. The0.1.22 yard return verifies exactly one native goal removal1->0 with no duplicate or tracker error; one-time Put native acceptance remains pending. The old yard F8 helper was removed; the new OneTimePlacementSetup0.1.0 is temporarily installed for the selected unbuilt one-time Put acceptance. Passive completion probe is absent. The returned0.1.21 repair/clearing pass remains bounded evidence; Max Buttons is deferred with unresolved ownership. Home callback furniture placement is separately excluded.
 
 ## Exact installed artifact
 
 | Identity | Value |
 | --- | --- |
-| Development branch | `dev/0.1.22` |
-| Frozen runtime source | `c5a48b283d5bf3a572ac49feb8abd8b968d65093` |
-| Version | 0.1.22 / assembly0.1.22.0 |
-| CI run / artifact | `39083281426` / `12119389208` |
-| DLL SHA256 | `e26b74274b9a7157aab9e111442506abcfc117dcbfbacfe257a95e3c6ef2bdec` |
-| ZIP SHA256 | `4098c91a8af03c7539421b54e036a8c040cfcc0941469838b30b718956638548` |
+| Development branch | `dev/0.1.23` |
+| Frozen runtime source | `a98c3ac47efe61b3de3c7287a3fba26d59959fdf` |
+| Version | 0.1.23 / assembly0.1.23.0 |
+| CI run / artifact | `39112334329` / `12130499837` |
+| DLL SHA256 | `b09065278ed8b2f8c4c048d57ae9503d6442ad7bb04ab61cdab10886bf4649f8` |
+| ZIP SHA256 | `c84e07195eb1f5f8b158f15ce54d258ec6ff7162974616cbd2b2393b5bd9a6cf` |
 | Calibration | enabled; F2 format 10, 60 individually resettable sliders |
 
-Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.22/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
+Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.23/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
 
 Both native-reference configurations, clean hosted build, state/geometry/font/calibration/localization/invalidation/energy-layout checks, exact-DLL tests and package boundaries passed. Accepted cases and limits are owned by [TEST_LOG.md](TEST_LOG.md). The live acceptance snapshot is `.local/evidence/accept-0.1.16-visual/LogOutput.log`, SHA256 `96ae57df373be5e2137e26f9e87678ddac37a51ecdccccde85c7a66570c5316d`: it loads 0.1.16 with no planner exception/disable found. It is a partial running-session snapshot, not a completed shutdown log.
 
@@ -80,3 +80,12 @@ Installed with host closed at2026-10-18T00:36:54Z after exact artifact verificat
 Next native pass: pin yard upgrade (or another available39-family action), leave another goal pinned, perform normally and confirm exactly one goal_completed/removal plus remaining goal/material refresh. If available exercise one-time Put (for example a soul totem) for exactly one goal_placed/removal and no decrement on cancellation/busy refusal. Do not ask for57 live tests; static corpus coverage is distinct from representative native acceptance. Shared native audit promoted to GraveyardKeeperResearche8eabd8f1eb812eb49de0a6296b1ecd5ed0c32bd. Max Buttons stays deferred; callback furniture requires its own later boundary, not instant-upgrade inclusion.
 
 Return update2026-10-18: the requested yard pass is now preserved under .local/evidence/return-0.1.22-yard/ (log SHA256ade1306b0fdad9b09dedd2f5a3829815ea6e47f01a312f757e766f684755cd96). Exactly one native goal_completed quantity0/UID182 follows Craft end. No control goal was pinned; immediate rendering/material totals and other authored variants are not newly established. F8 helper was backed up/removed with host closed at2026-10-18T08:29:07Z; core unchanged, passive probe absent. TEST_LOG.md owns details. The preceding installation/test instructions are historical: do not restore F8 or repeat yard boundary research merely to resume. Representative one-time Put live acceptance remains the next unclosed completion case; callback furniture is separate and Max Buttons stays deferred.
+
+
+## Current0.1.23 acceptance setup —2026-10-18
+
+0.1.23 adds quantity20 solely for the three empty-point lantern_1/2/3 world recipes on lantern_place, with exact native replacement checks. Existing owner-type/recipe keys aggregate across empty points; normal successful native completion decrements1 through the existing scoped receipt. Other world repairs/upgrades keep1; accepted construction/yard/visual behavior is unchanged. Both native-reference modes, clean hosted CI, exact downloaded-DLL state/native-absent-row checks and57-row dispatch regressions pass. Live lamp cap/aggregation/decrement and one-time Put placement remain pending. Gates/semantics are in ONEOFF_COMPLETION_RESEARCH.md and PRODUCT_SCOPE.md.
+
+Installed with host closed at2026-10-18T08:42:44Z; prior0.1.22 SHA256e26b74274b9a7157aab9e111442506abcfc117dcbfbacfe257a95e3c6ef2bdec was verified/backed up outside loading. Receipts/log under .local/evidence/pre-0.1.23/, backup under .local/installation-backups/pre-0.1.23/. OneTimePlacementSetup0.1.0 GUIDnikich.gyk.onetimeplacementsetup, same frozen sourcea98c3ac47efe61b3de3c7287a3fba26d59959fdf, DLL503b6d633274e62bc45c10c9c8733af86d7c15b4ec1a18a2b0236d2969b504bc is separately installed as temporary F8 resource setup; native compile passes, live setup remains unaccepted. Yard helper and passive probe remain absent. Remove the new helper after collecting the return. No automatic game launch or main/stable promotion.
+
+User says soul receivers are available, with only some locations already built. Open a builder with an unbuilt accessible receiver, retain a control goal, pin/highlight receiver and use F8 to explicitly issue missing native carried materials. Confirm selected name; grant is once per helper session. Close F8, cancel placement once (quantity1 unchanged), then place normally (one goal_placed quantity0, control preserved). Completion is verified native placement/material commitment, not later manual construction. Synthetic resources/real construction may persist if saved; guarded undo before placement only with same save/player/unchanged relevant counts, otherwise pre-test-save reload. No technology unlock, save edit or direct craft/world mutation by helper. No fresh observer is needed: existing production markers provide evidence. Also check lamp20/19 arrows, same type at a second point, and one completed lamp reduces quantity1. Max Buttons stays deferred. Shared static lamp note is saved in GraveyardKeeperResearch research/lighting-points commit eebaafc, not promoted to main (automatic review rejected direct default-branch publication).

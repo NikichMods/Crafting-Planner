@@ -41,7 +41,7 @@ P0 does not expand dependencies. If a bench needs planks, the planner asks for p
 
 ## Quantity semantics
 
-- Repeatable placeable/build projects have quantity 1..20; the limit is per goal counter and applies to every menu/HUD/mouse/gamepad entry path.
+- Repeatable placeable/build projects and the three accepted empty-point lighting choices have quantity 1..20; the limit is per goal counter and applies to every menu/HUD/mouse/gamepad entry path.
 - One-off repair/upgrade/clearing projects are quantity 1.
 - Quantity belongs to the planner goal, not to a workstation craft queue or private amount widget.
 - Display bare quantities without an `×` prefix in both menu and shared HUD/card counters. Keep the numeral centred; arrow glyphs default to a13-unit gap from the measured visible numeral edges, with common gap tuning and existing menu fine offsets. Zero is shown for unpinned menu projects; decrementing an existing goal to zero removes it.
@@ -315,4 +315,4 @@ User explicitly accepts the complete current visual presentation, including the0
 
 ### Repeated roadside lighting exception —2026-10-18
 
-The user adopts quantity1–20 for each of the three lighting choices on empty roadside/quarry lantern points. These native WorldChange recipes (lantern_1/2/3 on lantern_place) aggregate by existing owner-type/recipe key across points; each successful completed light reduces its own quantity by1. Their requirements multiply the chosen quantity as for repeated builder goals. Other repairs/clearing/one-time upgrades retain quantity1, including lamp-to-lamp upgrades and broken-lamp repair; no host build/craft rules change. The upcoming0.1.23 candidate implements this narrow exception; installed0.1.22 remains unchanged until exact candidate installation. Native acceptance is pending.
+The user adopts quantity1–20 for each of the three lighting choices on empty roadside/quarry lantern points. These native WorldChange recipes (lantern_1/2/3 on lantern_place) aggregate by existing owner-type/recipe key across points; each successful completed light reduces its own quantity by1. Their requirements multiply the chosen quantity as for repeated builder goals. Other repairs/clearing/one-time upgrades retain quantity1, including lamp-to-lamp upgrades and broken-lamp repair; no host build/craft rules change. Installed0.1.23 implements this narrow exception; TEST_LOG.md records its exact identity. Native acceptance is pending.
