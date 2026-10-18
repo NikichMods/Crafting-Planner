@@ -6,7 +6,7 @@ Updated: 2026-10-19. This is the current resume entry point; dated design and te
 
 Building Planner keeps stable technical identity CraftingPlanner. Visual baseline **0.1.19**, explicitly accepted, restores both user-tuned 0.1.18 layouts independently: materials without native costs29/0, with native costs46/0; common native cost24/-1, counter17/1 and fine-arrow X8/-9. Profile choice follows actual visible native cost-block presence per row, including mixed menus. Right increase arrows hide at repeatable20/one-off1 in menu and shared HUD, and return below the bound without moving the numeral.
 
-F2 format10 retains60 individually resettable sliders. The user accepts0.1.19 independent settings,20/19 arrow behavior and visuals. TEST_LOG.md owns the bounded acceptance and log identity; no further visual tuning is requested. Ordinary HUD across all11 languages is user-reported from0.1.11; gamepad/all11-language functional acceptance remains open. This is not stable-release acceptance.
+Prior development F2 format10 had60 sliders; installed0.1.26 excludes this temporary editor per user2026-10-19, preserving the accepted source defaults. The user accepts0.1.19 independent settings,20/19 arrow behavior and visuals. TEST_LOG.md owns the bounded acceptance and log identity; no further visual tuning is requested. Ordinary HUD across all11 languages is user-reported from0.1.11; gamepad/all11-language functional acceptance remains open. This is not stable-release acceptance.
 
 Prior dev/0.1.24 adds automatic home furniture/interior goal removal after correlated native Apply, exact-script termination and normal decision-handler return. Preview/Cancel/rotation retain the quantity1 goal. Prior placement/world/yard/light semantics and accepted visuals remain unchanged. Both native-reference modes, clean CI, exact downloaded-DLL state/native-absent-row checks and57+39 authored dispatch checks pass; representative0.1.24 cupboard Cancel retention/Apply once-only removal/control preservation now passes. Existing0.1.20/21/22/23 bounded native acceptance remains owned by TEST_LOG.md. F8 InteriorResourceSetup0.1.0 has been backed up/removed after acceptance return; passive observer and older sidecars remain absent. Max Buttons stays deferred, dedicated lamp2->1 replay declined.
 
@@ -16,15 +16,15 @@ Installed0.1.25 now adds per-save/version goal persistence under [PLAN_PERSISTEN
 
 | Identity | Value |
 | --- | --- |
-| Development branch | `dev/0.1.25` |
-| Frozen runtime source | `90c5bae9fc5474a0f9d867fc152dd5a98a61861f` |
-| Version | 0.1.25 / assembly0.1.25.0 |
-| CI run / artifact | `39118320369` / `12133380936` |
-| DLL SHA256 | `0922e8d7c27699cbe8483c2ee6c158034c105916df256070011609c49f31b1e2` |
-| ZIP SHA256 | `cc1e505bc5c02f168af4f0432af3439b25143f6fcbb3bcc42912fbafc8125f81` |
-| Calibration | enabled; F2 format 10, 60 individually resettable sliders |
+| Development branch | `dev/0.1.26` |
+| Frozen runtime source | `f4a9585d127d580f4c5eef44423f248a459bb4f5` |
+| Version | 0.1.26 / assembly0.1.26.0 |
+| CI run / artifact | `39169869618` / `12152381377` |
+| DLL SHA256 | `016004d294da4dab98d98054348a3d32f524bc3b345031f9b1a53fc89562f500` |
+| ZIP SHA256 | `ab1c60ac49a6c6b623e22ac04da4f1fa29008ecfc8f1f48d0055cd9b55eab1e4` |
+| Calibration | disabled; no F2/IMGUI callbacks, calibration guards or editor state |
 
-Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.25/`; previous payloads and installation receipts remain private under `.local/`.0.1.24 backup is `.local/installation-backups/pre-0.1.25/`; installation receipt is `.local/evidence/pre-0.1.25/installation.json`, installed2026-10-18T10:14:23Z with host closed and no extra planner payloads. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
+Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.26/`; previous payloads and installation receipts remain private under `.local/`.0.1.25 backup is `.local/installation-backups/pre-0.1.26/`; receipt is `.local/evidence/pre-0.1.26/installation.json`, installed2026-10-18T21:55:49Z with host closed and no extra planner payloads. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
 
 Both native-reference configurations, clean hosted build, state/geometry/font/calibration/localization/invalidation/energy-layout checks, exact-DLL tests and package boundaries passed. Accepted cases and limits are owned by [TEST_LOG.md](TEST_LOG.md). The live acceptance snapshot is `.local/evidence/accept-0.1.16-visual/LogOutput.log`, SHA256 `96ae57df373be5e2137e26f9e87678ddac37a51ecdccccde85c7a66570c5316d`: it loads 0.1.16 with no planner exception/disable found. It is a partial running-session snapshot, not a completed shutdown log.
 
@@ -34,7 +34,7 @@ Current remaining release pass (user2026-10-19): leave Max Buttons repair outsid
 
 The combined pass closes its exercised mouse/keyboard/gamepad input/context cases; do not repeat them without a new defect. Next accessible pass is final11-language menu/hint/feedback/long-name/CJK review. Ordinary HUD11-language acceptance and accepted completion/persistence scenarios remain valid, not a request for full repeated scenario-by-language testing. A representative long plan should confirm all adopted visible rows/materials remain reachable/readable; do not invent an overflow redesign without an observed problem and product agreement.
 
-Public F2 calibration fate is still a user-owned unresolved choice, separate from runtime testing. Final release preparation also includes current user docs and local-sidecar/cloud/copy limits, diagnostic-free packaging, exact clean build/hash/install verification and a short public-configuration startup pass. Stable merge/release still requires explicit acceptance. No new features (reserves, recursive production or remote collection) are pulled into this pass.
+The user adopts removal of temporary F2 from the player build on2026-10-19; installed0.1.26 excludes it under FINAL_UI_CHECK.md. Final release preparation also includes current user docs and local-sidecar/cloud/copy limits, diagnostic-free packaging, exact clean build/hash/install verification and a short public-configuration startup pass. Stable merge/release still requires explicit acceptance. No new features (reserves, recursive production or remote collection) are pulled into this pass.
 
 ### Combined inventory/input native pass — user2026-10-19
 
