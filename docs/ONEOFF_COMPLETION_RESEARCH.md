@@ -1,6 +1,6 @@
 # One-off repair, upgrade and clearing completion
 
-Updated:2026-10-17. Research branch: research/oneoff-completion. Historical passive research baseline is exact Building Planner0.1.20. Current installed production candidate0.1.22 and exact identities are owned by DEVELOPMENT.md/TEST_LOG.md.
+Updated:2026-10-17. Research branch: research/oneoff-completion. Historical passive research baseline is exact Building Planner0.1.20. Historical production0.1.22 introduced the upgrade path; accepted behavior is retained in prepared1.0.0. Current exact identity is owned by DEVELOPMENT.md; dated test identities by TEST_LOG.md.
 
 ## Question, retrieved evidence and method
 

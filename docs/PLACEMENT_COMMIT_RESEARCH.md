@@ -1,6 +1,6 @@
 # Successful-placement boundary research
 
-Updated: 2026-10-17. Historical passive research branch: `research/placement-commit`, based on `6379eb1`, with unchanged0.1.16 as its baseline. Current production candidate: `dev/0.1.20`; installed identity is owned by DEVELOPMENT.md.
+Updated: 2026-10-17. Historical passive research branch: `research/placement-commit`, based on `6379eb1`, with unchanged0.1.16 as its baseline. Historical production candidate: `dev/0.1.20`; accepted boundary is retained in prepared1.0.0. Current exact identity is owned by DEVELOPMENT.md.
 
 ## Question and readiness
 

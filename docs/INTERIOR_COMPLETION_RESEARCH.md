@@ -1,6 +1,6 @@
 # Home interior callback completion research
 
-Date:2026-10-18. Historical research below establishes the callback boundary. The user subsequently authorized implementation/build/install; installed0.1.24 now implements correlated Apply removal, with representative cupboard Cancel/Apply/control preservation verified in its return. TEST_LOG.md/DEVELOPMENT.md own exact identity. Prior0.1.23 passive instructions remain historical. Existing placement/world/yard/light acceptance and declined dedicated lamp2->1 replay remain unchanged. Max Buttons stays deferred.
+Date:2026-10-18. Historical research below establishes the callback boundary. The user subsequently authorized implementation/build/install; 0.1.24 introduced correlated Apply removal, retained unchanged in prepared1.0.0, with representative cupboard Cancel/Apply/control preservation verified in its return. TEST_LOG.md/DEVELOPMENT.md own exact identity. Prior0.1.23 passive instructions remain historical. Existing placement/world/yard/light acceptance and declined dedicated lamp2->1 replay remain unchanged. Max Buttons stays deferred.
 
 ## Question and evidence method
 

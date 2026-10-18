@@ -1,6 +1,6 @@
 # Per-save plan persistence — 0.1.25
 
-Status: installed0.1.25 persistence accepted by the user on2026-10-19 after all requested scenarios; returned native evidence is recorded below. User adopts persistence on 2026-10-18. Exact artifact/build/install identity is owned by DEVELOPMENT.md and TEST_LOG.md.
+Current status: persistence introduced in0.1.25 and retained unchanged in prepared1.0.0 is accepted by the user on2026-10-19 after all requested scenarios; returned native evidence is recorded below. User adopts persistence on 2026-10-18. Exact artifact/build/install identity is owned by DEVELOPMENT.md and TEST_LOG.md.
 
 ## Outcome and mechanism
 

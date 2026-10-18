@@ -8,7 +8,21 @@ The user requests a fixed ready1.0.0 build and current documentation. Publicatio
 
 Plugin.PluginVersion is the semantic owner; assembly/file/plugin/package identity is derived/checked. Only0.1.28->1.0.0 identity and SPDX comments change production source. PluginGuid remains nikich.gyk.craftingplanner, canonical installed filename CraftingPlanner.dll; persistence path/schema is unchanged.
 
-Release source/CI/DLL/ZIP/install identity is recorded below after the build completes. Until that record exists, the installed game still uses exact accepted0.1.28, source569c6185ec4a670f43e83e2a96c328309aadabde, DLL257db7aa9ca9012952a1d87994bf2c20d8f29a12dc72a612c5e246fc1e3014f7, CI39171882746/artifact12152897159. No research helper remains installed: CarriedBagSetup0.1.0 was backed up/removed with host closed; CARRIED_BAG_CHECK.md owns return/cleanup identity.
+## Exact prepared/installed artifact
+
+| Identity | Value |
+| --- | --- |
+| Working branch | dev/1.0.0 |
+| Frozen source / tag | e51769f9dffac36d09b04438ce49f4a403004206 / v1.0.0 |
+| Version | 1.0.0 / assembly-file1.0.0.0 |
+| CI run / artifact | 39174423952 / 12154115882 |
+| DLL SHA256 | 711e15fa2dd123228d20d0f424fad4e44468e752d711a32d2e9697205346f7af |
+| Player ZIP | artifacts/CraftingPlanner-1.0.0/Building-Planner-1.0.0.zip |
+| ZIP SHA256 | ad91274675de7feb6444d158054e0236d95a0c54484c96df2b463314420e690e |
+| Calibration / research | excluded / no helper installed |
+| Distribution state | prepared/frozen; not published; main unchanged |
+
+Exact CI DLL installed2026-10-18T22:59:23Z with host closed. Receipt .local/evidence/pre-1.0.0/installation.json; previous accepted0.1.28 backed up/hash-verified in .local/installation-backups/pre-1.0.0/. Installed hash/file version match; saves/config/other mods untouched. Subsequent documentation commits do not rebuild this numbered artifact. Native1.0.0 launch is unobserved; normalized source and753 compiled type/field/method parity records establish unchanged accepted0.1.28 implementation. RELEASE_1.0.0.md owns checks/audit and TEST_LOG.md owns the inherited bounded native results. Generic CI transport identity remains candidate-not-runtime-accepted; this prepared handoff does not invent a new native launch.
 
 ## Accepted behavior and remaining boundary
 
