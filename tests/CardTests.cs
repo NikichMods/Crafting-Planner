@@ -48,6 +48,32 @@ class CardTests
             }
             Require((int)nameRight.Invoke(null, new object[] {200, 12f, 9f, 13f}) > 200 - 48 - 4, "Measured controls must reclaim the excess nominal name reserve");
             Require((int)nameRight.Invoke(null, new object[] {200, 30f, 40f, 13f}) + 4 <= 200 - 15 - 13 - 40, "Wide-language glyphs must retain ink separation");
+            MethodInfo words = layout.GetMethod("GoalWords", BindingFlags.Static | BindingFlags.NonPublic);
+            Func<string, string> tokens = delegate(string text) {
+                var items = new System.Collections.Generic.List<string>();
+                foreach (string word in (IEnumerable)words.Invoke(null, new object[] {text})) items.Add(word);
+                return string.Join("|", items.ToArray());
+            };
+            Require(tokens("Дистилляционный куб II") == "Дистилляционный|куб|II", "Russian long words must stay whole");
+            Require(tokens(" \tИсследовательский\nстол\r\n") == "Исследовательский|стол", "Whitespace must not become part of word measurements");
+            Require(tokens("Einbalsamiertisch II (Basis)") == "Einbalsamiertisch|II|(Basis)", "German words and attached punctuation must stay whole");
+            Require(tokens("Палета-холодильник") == "Палета-холодильник", "A hyphenated name must fit without a forced internal break");
+            Require(tokens("錬金術作業台") == "錬|金|術|作|業|台" && tokens("冷蔵パレット") == "冷|蔵|パ|レ|ッ|ト", "CJK names must retain native character wrap opportunities");
+            Require(tokens("연금술 작업대 II") == "연금술|작업대|II", "Korean whitespace-delimited words must remain whole");
+            Require(tokens(null) == "" && tokens("") == "", "Absent names must not request width growth");
+            MethodInfo wordWidth = layout.GetMethod("GoalWordWidth", BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo quantityCentre = layout.GetMethod("QuantityCenter", BindingFlags.Static | BindingFlags.NonPublic);
+            foreach (int initial in new[] {286, 400, 600}) foreach (int word in new[] {0, 30, 180, 280, 420}) foreach (float arrow in new[] {9f, 40f})
+            {
+                int grown = (int)wordWidth.Invoke(null, new object[] {initial, 12, 20, arrow, 13f, word});
+                int centreBefore = (int)quantityCentre.Invoke(null, new object[] {initial, 12, 20});
+                int centreAfter = (int)quantityCentre.Invoke(null, new object[] {grown, 12, 20});
+                int right = (int)nameRight.Invoke(null, new object[] {centreAfter, 30f, arrow, 13f});
+                Require(grown >= initial && centreBefore - initial == centreAfter - grown, "Word growth must preserve the minimum width and right-anchored counter/material centres");
+                Require(word == 0 || right - 46 >= word + 2, "The longest measured word must fit including rounding slack and maximum quantity reserve");
+                Require(grown == initial || right - 46 == word + 2, "Growth must be minimal rather than an arbitrary fixed expansion");
+                Require((int)wordWidth.Invoke(null, new object[] {grown, 12, 20, arrow, 13f, word}) == grown, "Repeated redraw must not accumulate width growth");
+            }
             MethodInfo centre = layout.GetMethod("QuantityCenter", BindingFlags.Static | BindingFlags.NonPublic);
             int centreDefault = (int)centre.Invoke(null, new object[] {240, 4, 0});
             int centreInset = (int)centre.Invoke(null, new object[] {240, 4, 12});

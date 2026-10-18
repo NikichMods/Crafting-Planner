@@ -124,8 +124,14 @@ namespace CraftingPlanner
             col = (col + 1) / 2 * 2; // Even widths keep numeric/quantity centres exactly coincident.
             int columnGap = (int)Style.ColumnGap;
             _width = Math.Max((int)Style.Width, PlannerLayout.MinimumWidth(pad, col, columnGap));
-            int quantityCenter = PlannerLayout.QuantityCenter(_width, pad, (int)Style.ColumnInset);
             int quantityArrowWidth = Measure("<", 0, true, true);
+            var goals = Planner.GetGoals().ToList();
+            int longestWord = 0;
+            foreach (ProjectGoal goal in goals)
+                foreach (string word in PlannerLayout.GoalWords(Planner.GetProjectName(goal.Definition)))
+                    longestWord = Math.Max(longestWord, Measure(word));
+            _width = PlannerLayout.GoalWordWidth(_width, pad, (int)Style.ColumnInset, quantityArrowWidth, Style.QuantityArrowGap, longestWord);
+            int quantityCenter = PlannerLayout.QuantityCenter(_width, pad, (int)Style.ColumnInset);
             int firstCountX = quantityCenter - col / 2 - 2 * (col + columnGap);
             int y = pad;
             int titleHeight = Math.Max(22, (int)Style.Font + 6);
@@ -133,7 +139,7 @@ namespace CraftingPlanner
             y += (_title == null ? titleHeight : 0) + (int)Style.TitleGap + (int)Style.GoalsOffset;
             _bodyTop = y;
             int goalIndex = 0;
-            foreach (ProjectGoal goal in Planner.GetGoals())
+            foreach (ProjectGoal goal in goals)
             {
                 int nameX = pad + PlannerLayout.IconSlotWidth + 4;
                 UILabel quantity = Number(goal.Quantity.ToString(), quantityCenter - PlannerLayout.QuantityWidth / 2, y, PlannerLayout.QuantityWidth, line, true);

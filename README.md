@@ -4,7 +4,7 @@ A vanilla-friendly Graveyard Keeper 1.407 mod for planning multiple construction
 
 Choose projects and quantities in supported native menus, then use the shared HUD to compare **Required / Have / Missing** against what your character carries. Adjust the plan with mouse or gamepad. **Take Needed** collects only missing materials from the currently open chest, bounded by its contents and native inventory capacity; partial transfers are supported.
 
-The current development candidate is **0.1.27**. Supported placement, repair, upgrade, clearing and home-interior completion paths automatically reduce/remove goals after verified commitment; cancellation preserves them. Plans and quantities persist separately for each saved game. Representative runtime cases are accepted; final release checks continue.
+The current development candidate is **0.1.28**. Supported placement, repair, upgrade, clearing and home-interior completion paths automatically reduce/remove goals after verified commitment; cancellation preserves them. Plans and quantities persist separately for each saved game. Representative runtime cases are accepted; final release checks continue.
 
 Plan snapshots are local mod-owned files under `BepInEx/config/CraftingPlanner/plans`. They are saved with the native world save; unsaved plan edits roll back when loading. These files do not automatically travel with Steam Cloud or copied/renamed save slots.
 

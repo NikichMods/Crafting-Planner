@@ -26,6 +26,30 @@ namespace CraftingPlanner
             // Separate text from both visible ink and the larger clickable widget.
             return (int)Math.Floor(centre - offset - Math.Max(ArrowWidth, arrowWidth) / 2f - 4);
         }
+        internal static int GoalWordWidth(int width, int padding, int inset, float arrowWidth, float gap, int wordWidth)
+        {
+            if (wordWidth <= 0) return width;
+            int nameLeft = padding + IconSlotWidth + 4;
+            int nameRight = GoalNameRight(QuantityCenter(width, padding, inset), QuantityWidth, arrowWidth, gap);
+            return width + Math.Max(0, wordWidth + 2 - (nameRight - nameLeft));
+        }
+        internal static IEnumerable<string> GoalWords(string text)
+        {
+            if (string.IsNullOrEmpty(text)) yield break;
+            int start = 0;
+            for (int i = 0; i < text.Length; i++)
+            {
+                char c = text[i];
+                // Preserve native character wrapping for CJK; do not measure an entire
+                // unspaced Japanese/Chinese name as a single Latin-style word.
+                bool character = c >= '\u2e80' && c <= '\u9fff' || c >= '\uf900' && c <= '\ufaff' || c >= '\uff00' && c <= '\uffef';
+                if (!char.IsWhiteSpace(c) && !character) continue;
+                if (i > start) yield return text.Substring(start, i - start);
+                if (character) yield return c.ToString();
+                start = i + 1;
+            }
+            if (start < text.Length) yield return text.Substring(start);
+        }
         internal static int ClampSelection(int index, int count) { return Math.Max(0, Math.Min(index, count - 1)); }
 
         internal static int[] RightAlignedStarts(int[] widths, int right, int gap)
