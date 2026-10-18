@@ -24,6 +24,7 @@ namespace CraftingPlanner
             Planner.Log = Logger;
             _harmony = new Harmony(PluginGuid);
             _harmony.PatchAll();
+            PlannerNpcCards.Install();
             PlannerPlacement.Install();
             PlannerWorldCompletion.Install();
             PlannerInteriorCompletion.Install();
@@ -36,7 +37,7 @@ namespace CraftingPlanner
 
         private void OnDestroy()
         {
-            PlannerNpcCards.Reset();
+            PlannerNpcCards.Stop();
             PlannerPlacement.Stop();
             PlannerWorldCompletion.Stop();
             PlannerInteriorCompletion.Stop();

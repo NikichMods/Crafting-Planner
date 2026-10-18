@@ -49,6 +49,7 @@ namespace CraftingPlanner
     }
     internal static class PlannerNpcCards
     {
+        private static Harmony _harmony;
         private static UIPanel _panel;
         private static Transform _group;
         private static RelationGUI _primary, _additional;
@@ -56,6 +57,29 @@ namespace CraftingPlanner
         private static readonly PlannerNpcTranslation Translation = new PlannerNpcTranslation();
         private static bool _failed, _shifted, _limited;
         private static int _visible;
+        internal static void Install()
+        {
+            try
+            {
+                var draw = AccessTools.DeclaredMethod(typeof(UIPanel), "UpdateSelf", Type.EmptyTypes);
+                var update = AccessTools.DeclaredMethod(typeof(RelationGUI), "Update", Type.EmptyTypes);
+                if (draw == null || update == null || draw.ReturnType != typeof(void) || update.ReturnType != typeof(void))
+                    throw new MissingMethodException("Verified NPC layout consumers are unavailable");
+                _harmony = new Harmony(Plugin.PluginGuid + ".npc_cards");
+                _harmony.Patch(draw, prefix: new HarmonyMethod(typeof(PlannerNpcRenderPatch), "Prefix"));
+                _harmony.Patch(update, prefix: new HarmonyMethod(typeof(PlannerNpcNativePositionPatch), "Prefix"),
+                    finalizer: new HarmonyMethod(typeof(PlannerNpcNativePositionPatch), "Finalizer"));
+                Planner.LogLine("event=npc_cards_hooks state=ready");
+            }
+            catch (Exception ex) { Disable(ex); Detach(); }
+        }
+        private static void Detach()
+        {
+            try { if (_harmony != null) _harmony.UnpatchSelf(); }
+            catch (Exception ex) { Planner.LogLine("event=npc_cards_hooks state=unpatch_failed error=" + ex); }
+            _harmony = null;
+        }
+        internal static void Stop() { _failed = true; Reset(); Detach(); }
         internal static void Include(UIWidget widget, Transform space, ref PlannerBounds bounds)
         {
             if (widget == null || !widget.enabled || !widget.gameObject.activeInHierarchy || widget.alpha <= .001f) return;
@@ -185,10 +209,8 @@ namespace CraftingPlanner
             card.anchor_zone_info.parent == group && card.anchor_no_zone != null && card.anchor_no_zone.parent == group; }
     }
     // Exact native 1.407 final mesh consumer; all other panels return without modification.
-    [HarmonyPatch(typeof(UIPanel), "UpdateSelf")]
     internal static class PlannerNpcRenderPatch
     { private static void Prefix(UIPanel __instance) { PlannerNpcCards.Prepare(__instance); } }
-    [HarmonyPatch(typeof(RelationGUI), "Update")]
     internal static class PlannerNpcNativePositionPatch
     {
         private static void Prefix(RelationGUI __instance, out float __state) { __state = PlannerNpcCards.BeforeNativeUpdate(__instance); }
