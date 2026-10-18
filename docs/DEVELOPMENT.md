@@ -8,21 +8,21 @@ Building Planner keeps stable technical identity CraftingPlanner. Visual baselin
 
 F2 format10 retains60 individually resettable sliders. The user accepts0.1.19 independent settings,20/19 arrow behavior and visuals. TEST_LOG.md owns the bounded acceptance and log identity; no further visual tuning is requested. Ordinary HUD across all11 languages is user-reported from0.1.11; gamepad/all11-language functional acceptance remains open. This is not stable-release acceptance.
 
-Installed dev/0.1.23 preserves accepted repeatable/world completion and visuals, adds one-time scripted builder upgrade removal and one-time Put removal. Exact CI/downloaded-byte/native-reference/state/absent-row/catalogue checks pass. The0.1.22 yard return verifies exactly one native goal removal1->0 with no duplicate or tracker error; Representative one-time Put cancellation/success/control preservation are now verified in0.1.23. The yard and OneTimePlacementSetup F8 helpers are removed after return preservation. Passive completion probe is absent. The returned0.1.21 repair/clearing pass remains bounded evidence; Max Buttons is deferred with unresolved ownership. Home callback furniture placement is separately excluded.
+Installed dev/0.1.24 adds automatic home furniture/interior goal removal after correlated native Apply, exact-script termination and normal decision-handler return. Preview/Cancel/rotation retain the quantity1 goal. Prior placement/world/yard/light semantics and accepted visuals remain unchanged. Both native-reference modes, clean CI, exact downloaded-DLL state/native-absent-row checks and57+39 authored dispatch checks pass; new0.1.24 native goal-removal acceptance is pending. Existing0.1.20/21/22/23 bounded native acceptance remains owned by TEST_LOG.md. F8 InteriorResourceSetup0.1.0 is temporarily restored for acceptance; passive observer and older sidecars remain absent. Max Buttons stays deferred, dedicated lamp2->1 replay declined.
 
 ## Exact installed artifact
 
 | Identity | Value |
 | --- | --- |
-| Development branch | `dev/0.1.23` |
-| Frozen runtime source | `a98c3ac47efe61b3de3c7287a3fba26d59959fdf` |
-| Version | 0.1.23 / assembly0.1.23.0 |
-| CI run / artifact | `39112334329` / `12130499837` |
-| DLL SHA256 | `b09065278ed8b2f8c4c048d57ae9503d6442ad7bb04ab61cdab10886bf4649f8` |
-| ZIP SHA256 | `c84e07195eb1f5f8b158f15ce54d258ec6ff7162974616cbd2b2393b5bd9a6cf` |
+| Development branch | `dev/0.1.24` |
+| Frozen runtime source | `09f4febf8588fb18a7c9aada3fff5f836ab8787a` |
+| Version | 0.1.24 / assembly0.1.24.0 |
+| CI run / artifact | `39116068017` / `12132217648` |
+| DLL SHA256 | `d38cafe37f7ab810e655b1c71cd00042b533ea6a74243e203766ed9ac2094330` |
+| ZIP SHA256 | `fa723e3583f28a3a02df866a8e29a9571735c7bcd1c4e8a779567c3a08d86e27` |
 | Calibration | enabled; F2 format 10, 60 individually resettable sliders |
 
-Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.23/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
+Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.24/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
 
 Both native-reference configurations, clean hosted build, state/geometry/font/calibration/localization/invalidation/energy-layout checks, exact-DLL tests and package boundaries passed. Accepted cases and limits are owned by [TEST_LOG.md](TEST_LOG.md). The live acceptance snapshot is `.local/evidence/accept-0.1.16-visual/LogOutput.log`, SHA256 `96ae57df373be5e2137e26f9e87678ddac37a51ecdccccde85c7a66570c5316d`: it loads 0.1.16 with no planner exception/disable found. It is a partial running-session snapshot, not a completed shutdown log.
 
@@ -103,3 +103,12 @@ User test: one available home table variant (or cupboard/bed/finish), control go
 
 
 Interior return2026-10-18: exact log752d0cf821bdac65465fc797ca81db013e080929bd71d005725393a4241e435d under .local/evidence/interior-research-return/ verifies7 attempts (4 cancel/refund/restore,3 apply/retain) across compound kitchen tables and spawned cupboards, each early finish before decision plus normal exact script termination/handler return. No observer/setup errors, no helper grants in this return. INTERIOR_COMPLETION_RESEARCH.md owns the READY boundary and remaining code/candidate gate; actual auto-removal is absent. Both temporary sidecars backed up/removed with host closed2026-10-18T09:28:19Z; core remains exact0.1.23. No need to reinstall probes just to rediscover this path. Prior pending/setup instructions above are historical. Next authorized work needs implementation/compiled failure+stale tests and a new candidate acceptance after user chooses to proceed. Shared facts saved in research/interior-completion a3079a2; no shared main/stable promotion.
+
+
+## Current0.1.24 acceptance handoff —2026-10-18
+
+Active checkout dev/0.1.24. Frozen source09f4febf8588fb18a7c9aada3fff5f836ab8787a, clean CI39116068017/artifact12132217648; exact hashes in table/TEST_LOG.md. INTERIOR_COMPLETION_RESEARCH.md owns native7-attempt evidence and per-change READY/selected six-seam production gate. PlannerInteriorCompletion has its own Harmony owner/public decision subscriptions; no room/spend observer patches or inventory/world writes ship. Receipt captures existing goal/definition/save/owner and exact script, requires all normal once-only latches, rejects Cancel/duplicates/errors/stale re-add/save transition, then uses existing goal adjustment and deferred menu/HUD refresh. A new dispatch/reset/stop invalidates prior receipts; old completion/visual policies remain unchanged.
+
+Installed with host closed2026-10-18T09:40:37Z; previous0.1.23 exact digestb09065278ed8b2f8c4c048d57ae9503d6442ad7bb04ab61cdab10886bf4649f8 was backed up outside loading. Receipt/prior log .local/evidence/pre-0.1.24/, backup .local/installation-backups/pre-0.1.24/. Existing immutable F8 InteriorResourceSetup0.1.0 source80db85c7 / DLL2c012e963a4d30fe101cd4d5345e272cf8559a79e82737cc92646f50866d2246 is restored for resource-assisted acceptance, not included in production package. Passive InteriorCompletionProbe remains absent. Remove temporary helper after return. No game launch/save edit/main/stable promotion by tools.
+
+Next native pass: keep a control goal, pin one accessible home table/cupboard/bed/finish variant1, highlight it and use F8 only if materials are missing. Begin preview (goal1 remains), cancel and wait for camera/control (goal1/control remain), repeat and Apply/wait (exactly one goal_completed family=interior quantity0, control retained and requirements refreshed). Now automatic goal removal is expected, superseding the passive0.1.23 research instructions. Same-ID valid applies may be used; no39-case replay or new discovery probe. Grants and actual native interior changes may be saved; guarded undo/pre-test-save contract remains. Max Buttons deferred, lamp replay declined. New candidate native acceptance remains pending.
