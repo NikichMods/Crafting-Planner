@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Building Planner";
-        public const string PluginVersion = "0.1.21";
+        public const string PluginVersion = "0.1.22";
 
         private Harmony _harmony;
 
@@ -216,7 +216,7 @@ namespace CraftingPlanner
             return true;
         }
         internal static ProjectGoal FindWorldCompletion(CraftDefinition definition, string owner)
-        { return PlannerGoalState.FindWorldCompletion(Goals, definition, owner); }
+        { return PlannerGoalState.FindWorldCompletion(Goals, definition, owner) ?? PlannerGoalState.FindBuilderCompletion(Goals, definition, owner); }
         internal static bool CompleteWorldProject(WorldCompletionAttempt attempt, bool nativeCompleted)
         {
             ProjectGoal updated;

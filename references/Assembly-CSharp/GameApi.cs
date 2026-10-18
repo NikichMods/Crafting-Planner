@@ -47,6 +47,8 @@ public class CraftDefinition : BalanceBaseObject
     public List<Item> needs;
     public List<Item> needs_from_wgo;
     public bool one_time_craft;
+    public bool is_auto;
+    public string end_script;
     public string change_wgo;
     public string icon;
 
@@ -66,6 +68,7 @@ public class ObjectCraftDefinition : CraftDefinition
     }
 
     public BuildType build_type;
+    public bool wait_script_callback;
     public string out_obj;
 }
 

@@ -147,8 +147,10 @@ class CardTests
             MethodInfo normalize = localization.GetMethod("Normalize", BindingFlags.Static | BindingFlags.NonPublic);
             Require((string)normalize.Invoke(null, new object[] {"zh_CN"}) == "zh-cn", "Native Chinese code not normalized");
             Require((string)normalize.Invoke(null, new object[] {"pt_BR"}) == "pt-br", "Native Portuguese code not normalized");
-            if (Array.IndexOf(args, "--state") >= 0) { CheckPinnedState(candidate); CheckPlacement(candidate); CheckWorldCompletion(candidate); }
+            if (Array.IndexOf(args, "--state") >= 0) { CheckPinnedState(candidate); CheckPlacement(candidate); CheckWorldCompletion(candidate); CheckBuilderCompletion(candidate); }
             if (Array.IndexOf(args, "--native-rows") >= 0) CheckAbsentRows(candidate);
+            int catalogue = Array.IndexOf(args, "--builder-catalog");
+            if (catalogue >= 0) CheckBuilderCatalog(candidate, args[catalogue + 1]);
             Console.WriteLine("PASS: centred rounded backing, feather/bounds/top-row coverage, quantity slot and 11-language schema. Native visual and input acceptance require the game.");
             return 0;
         }
@@ -211,6 +213,64 @@ class CardTests
         goals.Clear();
         Console.WriteLine("PASS: original world key, upgrade/production exclusion, exact completion marker, failures, once-only removal, unrelated goals and derived requirements.");
     }
+    static void CheckBuilderCompletion(Assembly candidate)
+    {
+        const BindingFlags methods=BindingFlags.Static|BindingFlags.NonPublic, fields=BindingFlags.Instance|BindingFlags.NonPublic;
+        Type state=candidate.GetType("CraftingPlanner.PlannerGoalState",true), planner=candidate.GetType("CraftingPlanner.Planner",true), goalType=candidate.GetType("CraftingPlanner.ProjectGoal",true), receiptType=candidate.GetType("CraftingPlanner.WorldCompletionAttempt",true);
+        IList goals=(IList)planner.GetField("Goals",methods).GetValue(null); goals.Clear();
+        Type defType=state.GetMethod("FindPlacement",methods).GetParameters()[1].ParameterType;
+        object definition=System.Runtime.Serialization.FormatterServices.GetUninitializedObject(defType);
+        Field(definition,"id","upgrade"); Field(definition,"one_time_craft",true); Field(definition,"is_auto",true); Field(definition,"end_script","native_upgrade");
+        Field(definition,"build_type",Enum.Parse(defType.GetField("build_type").FieldType,"None"));
+        Type needsType=defType.GetField("needs").FieldType; IList needs=(IList)Activator.CreateInstance(needsType);
+        object item=System.Runtime.Serialization.FormatterServices.GetUninitializedObject(needsType.GetGenericArguments()[0]); Field(item,"id","upgrade_material"); Field(item,"value",10); needs.Add(item); Field(definition,"needs",needs);
+        Func<string,bool,object> goal=delegate(string key,bool repeatable){object g=Activator.CreateInstance(goalType,true);Field(g,"Key",key);Field(g,"Definition",definition);Field(g,"Repeatable",repeatable);Field(g,"Quantity",1);return g;};
+        object tracked=goal("1|builder_a|upgrade",false), other=goal("1|builder_b|upgrade",false), world=goal("2|builder_a|upgrade",false);
+        goals.Add(tracked);goals.Add(other);goals.Add(world);
+        MethodInfo find=state.GetMethod("FindBuilderCompletion",methods);
+        Func<object> match=()=>find.Invoke(null,new[]{(object)goals,definition,"builder_a"});
+        Require(ReferenceEquals(match(),tracked),"Builder completion must select its exact original builder key");
+        Require(ReferenceEquals(planner.GetMethod("FindWorldCompletion",methods).Invoke(null,new[]{definition,(object)"builder_a"}),tracked),"Actual completion hook router must include builder upgrades");
+        Require(find.Invoke(null,new[]{(object)goals,definition,"unknown"})==null,"Unknown owner must not fulfil another upgrade");
+        foreach(string flag in new[]{"one_time_craft","is_auto"}){Field(definition,flag,false);Require(match()==null,"Unsupported builder flags must fail closed");Field(definition,flag,true);}
+        Field(definition,"wait_script_callback",true);Require(match()==null,"Script callback builds remain excluded");Field(definition,"wait_script_callback",false);
+        Field(definition,"end_script",null);Require(match()==null,"Unverified scriptless builder shape must be excluded");Field(definition,"end_script","native_upgrade");
+        Field(definition,"build_type",Enum.Parse(defType.GetField("build_type").FieldType,"Put"));Require(match()==null,"Placement must not be counted again at later craft completion");Field(definition,"build_type",Enum.Parse(defType.GetField("build_type").FieldType,"None"));
+        Field(tracked,"Repeatable",true);Require(match()==null,"One-off completion cannot consume repeatable goals");Field(tracked,"Repeatable",false);
+        Func<object> receipt=()=>{object r=Activator.CreateInstance(receiptType,true);Field(r,"Goal",tracked);Field(r,"Definition",definition);return r;};
+        MethodInfo mark=receiptType.GetMethod("ObserveCompletion",fields), complete=receiptType.GetMethod("Complete",fields);
+        foreach(int mode in new[]{0,1,2,3}) {object r=receipt();if(mode!=0) mark.Invoke(r,new[]{definition,(object)(mode!=1)});if(mode==2)mark.Invoke(r,new[]{definition,(object)true});Require(!(bool)complete.Invoke(r,new object[]{goals,mode!=3,null}) && goals.Contains(tracked),"Absent/failed/duplicate marker or native failure must preserve upgrade");}
+        object success=receipt();mark.Invoke(success,new[]{definition,(object)true});
+        Require((bool)complete.Invoke(success,new object[]{goals,true,null}) && !goals.Contains(tracked),"Synchronous native upgrade completion must remove its one-off goal");
+        Require(!(bool)complete.Invoke(success,new object[]{goals,true,null}) && goals.Contains(other) && goals.Contains(world),"Duplicate receipt or other contexts must not remove unrelated goals");
+        IDictionary requirements=(IDictionary)planner.GetMethod("AggregateRequirements",methods).Invoke(null,null);
+        Require((int)requirements["upgrade_material"]==20,"Derived materials must retain only the other two goals");
+        goals.Clear();
+        Console.WriteLine("PASS: builder completion router, original owner/context, unsupported shapes, successful marker, failure preservation, one-off removal and unrelated requirements.");
+    }
+    static void CheckBuilderCatalog(Assembly candidate,string path)
+    {
+        const BindingFlags methods=BindingFlags.Static|BindingFlags.NonPublic;
+        Type state=candidate.GetType("CraftingPlanner.PlannerGoalState",true), goalType=candidate.GetType("CraftingPlanner.ProjectGoal",true);
+        var find=state.GetMethod("FindBuilderCompletion",methods);var placement=state.GetMethod("FindPlacement",methods);Type defType=placement.GetParameters()[1].ParameterType;
+        Type listType=typeof(System.Collections.Generic.List<>).MakeGenericType(goalType);IList goals=(IList)Activator.CreateInstance(listType);
+        int upgrades=0,places=0,excluded=0;
+        foreach(string line in File.ReadAllLines(path))
+        {
+            string[] row=line.Split('\t');object definition=System.Runtime.Serialization.FormatterServices.GetUninitializedObject(defType);
+            Field(definition,"id",row[1]);Field(definition,"build_type",Enum.ToObject(defType.GetField("build_type").FieldType,int.Parse(row[2])));Field(definition,"one_time_craft",true);Field(definition,"is_auto",row[3]=="1");Field(definition,"wait_script_callback",row[4]=="1");Field(definition,"end_script",row[5]);
+            Type needsType=defType.GetField("needs").FieldType;IList needs=(IList)Activator.CreateInstance(needsType);
+            if(row[6].Length>0)foreach(string value in row[6].Split(',')){int split=value.LastIndexOf(':');object item=System.Runtime.Serialization.FormatterServices.GetUninitializedObject(needsType.GetGenericArguments()[0]);Field(item,"id",value.Substring(0,split));Field(item,"value",int.Parse(value.Substring(split+1)));needs.Add(item);}Field(definition,"needs",needs);
+            object goal=Activator.CreateInstance(goalType,true);Field(goal,"Key","1|"+row[0]+"|"+row[1]);Field(goal,"Definition",definition);Field(goal,"Repeatable",false);Field(goal,"Quantity",1);goals.Add(goal);
+            object matched=find.Invoke(null,new[]{(object)goals,definition,row[0]});object put=placement.Invoke(null,new[]{(object)goals,definition,row[0]});
+            if(row[2]=="0"){Require(ReferenceEquals(put,goal) && matched==null,"One-off placement dispatch mismatch: "+row[1]);places++;}
+            else if(needs.Count>0){Require(ReferenceEquals(matched,goal) && put==null,"Builder upgrade dispatch mismatch: "+row[1]);upgrades++;}
+            else {Require(matched==null && put==null,"No-needs non-goal must remain excluded");excluded++;}
+            goals.Clear();
+        }
+        Require(upgrades==39 && places==17 && excluded==1,"Unexpected authored one-time builder coverage");
+        Console.WriteLine("PASS: all57 authored one-time builder definitions dispatch as39 upgrades,17 placements and1 no-needs exclusion. This is static compiled-policy coverage, not57 live executions.");
+    }
     static void CheckPlacement(Assembly candidate)
     {
         BindingFlags methods = BindingFlags.Static | BindingFlags.NonPublic;
@@ -235,7 +295,7 @@ class CardTests
         goals.Add(tracked); goals.Add(otherOwner); goals.Add(otherCraft); goals.Add(world);
         Require(ReferenceEquals(find.Invoke(null, new object[] {goals, definition, "builder_a"}), tracked), "Placement must match the original builder/definition key after menus close");
         Require(find.Invoke(null, new object[] {goals, definition, "missing"}) == null, "Unknown builders must not consume any goal");
-        Field(definition, "one_time_craft", true); Require(find.Invoke(null, new object[] {goals, definition, "builder_a"}) == null, "One-time upgrades are a separate success path"); Field(definition, "one_time_craft", false);
+        Field(definition, "one_time_craft", true); Require(find.Invoke(null, new object[] {goals, definition, "builder_a"}) == null, "One-time placement cannot consume a repeatable goal"); Field(definition, "one_time_craft", false);
         Field(definition, "build_type", Enum.Parse(definitionType.GetField("build_type").FieldType, "Remove"));
         Require(find.Invoke(null, new object[] {goals, definition, "builder_a"}) == null, "Removal controls must not fulfil construction goals");
         Field(definition, "build_type", Enum.Parse(definitionType.GetField("build_type").FieldType, "Put"));
@@ -268,6 +328,12 @@ class CardTests
         Require(!finish(stale,true,true) && quantityOf(replacement) == 2, "Removed/re-added goals must not inherit an old captured placement");
         for (int i = 0; i < 2; i++) { object value=receipt(replacement); observe(value,inventory,needs,true); Require(finish(value,true,true), "Repeated placements must each consume one unit"); }
         Require(!goals.Contains(replacement), "Last successful placement must remove the goal at zero");
+        goals.Clear();
+        Field(definition,"one_time_craft",true); object oneoff=goal("1|builder_a|bench",1,false); goals.Add(oneoff);
+        Require(ReferenceEquals(find.Invoke(null,new object[]{goals,definition,"builder_a"}),oneoff),"One-time Put must use placement commitment");
+        object rejected=receipt(oneoff);observe(rejected,inventory,needs,true);Require(!finish(rejected,true,false) && goals.Contains(oneoff),"Rejected one-time placement must preserve its goal");
+        object placed=receipt(oneoff);observe(placed,inventory,needs,true);Require(finish(placed,true,true) && !goals.Contains(oneoff),"Successful one-time placement must remove its goal");
+        Require(!finish(placed,true,true),"One-time placement must not apply twice");
         goals.Clear();
         Console.WriteLine("PASS: placement key isolation, matching native spend, once-only receipts, failure preservation, exact requirements and zero removal. Native placement/patch acceptance still requires the game.");
     }
