@@ -1,14 +1,14 @@
 # Building Planner — Product Scope
 
-Updated: 2026-10-18
+Updated:2026-10-19
 
-## Current milestone
+## Current release scope
 
-The complete 0.1.16 visual presentation is user-accepted as of 2026-10-17. Preserve it unless a new defect/request reopens visual work. Exercised core functionality is recorded in [TEST_LOG.md](TEST_LOG.md); this is not full functional or stable-release acceptance. Exact installed artifact and recovery are in [DEVELOPMENT.md](DEVELOPMENT.md).
+Version1.0.0 is the prepared release build of the behavior accepted in0.1.28. Automatic success reduction, local per-save persistence, inventory/bag transfers and native mouse/gamepad UI are implemented and accepted within TEST_LOG.md bounds. RELEASE_1.0.0.md owns audits/preparation status; DEVELOPMENT.md owns exact artifact identity. Native1.0.0 launch/publication must be reported separately from inherited behavior acceptance.
 
-The user reports the 0.1.17 multi-line native-cost separation technically works and adopts one shared cost-block format for both single-energy and multi-line costs. The rightmost menu column belongs exclusively to planner quantity, centred horizontally/vertically by default. Native cost text/width/height remain host-owned; F2 independently moves its whole block in X/Y and adjusts materials relative to it. The earlier stacked single-energy arrangement is superseded. Recovered tuning below owns the defaults; the user accepts0.1.19 cross-context visual behavior, independent settings and20/19 arrow behavior on2026-10-17.
+Keep accepted0.1.19 construction rows: ordinary materials X/Y29/0, native-cost rows46/0, cost block24/-1, counter17/1 and arrow fine-X8/-9. Actual visible cost-block presence chooses the row layout. The rightmost column belongs to bare centred planner quantities; native costs have a separate block for both one-line energy and multiline data. Increase arrows hide at repeatable20/one-off1 and return below the bound without shifting the numeral. F2 calibration is absent from player bytes.
 
-The 0.1.18 return supplies separate tuned layouts: ordinary rows need material X/Y 29/0; rows with native costs need 46/0, with cost-block 24/-1. Shared counter settings are X/Y 17/1 and arrow fine-X 8/-9. Preserve both sets independently based on visible native cost-block presence in each row, including mixed menus; changing repair/cost-row materials must not move ordinary builder rows. These recovered settings are the accepted visual defaults. The right arrow disappears at the repeatable cap20 in both menu and HUD, reappears below20, and retains the one-off0/1 behavior.
+Accepted0.1.28 shared-card names grow left only as needed for the longest native-measured word; counters stay fixed and native UILabel wraps/heights rows. Preserve all11 language fonts/live refresh and chest continuity. User accepts long plans below the viewport; no scrolling/clipping/paging/total-goal cap is adopted.
 
 ## Product model
 
@@ -46,7 +46,7 @@ P0 does not expand dependencies. If a bench needs planks, the planner asks for p
 - Quantity belongs to the planner goal, not to a workstation craft queue or private amount widget.
 - Display bare quantities without an `×` prefix in both menu and shared HUD/card counters. Keep the numeral centred; arrow glyphs default to a13-unit gap from the measured visible numeral edges, with common gap tuning and existing menu fine offsets. Zero is shown for unpinned menu projects; decrementing an existing goal to zero removes it.
 
-## Required next milestone: successful-operation reduction
+## Successful-operation reduction
 
 Automatic reduction is required follow-up, absent through0.1.19, and implemented in0.1.20 with bounded native success/failure/identity/zero-removal verification recorded in TEST_LOG.md. For repeatable placeables, decrement exactly one at verified successful placement/material commitment, not at later physical construction completion. Failed/cancelled/rejected placement removes none. Remove a goal at zero and recompute derived aggregate requirements; native code alone spends materials. Do not introduce an in-progress tracker.
 
@@ -113,15 +113,15 @@ Builder-internal pseudo actions such as remove/move controls are not planner pro
 
 Mouse/keyboard and gamepad management are required and exercised on supported paths. Native build-row activation still builds; separate left/right quantity controls adjust only the plan. Decrement from one removes a goal; one-off projects remain capped at one. Native ordinary production/queue controls retain ownership.
 
-The ordinary HUD shows project names/icons and fixed quantity slots above aggregate material icon/count rows. Mouse arrows remain visible with hover emphasis, and hovered rows highlight. Gamepad RS enters deliberate HUD editing; up/down selects a visibly highlighted row, left/right changes quantity, B finishes. Outside deliberate editing, the HUD does not capture gameplay. The RS/Edit Plan or B/Done hint is right-aligned and remains previewable while F2 is open. There is no separate management window or draft/apply state.
+The ordinary HUD shows project names/icons and fixed quantity slots above aggregate material icon/count rows. Mouse arrows remain visible with hover emphasis, and hovered rows highlight. Gamepad RS enters deliberate HUD editing; up/down selects a visibly highlighted row, left/right changes quantity, B finishes. Outside deliberate editing, the HUD does not capture gameplay. The RS/Edit Plan or B/Done hint is right-aligned. There is no separate management window or draft/apply state.
 
 The shared card stays in the same apparent position across ordinary HUD, supported build/world-project menus, character Inventory tab and chest. The native location banner is replaced by the planner title while shown and restored when hidden. English title/display name is **Building Planner**; host project/item names and owned labels follow the live language.
 
-Supported-menu help is ONE right-aligned row: round native left/right arrow symbols plus localized Add to planner first, followed by original native action blocks in native order, with final Close at the frame edge. Measured equal gaps and leftward growth accommodate translations. Planner help copies the native cream-to-brown label gradient/font/effect and round arrow sprites. Keyboard/mouse shows only planner help. Do not restore the rejected Add to planner header: it misleadingly made planning look like the window's primary build action. Single-energy and multi-line native costs share one separately movable block to the left of planner quantity; row height and native cost formatting remain unchanged.
+Supported-menu help is ONE right-aligned row: round native left/right arrow symbols plus localized Add to planner first, followed by original native action blocks in native order, with final Close at the frame edge. Measured equal gaps and leftward growth accommodate translations. Planner help copies the native cream-to-brown label gradient/font/effect and round arrow sprites. Keyboard/mouse shows only planner help. Do not restore the rejected Add to planner header: it misleadingly made planning look like the window's primary build action. Single-energy and multi-line native costs share one independently positioned block to the left of planner quantity using accepted source defaults; row height and native cost formatting remain unchanged.
 
 Chest gamepad hints are one right-aligned **A / X / B / Y** row, preserving native omitted/disabled actions. Y Take Needed ends at the chest's right edge, equal measured gaps expand leftward; keyboard F uses that edge. Results/notices right-align to the same edge and report actual transferred item icons/counts, with compact measured spacing. A guaranteed pre-action transfer manifest is not adopted. Quick Stack's world transfer now immediately refreshes Have/Missing through a scoped native transfer observer; reserve protection and gesture takeover remain outside scope.
 
-F2 was temporary live development calibration (format10,60 sliders). On2026-10-19 the user adopts excluding it from the player build; candidate0.1.26 compiles out the editor/input guards and Plugin.Update/OnGUI calibration callbacks. Accepted defaults remain owned by source; calibration logs are recovery evidence, not a settings database. Original opt-in development code may remain outside distributed bytes; no replacement player settings system is adopted. FINAL_UI_CHECK.md owns the READY gate and remaining actual no-F2/language/long-plan acceptance.
+F2 was temporary live development calibration (format10,60 sliders). On2026-10-19 the user adopts excluding it from the player build; candidate0.1.26 compiles out the editor/input guards and Plugin.Update/OnGUI calibration callbacks. Accepted defaults remain owned by source; calibration logs are recovery evidence, not a settings database. Original opt-in development code may remain outside distributed bytes; no replacement player settings system is adopted. FINAL_UI_CHECK.md owns the READY gate and completed no-F2/language/long-plan/long-word acceptance.
 
 ## Localization requirement
 

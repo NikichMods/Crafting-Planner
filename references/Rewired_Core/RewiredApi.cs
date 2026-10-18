@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MPL-2.0
 // Verified compile signatures only. Never distribute this reference assembly.
 namespace Rewired
 {

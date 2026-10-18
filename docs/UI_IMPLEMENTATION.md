@@ -1,30 +1,22 @@
 # Building Planner — UI implementation
 
-## Last accepted visual baseline — 2026-10-17
+## Current accepted presentation —2026-10-19
 
-The user accepts the complete 0.1.16 visual presentation, including single-line repair-energy separation. Visual iteration is closed unless a new defect/request reopens it. [PRODUCT_SCOPE.md](PRODUCT_SCOPE.md) owns active UX requirements; [TEST_LOG.md](TEST_LOG.md) owns bounded runtime acceptance; [DEVELOPMENT.md](DEVELOPMENT.md) identifies the exact installed artifact and next functional milestone. A READY static gate below is not by itself runtime acceptance.
-
-The subsequently reported multi-line native-cost overlap was corrected in 0.1.17 and technically confirmed by the user. The next adopted policy supersedes its single-energy preservation invariant.
-
-Installed 0.1.18 uses one movable native-cost block, bare centred quantities/edge-measured arrows and a central quantity cap20. Final positions and real rendering/input acceptance await the user's F2 tuning.
-
-Current source ownership:
+Prepared1.0.0 preserves user-accepted0.1.28. PRODUCT_SCOPE.md owns active UX, TEST_LOG.md owns bounded native acceptance and DEVELOPMENT.md owns exact build identity. Construction rows retain independent ordinary/native-cost material offsets from0.1.19, bare centred counters, measured arrow spacing and cap visibility. Shared card width fits the longest native-measured word while quantity/material numeric screen positions remain fixed; Japanese/Chinese retain native character wrapping. The user accepts longer plans overflowing below the viewport. F2/editor/input guards are excluded from public bytes; no replacement player settings system is adopted.
 
 | Component | Responsibility |
 | --- | --- |
-| `PlannerPresentation` | shared native card/header/font/backing and visibility |
-| `PlannerRowControls` | supported native ingredient/quantity placement and energy separation; restore native geometry |
-| `PlannerBuildTips` | one frame-right-aligned menu action row, native gradient and round arrows |
-| `PlannerChestControls` | A/X/B/Y or F action row, measured right-aligned results/notices |
-| `PlannerEditing` | deliberate RS entry, selection/edit/B exit and narrow player-control containment |
-| `PlannerInventoryRefresh` | successful native transfer invalidation, coalesced in LateUpdate |
-| `PlannerStyle` / `PlannerTuning` | accepted style/layout defaults |
-| `PlannerCalibration` | temporary compile-flagged F2 editor, format 8, 55 sliders with local resets |
-| `PlannerLayout` | shared pure geometry policies |
+| PlannerPresentation | shared native card/header/font/backing, current localized names and visibility |
+| PlannerLayout | pure measured geometry, longest-word units/minimal width, count/arrow separation |
+| PlannerRowControls | supported menu material/cost/counter geometry, restoration of native rows |
+| PlannerBuildTips | measured native-style menu action/help row |
+| PlannerChestControls | native chest action/help/results and actual transferred item feedback |
+| PlannerEditing | deliberate RS edit, selection/quantity/B exit and scoped input containment |
+| PlannerInventoryRefresh | native transfer invalidation coalesced in LateUpdate |
+| PlannerStyle / PlannerTuning | accepted fixed presentation defaults |
+| PlannerCalibration | developer-only opt-in source; absent editor/callback/guard/state in public build |
 
-Native row activation/input, material/capacity semantics and world Quick Stack ownership are retained. Shared card quantity positions are independent of input-device arrows; icon visual sizing is independent of text row metrics. Native fonts/artwork and live localization are used; ordinary HUD appearance across all 11 languages is user-reported, without claiming every context/language combination was exercised.
-
-No UI redesign is the next task. Verify successful-operation reduction under PRODUCT_SCOPE.md; it is absent from 0.1.16. Final public-build calibration policy remains undecided.
+Mouse/gamepad, all11 language presentation, long names and open chest are accepted in exercised contexts, not an exhaustive cross-product guarantee. Player stock/native capacity/transfer and completion/persistence live in their own owners. No new UI or mechanics change is part of1.0.0 preparation.
 
 ## Historical engineering gates
 

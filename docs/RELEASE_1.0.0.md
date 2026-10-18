@@ -1,0 +1,23 @@
+# Building Planner1.0.0 — release preparation
+
+## Scope and readiness —2026-10-19
+
+User requests checking/correcting project documents and preparing the fixed release version1.0.0; Nexus publication material belongs to another conversation. This work prepares a frozen source/build/package, without adding mechanics or reopening accepted gameplay tests. Publication/promotion is kept separate from this preparation-only handoff.
+
+Version-only production gate READY: observable change is plugin/assembly/file/load-log identity0.1.28->1.0.0; canonical owner Plugin.PluginVersion, consumed by BepInPlugin and AssemblyInfo then compiled metadata/log literals. Every gameplay/UI/persistence/input/quantity consumer remains unchanged; same PluginGuid, save-sidecar path/schema and installed basename preserve identity/data. Add SPDX comments to remaining original-source/reference-stub files without changing emitted behavior. Preserved invariants are the accepted0.1.28 implementation and all recorded bounded runtime results. Compare normalized production source and actual compiled methods/fields against exact0.1.28, run existing native-reference/state/no-calibration/catalogue tests and clean hosted CI, verify release metadata and allowlisted package. No new host seam, probe, settings, language or scope is introduced. Native1.0.0 startup must not be claimed before observed; accepted0.1.x behavior is reused only because the release differs by metadata.
+
+## Acceptance basis
+
+TEST_LOG.md owns exact evidence/bounds: repeatable placement20, repair/clearing21, yard upgrade22, one-time placement/lighting23, cupboard Apply/Cancel24, per-save/restart/two-slot/unsaved rollback25, ordinary input/stock/capacity25, no-F2/11-language/accepted vertical overflow26, adaptive longest-word width/chest28 and representative carried builder-bag/native bag-only transfer28. These are representative live tests plus authored57 builder/39 interior dispatch cases, not exhaustive native executions of every definition/language/bag/mod. Max Buttons failure reproduced without Planner and its repair remains outside this release.
+
+## Documentation and support-log audit
+
+Reconcile current owners rather than appending success after stale claims: README for install/use/limits; PRODUCT_SCOPE for active behavior; AGENTS for current working contract; DEVELOPMENT for exact build/install recovery; UI_IMPLEMENTATION/VERIFIED_GAME_DATA for accepted current map with historical evidence retained below. TEST_LOG remains chronological. No Nexus description, screenshots or permissions page is prepared.
+
+Audit0.1.28 ordinary production output using accepted language/inventory/bag logs and current failure branches: loader/version and BepInEx/Unity/platform header available; completion/persistence ready markers identify supported binding state. Input/card/storage failures log session containment; completion failures disable the affected tracker, native crafting remains host-owned; persistence warns on failed phase and logs no-snapshot/unverified disk commitment/preserved unreadable snapshot rather than claiming success. Native disk saves remain untouched. Card visibility logs require state changes; inventory refresh is event-coalesced in LateUpdate, no inventory polling/logging loop. Bag session contains92 card transitions,22 deliberate quantity changes,16 chest opens,8 transfer refreshes and3 ingredient records during the exercised UI sequence; no Planner/helper exception/disable. Native Unity world/resource error lines are outside that acceptance. No new logging patch or exception suppression is justified. This is source/ordinary-log review, not new injected-failure acceptance.
+
+## Licensing and package boundary
+
+Existing unchanged MPL-2.0 LICENSE and LICENSING apply to original code. Original source/reference signatures carry SPDX; existing project history lists project contributors, no imported implementation/license change is introduced. BepInEx/Harmony/Unity/game/Rewired are referenced dependencies with their own terms, provided by the user's runtime, not bundled. Game text/fonts/artwork are resolved at runtime; no game DLL, extracted assets, raw research data or compile stub is shipped. Keep source publicly available through the corresponding commit. The player ZIP contains only canonical BepInEx/plugins/CraftingPlanner.dll, README, CHANGELOG, LICENSE, LICENSING and build-identity.json. CI checks one permitted DLL, version/source/hash and calibration=false before uploading.
+
+Frozen source/CI/hash/package/install results are recorded after successful build. Until then this document is a preparation gate, not a claim of a completed release or new native acceptance.

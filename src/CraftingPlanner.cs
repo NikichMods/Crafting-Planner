@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MPL-2.0
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Building Planner";
-        public const string PluginVersion = "0.1.28";
+        public const string PluginVersion = "1.0.0";
 
         private Harmony _harmony;
 

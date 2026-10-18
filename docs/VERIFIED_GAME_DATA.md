@@ -1,6 +1,6 @@
 # Verified Graveyard Keeper 1.407 Data for Building Planner
 
-Current status (2026-10-17): complete 0.1.16 visual presentation is user-accepted, with exercised mouse/gamepad management, current-storage transfers and immediate Quick Stack refresh. Exact artifacts and bounded cases are recorded in [TEST_LOG.md](TEST_LOG.md). Successful-operation reduction is required next and absent from 0.1.16; static placement evidence below does not yet prove the production success boundary. Dated prototype/calibration seams retain historical context; active layout/input policy is owned by [PRODUCT_SCOPE.md](PRODUCT_SCOPE.md).
+Current status2026-10-19: representative native acceptance is complete for the1.0.0 behavior baseline: placement/repair/clearing/yard/interior success and cancellation, save persistence, ordinary stock/capacity/input, carried builder-bag count/ownership/transfer and accepted0.1.28 UI/localization. TEST_LOG.md owns exact bounds; RELEASE_1.0.0.md/DEVELOPMENT.md own release preparation/identity. No exhaustive all-definition/bag/mod claim or new1.0.0 native launch is inferred. Dated probe/calibration evidence below is historical and does not reopen closed gates.
 
 Status legend:
 - **Verified static** — established from Graveyard Keeper 1.407 decompile/API evidence and/or accepted NikichMods repository evidence.
@@ -200,7 +200,7 @@ Accepted binary/static research identifies `MultiInventory.MoveItemTo` use and p
 
 **P0 compatibility direction:** keep Crafting Planner's `Take Needed` in open-storage context and avoid owning Quick Stack's world-interaction seam.
 
-## Open runtime gates before production
+## Historical initial runtime gates (superseded by accepted results above)
 
 1. Final production pin/manage gesture and help presentation, especially gamepad behavior and conflicts. Build-menu mouse focus is runtime-verified; gamepad build focus was not exercised in Probe 0.2.0.
 2. Concrete current-storage ownership lifecycle without private-field reflection.

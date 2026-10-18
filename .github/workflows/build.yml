@@ -96,6 +96,42 @@ jobs:
           }
           $identity | ConvertTo-Json | Set-Content artifacts/build-identity.json -Encoding utf8
 
+      - name: Package installable player archive
+        shell: pwsh
+        run: |
+          $stage = Join-Path $env:RUNNER_TEMP "CraftingPlanner-package-$env:GITHUB_RUN_ID"
+          if (Test-Path $stage) { throw 'Package staging directory already exists' }
+          $plugins = Join-Path $stage 'BepInEx/plugins'
+          New-Item -ItemType Directory -Path $plugins -Force | Out-Null
+          Copy-Item bin/Release/CraftingPlanner.dll (Join-Path $plugins 'CraftingPlanner.dll')
+          foreach ($name in @('README.md','CHANGELOG.md','LICENSE','LICENSING.md')) {
+            Copy-Item -LiteralPath $name -Destination (Join-Path $stage $name)
+          }
+          $identity = Get-Content artifacts/build-identity.json -Raw | ConvertFrom-Json
+          if ($identity.version -ne $env:CANDIDATE_VERSION -or $identity.source -ne $env:GITHUB_SHA -or $identity.calibration -ne $false) { throw 'Package identity mismatch' }
+          $readmeVersion = [regex]::Match((Get-Content README.md -Raw), 'Version\s+\*\*(\d+\.\d+\.\d+)\*\*').Groups[1].Value
+          $changelogVersion = [regex]::Match((Get-Content CHANGELOG.md -Raw), '(?m)^## (\d+\.\d+\.\d+)\b').Groups[1].Value
+          if ($readmeVersion -ne $env:CANDIDATE_VERSION -or $changelogVersion -ne $env:CANDIDATE_VERSION) { throw 'Player-document version mismatch' }
+          $packageIdentity = [ordered]@{
+            version = $identity.version
+            source = $identity.source
+            run = $identity.run
+            artifact = 'BepInEx/plugins/CraftingPlanner.dll'
+            sha256 = $identity.sha256
+            calibration = $false
+            sourceUrl = "https://github.com/$env:GITHUB_REPOSITORY/tree/$env:GITHUB_SHA"
+          }
+          $packageIdentity | ConvertTo-Json | Set-Content (Join-Path $stage 'build-identity.json') -Encoding utf8
+          $allowed = @('BepInEx/plugins/CraftingPlanner.dll','README.md','CHANGELOG.md','LICENSE','LICENSING.md','build-identity.json')
+          $actual = @(Get-ChildItem -LiteralPath $stage -Recurse -File | ForEach-Object { [IO.Path]::GetRelativePath($stage,$_.FullName).Replace('\','/') })
+          if (@(Compare-Object $allowed $actual).Count -ne 0) { throw 'Unexpected player package contents' }
+          if ((Get-FileHash (Join-Path $plugins 'CraftingPlanner.dll')).Hash.ToLowerInvariant() -ne $identity.sha256) { throw 'Packaged DLL digest mismatch' }
+          $archive = "artifacts/Building-Planner-$env:CANDIDATE_VERSION.zip"
+          Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $archive
+          $identity | Add-Member -NotePropertyName package -NotePropertyValue (Split-Path $archive -Leaf)
+          $identity | Add-Member -NotePropertyName packageSha256 -NotePropertyValue ((Get-FileHash $archive).Hash.ToLowerInvariant())
+          $identity | ConvertTo-Json | Set-Content artifacts/build-identity.json -Encoding utf8
+
       - name: Upload candidate
         uses: actions/upload-artifact@v4
         with:
