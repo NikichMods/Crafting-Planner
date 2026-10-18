@@ -57,7 +57,9 @@ jobs:
           $testSource = (Resolve-Path -LiteralPath 'tests/CardTests.cs').Path
           & "$env:WINDIR/Microsoft.NET/Framework64/v4.0.30319/csc.exe" /nologo /out:CardTests.exe $testSource
           if ($LASTEXITCODE -ne 0) { throw 'Test compilation failed' }
-          & ./CardTests.exe bin/Release/CraftingPlanner.dll bin/Release references/Assembly-CSharp/bin/Release/net472 references/Assembly-CSharp-firstpass/bin/Release/net472 references/Rewired_Core/bin/Release/net472 "$env:USERPROFILE/.nuget/packages/unity3d.sdk/2020.3.13.1/lib" --state --no-calibration
+          $bepFolders = @(Get-ChildItem "$env:USERPROFILE/.nuget/packages/bepinex.baselib" -Recurse -Filter BepInEx.dll | Select-Object -ExpandProperty DirectoryName -Unique)
+          if ($bepFolders.Count -eq 0) { throw 'Missing restored BepInEx test dependency' }
+          & ./CardTests.exe bin/Release/CraftingPlanner.dll bin/Release references/Assembly-CSharp/bin/Release/net472 references/Assembly-CSharp-firstpass/bin/Release/net472 references/Rewired_Core/bin/Release/net472 "$env:USERPROFILE/.nuget/packages/unity3d.sdk/2020.3.13.1/lib" @bepFolders --state --no-calibration
           if ($LASTEXITCODE -ne 0) { throw 'Card policy checks failed' }
 
       - name: Verify package boundary
