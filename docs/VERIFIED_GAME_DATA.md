@@ -103,6 +103,8 @@ That method can include the nearest object's/world-zone inventories. It answers 
 
 For planner `Have`, count player-owned data only. Native `Item.GetTotalCount(item_id, count_in_bags:true)` recursively counts carried bag contents.
 
+Representative native bag acceptance2026-10-19: bag_builder (16 slots, native BagType7) accepts flitch. Moving contents between ordinary inventory/bag keeps total30; moving the whole bag into the open chest excludes its25/30 from player count, retrieving restores it. Native WithoutWorldZone(true) capacity/MoveItemTo then transfers5 flitch into the carried bag when ordinary capacity is0: carried30->35, bag30->35, main0, source5->0. Exact0.1.28/CarriedBagSetup0.1.0 evidence and limits are owned by CARRIED_BAG_CHECK.md/TEST_LOG.md. This closes the exercised carried builder-bag gate, not all bag/filter/toolbelt/nested-inventory variants. Temporary helper is removed, production unchanged.
+
 **Runtime gate**
 
 Confirm exact P0 treatment of toolbelt/secondary inventory. Default planner assumption is that ordinary crafting materials are counted from carried inventory + bags, not the toolbelt.
