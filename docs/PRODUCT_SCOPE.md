@@ -73,7 +73,7 @@ A world-level action that takes materials without opening the storage is not P0.
 
 ## Persistence
 
-Through0.1.24 goals are session-local. On2026-10-18 the user makes per-save persistence an active required follow-up before release, superseding its earlier deferral: saving/loading the same game must recover its own pinned goals and quantities, including a full process restart. Keep different saves isolated and align the restored plan with the loaded saved world rather than unsaved later goal changes. Persist only stable goal identity/quantity; resolve current native definitions and derive materials. Candidate0.1.25 implements this requirement with local mod-owned snapshots; native acceptance remains open. See PLAN_PERSISTENCE.md for lifecycle and storage limits.
+Through0.1.24 goals are session-local. On2026-10-18 the user makes per-save persistence an active required follow-up before release, superseding its earlier deferral: saving/loading the same game must recover its own pinned goals and quantities, including a full process restart. Keep different saves isolated and align the restored plan with the loaded saved world rather than unsaved later goal changes. Persist only stable goal identity/quantity; resolve current native definitions and derive materials. Candidate0.1.25 implements this requirement with local mod-owned snapshots; native persistence scenarios are accepted on2026-10-19, bounded by TEST_LOG.md. See PLAN_PERSISTENCE.md for lifecycle and storage limits.
 
 ## UI
 

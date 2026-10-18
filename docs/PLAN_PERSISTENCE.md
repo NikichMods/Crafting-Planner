@@ -1,6 +1,6 @@
 # Per-save plan persistence — 0.1.25
 
-Status: READY gate implemented in installed0.1.25; native candidate acceptance pending. User adopts persistence on 2026-10-18. Exact artifact/build/install identity is owned by DEVELOPMENT.md and TEST_LOG.md.
+Status: installed0.1.25 persistence accepted by the user on2026-10-19 after all requested scenarios; returned native evidence is recorded below. User adopts persistence on 2026-10-18. Exact artifact/build/install identity is owned by DEVELOPMENT.md and TEST_LOG.md.
 
 ## Outcome and mechanism
 
@@ -28,3 +28,7 @@ No research sidecar is necessary: static inspection establishes the owners and f
 5. Optional direct control: after a successful save make an unsaved plan edit, reload that same native world state and expect the saved plan, not the unsaved edit.
 
 Collect the native log before a restart replaces it. Ready marker is `plan_persistence state=ready`; save/restore records include short slot/snapshot hashes; `plan_restored_goal` records exact keys/quantities. No test helper or resources are needed for pinning alone. A user report of successful checks still requires matching candidate loader/installed identity and log review; no new acceptance is asserted here.
+
+## Native acceptance —2026-10-19
+
+User reports all requested scenarios pass, explicitly including unsaved plan changes and full restart. Loader/installed hash matches frozen0.1.25. Private return .local/evidence/return-0.1.25-persistence/LogOutput.log SHA256f42d10c98562044080bc5e2fad4176df71625ee8a0c2298a27f0bba382240cc7; own plan files are copied alongside it. This surviving post-restart session independently shows slot384f7c598c30 restoring3 goals with quantities3/1/1, slot0da2c5c38925 initially without a snapshot then saving/restoring0 and later2 goals, return to the first slot preserving its own plan, saved removals reducing3->1->0, and the second slot restoring1/1 after unsaved increases to2/3. All7 nonempty/empty snapshot restores report skipped=0;6 save receipts and1 no-snapshot load are present. No plan_persistence_error, disable or exception marker occurs in this snapshot. It contains no new goal_completed marker, so automatic-completion-then-save is covered by the user's all-scenarios report and prior completion evidence rather than a separate new traced completion. Full process restart is user-confirmed and supported by persisted files/initial restoration; the preceding process log has already been replaced. No claim of forced I/O-failure runtime testing, independent one-off1 test or exhaustive mod compatibility. Accept the requested persistence feature; no source/binary change, stable merge or release follows automatically.

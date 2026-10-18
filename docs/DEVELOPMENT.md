@@ -1,6 +1,6 @@
 # Development and recovery
 
-Updated: 2026-10-18. This is the current resume entry point; dated design and test records describe their own candidate, not competing current instructions.
+Updated: 2026-10-19. This is the current resume entry point; dated design and test records describe their own candidate, not competing current instructions.
 
 ## Current state
 
@@ -10,7 +10,7 @@ F2 format10 retains60 individually resettable sliders. The user accepts0.1.19 in
 
 Prior dev/0.1.24 adds automatic home furniture/interior goal removal after correlated native Apply, exact-script termination and normal decision-handler return. Preview/Cancel/rotation retain the quantity1 goal. Prior placement/world/yard/light semantics and accepted visuals remain unchanged. Both native-reference modes, clean CI, exact downloaded-DLL state/native-absent-row checks and57+39 authored dispatch checks pass; representative0.1.24 cupboard Cancel retention/Apply once-only removal/control preservation now passes. Existing0.1.20/21/22/23 bounded native acceptance remains owned by TEST_LOG.md. F8 InteriorResourceSetup0.1.0 has been backed up/removed after acceptance return; passive observer and older sidecars remain absent. Max Buttons stays deferred, dedicated lamp2->1 replay declined.
 
-Installed0.1.25 now adds per-save/version goal persistence under [PLAN_PERSISTENCE.md](PLAN_PERSISTENCE.md). Native world-save commitment captures keys/quantities; binary decode plus existing session start restores fresh definitions and quantities. Empty plans, another slot and distinct older native snapshots are isolated. Native acceptance is pending; the0.1.24 interior return above remains prior functional evidence.
+Installed0.1.25 now adds per-save/version goal persistence under [PLAN_PERSISTENCE.md](PLAN_PERSISTENCE.md). Native world-save commitment captures keys/quantities; binary decode plus existing session start restores fresh definitions and quantities. Empty plans, another slot and distinct older native snapshots are isolated. Persistence native acceptance is recorded on2026-10-19: user reports all requested scenarios pass, including restart/unsaved edits; returned log verifies two distinct slots, quantities, saved removals/empty plans and unsaved edits reverting. Exact return hash and limits are in TEST_LOG.md. The0.1.24 interior return remains prior functional evidence.
 
 ## Exact installed artifact
 
@@ -34,7 +34,7 @@ Repeatable-placeable reduction is implemented in dev/0.1.20, verified for the ex
 
 [PLACEMENT_COMMIT_RESEARCH.md](PLACEMENT_COMMIT_RESEARCH.md) owns the returned passive probe evidence and production gate. Reuse it; no probe reinstall is needed. Returned0.1.20 evidence confirms ready activation,9 once-only decrements, zero removal, unrelated goal preservation and4 busy failures without decrement; standalone cancellation and upstream resource refusal likewise add none. Actual material totals/rendering are not asserted from the log. Actual pinned repair/clearing removal and unrelated repair preservation now pass in0.1.21. The subsequent0.1.22 yard completion/removal pass is verified in TEST_LOG.md; a representative one-time Put native pass remains open. Do not infer completion from menu selection or arbitrary inventory changes.
 
-After this milestone, perform a focused functional/release pass, including carried-bag and capacity edges only where correctness remains unproven. The fate of temporary F2 calibration in a public build is still a product decision; neither removing it nor building a permanent settings system is adopted. Per-save persistence is now the active next pre-release follow-up (user2026-10-18); reserve protection, recursive material planning and remote/multiple-storage logistics remain deferred. Main/stable promotion needs separate explicit acceptance.
+After this milestone, perform a focused functional/release pass, including carried-bag and capacity edges only where correctness remains unproven. The fate of temporary F2 calibration in a public build is still a product decision; neither removing it nor building a permanent settings system is adopted. Per-save persistence is accepted in0.1.25 (user2026-10-19); the next useful milestone is the focused remaining inventory/gamepad/localization/compatibility pass, including deferred Max Buttons diagnosis and the F2 public-build decision; reserve protection, recursive material planning and remote/multiple-storage logistics remain deferred. Main/stable promotion needs separate explicit acceptance.
 
 ## Resume and document ownership
 
