@@ -312,3 +312,7 @@ User accepts the combined lower action row and native round arrow icons in0.1.15
 ### Visual milestone accepted — 2026-10-17
 
 User explicitly accepts the complete current visual presentation, including the0.1.16 energy-row correction. Close visual iteration unless a new defect/request reopens it. This is visual acceptance, not an assertion that all functional edge cases or the release are accepted. No new binary/install is requested while the game remains running. Next required function is automatic reduction after verified successful placement, with separate repair/upgrade/clearing success paths; session persistence stays deferred.
+
+### Repeated roadside lighting exception —2026-10-18
+
+The user adopts quantity1–20 for each of the three lighting choices on empty roadside/quarry lantern points. These native WorldChange recipes (lantern_1/2/3 on lantern_place) aggregate by existing owner-type/recipe key across points; each successful completed light reduces its own quantity by1. Their requirements multiply the chosen quantity as for repeated builder goals. Other repairs/clearing/one-time upgrades retain quantity1, including lamp-to-lamp upgrades and broken-lamp repair; no host build/craft rules change. The upcoming0.1.23 candidate implements this narrow exception; installed0.1.22 remains unchanged until exact candidate installation. Native acceptance is pending.

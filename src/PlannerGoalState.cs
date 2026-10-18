@@ -5,6 +5,16 @@ namespace CraftingPlanner
     internal static class PlannerGoalState
     {
         internal const int MaxQuantity = 20;
+        // These three native world changes repeat across lantern_place objects.
+        // Other repairs/upgrades retain their existing one-off planning semantics.
+        internal static bool IsLightingProject(CraftDefinition definition, string owner)
+        {
+            return !(definition is ObjectCraftDefinition) && Planner.HasPlainNeeds(definition) &&
+                   owner == "lantern_place" && !definition.one_time_craft &&
+                   ((definition.id == "lantern_1" && definition.change_wgo == "lantern_1_clone") ||
+                    (definition.id == "lantern_2" && definition.change_wgo == "lantern_2_clone") ||
+                    (definition.id == "lantern_3" && definition.change_wgo == "lantern_3_clone"));
+        }
         internal static string Key(ProjectContextKind context, string owner, string definition)
         { return ((int)context).ToString() + "|" + (owner ?? "") + "|" + definition; }
         internal static ProjectGoal FindPlacement(IList<ProjectGoal> goals, ObjectCraftDefinition definition, string builder)
@@ -20,7 +30,7 @@ namespace CraftingPlanner
             if (definition is ObjectCraftDefinition || !Planner.HasPlainNeeds(definition) || string.IsNullOrEmpty(definition.change_wgo) ||
                 string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(definition.id)) return null;
             string key = Key(ProjectContextKind.WorldChange, owner, definition.id);
-            foreach (ProjectGoal goal in goals) if (!goal.Repeatable && goal.Key == key) return goal;
+            foreach (ProjectGoal goal in goals) if (goal.Repeatable == IsLightingProject(definition, owner) && goal.Key == key) return goal;
             return null;
         }
         internal static ProjectGoal FindBuilderCompletion(IList<ProjectGoal> goals, CraftDefinition definition, string owner)

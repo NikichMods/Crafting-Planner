@@ -147,7 +147,7 @@ class CardTests
             MethodInfo normalize = localization.GetMethod("Normalize", BindingFlags.Static | BindingFlags.NonPublic);
             Require((string)normalize.Invoke(null, new object[] {"zh_CN"}) == "zh-cn", "Native Chinese code not normalized");
             Require((string)normalize.Invoke(null, new object[] {"pt_BR"}) == "pt-br", "Native Portuguese code not normalized");
-            if (Array.IndexOf(args, "--state") >= 0) { CheckPinnedState(candidate); CheckPlacement(candidate); CheckWorldCompletion(candidate); CheckBuilderCompletion(candidate); }
+            if (Array.IndexOf(args, "--state") >= 0) { CheckPinnedState(candidate); CheckPlacement(candidate); CheckWorldCompletion(candidate); CheckBuilderCompletion(candidate); CheckLighting(candidate); }
             if (Array.IndexOf(args, "--native-rows") >= 0) CheckAbsentRows(candidate);
             int catalogue = Array.IndexOf(args, "--builder-catalog");
             if (catalogue >= 0) CheckBuilderCatalog(candidate, args[catalogue + 1]);
@@ -165,6 +165,37 @@ class CardTests
         object detached = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(prefix.GetParameters()[0].ParameterType);
         prefix.Invoke(null, new[] {detached});
         Console.WriteLine("PASS: actual redraw prefix accepts CLR-null and detached Unity row without GetComponent; live Max Buttons input remains a game check.");
+    }
+    static void CheckLighting(Assembly candidate)
+    {
+        const BindingFlags methods=BindingFlags.Static|BindingFlags.NonPublic;
+        const BindingFlags fields=BindingFlags.Instance|BindingFlags.NonPublic;
+        Type planner=candidate.GetType("CraftingPlanner.Planner",true),state=candidate.GetType("CraftingPlanner.PlannerGoalState",true);
+        Type goalType=candidate.GetType("CraftingPlanner.ProjectGoal",true),receiptType=candidate.GetType("CraftingPlanner.WorldCompletionAttempt",true);
+        IList goals=(IList)planner.GetField("Goals",methods).GetValue(null);goals.Clear();
+        var find=state.GetMethod("FindWorldCompletion",methods);var lighting=state.GetMethod("IsLightingProject",methods);
+        Type defType=find.GetParameters()[1].ParameterType;var observe=receiptType.GetMethod("ObserveCompletion",fields);var complete=receiptType.GetMethod("Complete",fields);
+        foreach(string id in new[]{"lantern_1","lantern_2","lantern_3"})
+        {
+            object definition=Activator.CreateInstance(defType);Field(definition,"id",id);Field(definition,"change_wgo",id+"_clone");
+            Type needsType=defType.GetField("needs").FieldType;IList needs=(IList)Activator.CreateInstance(needsType);
+            object need=System.Runtime.Serialization.FormatterServices.GetUninitializedObject(needsType.GetGenericArguments()[0]);Field(need,"id","lamp_material");Field(need,"value",3);needs.Add(need);Field(definition,"needs",needs);
+            Require((bool)lighting.Invoke(null,new[]{definition,(object)"lantern_place"}),"Native lamp family must allow repeated planning");
+            Require(!(bool)lighting.Invoke(null,new[]{definition,(object)"other"}),"Other owner must not gain quantity20");
+            Field(definition,"change_wgo","other");Require(!(bool)lighting.Invoke(null,new[]{definition,(object)"lantern_place"}),"Wrong replacement must fail closed");Field(definition,"change_wgo",id+"_clone");
+            Field(definition,"id",id+"_to_lantern_3");Require(!(bool)lighting.Invoke(null,new[]{definition,(object)"lantern_place"}),"Lamp upgrades remain outside this quantity change");Field(definition,"id",id);
+            object goal=Activator.CreateInstance(goalType,true);Field(goal,"Key","2|lantern_place|"+id);Field(goal,"Definition",definition);Field(goal,"Quantity",20);Field(goal,"Repeatable",true);goals.Add(goal);
+            Require(ReferenceEquals(find.Invoke(null,new[]{(object)goals,definition,"lantern_place"}),goal),"Completion must find repeated lamp goal");
+            var adjust=state.GetMethod("AdjustPinned",methods);object[] capped={goals,goal,1,null};Require(!(bool)adjust.Invoke(null,capped),"Lamp quantity must stop at20");
+            object receipt=Activator.CreateInstance(receiptType,true);Field(receipt,"Goal",goal);Field(receipt,"Definition",definition);observe.Invoke(receipt,new[]{definition,(object)true});
+            Require((bool)complete.Invoke(receipt,new object[]{goals,true,null}) && (int)goalType.GetField("Quantity",fields).GetValue(goal)==19,"One lamp completion must decrement20 to19");
+            Require(!(bool)complete.Invoke(receipt,new object[]{goals,true,null}),"Lamp completion receipt must not repeat");
+            Require((int)((IDictionary)planner.GetMethod("AggregateRequirements",methods).Invoke(null,null))["lamp_material"]==57,"Lamp materials must multiply remaining quantity");
+            Field(goal,"Quantity",1);receipt=Activator.CreateInstance(receiptType,true);Field(receipt,"Goal",goal);Field(receipt,"Definition",definition);observe.Invoke(receipt,new[]{definition,(object)true});
+            Require((bool)complete.Invoke(receipt,new object[]{goals,true,null})&&!goals.Contains(goal),"Last lamp must remove goal");
+        }
+        Require(!(bool)lighting.Invoke(null,new object[]{null,"lantern_place"}),"Null recipe must fail closed");
+        Console.WriteLine("PASS: three native lamp families, narrow owner/replacement policy, cap20,20->19, multiplied materials, once-only and zero removal.");
     }
     static void CheckWorldCompletion(Assembly candidate)
     {

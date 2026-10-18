@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Building Planner";
-        public const string PluginVersion = "0.1.22";
+        public const string PluginVersion = "0.1.23";
 
         private Harmony _harmony;
 
@@ -461,6 +461,8 @@ namespace CraftingPlanner
 
         internal static bool IsRepeatable(CraftDefinition definition)
         {
+            if (_context == ProjectContextKind.WorldChange)
+                return PlannerGoalState.IsLightingProject(definition, _contextOwner != null ? _contextOwner.obj_id : null);
             ObjectCraftDefinition objectCraft = definition as ObjectCraftDefinition;
             return _context == ProjectContextKind.Builder &&
                    objectCraft != null &&
