@@ -16,15 +16,15 @@ Installed0.1.25 now adds per-save/version goal persistence under [PLAN_PERSISTEN
 
 | Identity | Value |
 | --- | --- |
-| Development branch | `dev/0.1.26` |
-| Frozen runtime source | `f4a9585d127d580f4c5eef44423f248a459bb4f5` |
-| Version | 0.1.26 / assembly0.1.26.0 |
-| CI run / artifact | `39169869618` / `12152381377` |
-| DLL SHA256 | `016004d294da4dab98d98054348a3d32f524bc3b345031f9b1a53fc89562f500` |
-| ZIP SHA256 | `ab1c60ac49a6c6b623e22ac04da4f1fa29008ecfc8f1f48d0055cd9b55eab1e4` |
+| Development branch | `dev/0.1.27` |
+| Frozen runtime source | `1b8b6339534cd1c35c5b3429f9e839b798a79981` |
+| Version | 0.1.27 / assembly0.1.27.0 |
+| CI run / artifact | `39171186633` / `12152249210` |
+| DLL SHA256 | `83931003fdc93e91a8392cdc42fa42e353cf76f9cd4c8ed97aa40ea405320b82` |
+| ZIP SHA256 | `c989fe4a7cc8d5720cbd974c7e8ee5f8a285647732e4a0acfd8ecb5e9c5d946c` |
 | Calibration | disabled; no F2/IMGUI callbacks, calibration guards or editor state |
 
-Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.26/`; previous payloads and installation receipts remain private under `.local/`.0.1.25 backup is `.local/installation-backups/pre-0.1.26/`; receipt is `.local/evidence/pre-0.1.26/installation.json`, installed2026-10-18T21:55:49Z with host closed and no extra planner payloads. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
+Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.27/`; previous payloads and installation receipts remain private under `.local/`.0.1.26 backup is `.local/installation-backups/pre-0.1.27/`; receipt is `.local/evidence/pre-0.1.27/installation.json`, installed2026-10-18T22:13:43Z with host closed and no extra planner payloads. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
 
 Both native-reference configurations, clean hosted build, state/geometry/font/calibration/localization/invalidation/energy-layout checks, exact-DLL tests and package boundaries passed. Accepted cases and limits are owned by [TEST_LOG.md](TEST_LOG.md). The live acceptance snapshot is `.local/evidence/accept-0.1.16-visual/LogOutput.log`, SHA256 `96ae57df373be5e2137e26f9e87678ddac37a51ecdccccde85c7a66570c5316d`: it loads 0.1.16 with no planner exception/disable found. It is a partial running-session snapshot, not a completed shutdown log.
 
@@ -32,7 +32,7 @@ Both native-reference configurations, clean hosted build, state/geometry/font/ca
 
 Current remaining release pass (user2026-10-19): leave Max Buttons repair outside the Planner workstream after positive planner-absent reproduction. No new core/probe is requested for this planning step. The combined native inventory/input return is accepted for exercised steps1/3/4/5/6/7: ordinary controls, storage-local stock bounds/exact remainder/no surplus, partial/full capacity and recovery, empty-plan removal/re-add. Capacity is now runtime-verified. Carried-bag counting remains untested because the user has no portable bag; no bag correctness or release deferral is inferred. Toolbelt treatment must be verified only to the extent production relies on it; do not silently expand inventory ownership.
 
-The combined pass closes its exercised mouse/keyboard/gamepad input/context cases; do not repeat them without a new defect. Next accessible pass is final11-language menu/hint/feedback/long-name/CJK review. Ordinary HUD11-language acceptance and accepted completion/persistence scenarios remain valid, not a request for full repeated scenario-by-language testing. A representative long plan should confirm all adopted visible rows/materials remain reachable/readable; do not invent an overflow redesign without an observed problem and product agreement.
+The combined pass closes its exercised mouse/keyboard/gamepad input/context cases; do not repeat them without a new defect. Next accessible pass is final11-language menu/hint/feedback/long-name/CJK review. Ordinary HUD11-language acceptance and accepted completion/persistence scenarios remain valid, not a request for full repeated scenario-by-language testing. User2026-10-19 accepts unbounded long-plan overflow below the screen (about8–13/sometimes14 goals fit); do not introduce scrolling/clipping/caps/auto-shrinking. The eleven-language return accepts other tested UI, with goal-name wrapping the sole reported defect. Installed0.1.27 implements the first measured spare-width correction under FINAL_UI_CHECK.md; targeted native comparison remains pending.
 
 The user adopts removal of temporary F2 from the player build on2026-10-19; installed0.1.26 excludes it under FINAL_UI_CHECK.md. Final release preparation also includes current user docs and local-sidecar/cloud/copy limits, diagnostic-free packaging, exact clean build/hash/install verification and a short public-configuration startup pass. Stable merge/release still requires explicit acceptance. No new features (reserves, recursive production or remote collection) are pulled into this pass.
 
