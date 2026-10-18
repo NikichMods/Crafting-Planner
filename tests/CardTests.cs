@@ -147,7 +147,7 @@ class CardTests
             MethodInfo normalize = localization.GetMethod("Normalize", BindingFlags.Static | BindingFlags.NonPublic);
             Require((string)normalize.Invoke(null, new object[] {"zh_CN"}) == "zh-cn", "Native Chinese code not normalized");
             Require((string)normalize.Invoke(null, new object[] {"pt_BR"}) == "pt-br", "Native Portuguese code not normalized");
-            if (Array.IndexOf(args, "--state") >= 0) { CheckPinnedState(candidate); CheckPlacement(candidate); CheckWorldCompletion(candidate); CheckBuilderCompletion(candidate); CheckLighting(candidate); CheckInterior(candidate); }
+            if (Array.IndexOf(args, "--state") >= 0) { CheckPinnedState(candidate); CheckPlacement(candidate); CheckWorldCompletion(candidate); CheckBuilderCompletion(candidate); CheckLighting(candidate); CheckInterior(candidate); CheckPersistence(candidate); }
             if (Array.IndexOf(args, "--native-rows") >= 0) CheckAbsentRows(candidate);
             int catalogue = Array.IndexOf(args, "--builder-catalog");
             if (catalogue >= 0) CheckBuilderCatalog(candidate, args[catalogue + 1]);
@@ -440,6 +440,65 @@ class CardTests
     static void Field(object target, string name, object value)
     {
         target.GetType().GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(target, value);
+    }
+    static void CheckPersistence(Assembly candidate)
+    {
+        const BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic, fields = BindingFlags.Instance | BindingFlags.NonPublic;
+        Type store = candidate.GetType("CraftingPlanner.PlannerPlanStore", true), planner = candidate.GetType("CraftingPlanner.Planner", true);
+        Type goalType = candidate.GetType("CraftingPlanner.ProjectGoal", true), savedType = candidate.GetType("CraftingPlanner.SavedGoal", true);
+        Type buildType = candidate.GetType("CraftingPlanner.PlannerGoalState", true).GetMethod("FindPlacement", flags).GetParameters()[1].ParameterType;
+        IList goals = (IList)planner.GetField("Goals", flags).GetValue(null); goals.Clear();
+        Func<string, int, object> make = (key, quantity) => {object g = Activator.CreateInstance(goalType, true); Field(g, "Key", key); Field(g, "Quantity", quantity); return g;};
+        MethodInfo encode = store.GetMethod("Encode", flags), decode = store.GetMethod("Decode", flags), resolve = store.GetMethod("Resolve", flags);
+        Func<string[], IList> read = lines => (IList)decode.Invoke(null, new object[] {lines});
+        string first = "1|builder|builder:p:скамья", second = "2|broken|repair";
+        goals.Add(make(first, 20)); goals.Add(make(second, 1));
+        string[] encoded = (string[])encode.Invoke(null, new object[] {goals});
+        IList restored = read(encoded);
+        Require(restored.Count == 2 && (string)savedType.GetField("Key", fields).GetValue(restored[0]) == first && (int)savedType.GetField("Quantity", fields).GetValue(restored[0]) == 20 && (string)savedType.GetField("Key", fields).GetValue(restored[1]) == second, "Persistence must preserve ordered keys, Unicode and quantities");
+        goals.Clear(); string[] empty = (string[])encode.Invoke(null, new object[] {goals});
+        Require(read(empty).Count == 0, "Saved empty plan must remain empty after deletion/completion");
+        Action<string[]> reject = lines => { bool failed = false; try {read(lines);} catch (TargetInvocationException ex) {failed = ex.InnerException is FormatException || ex.InnerException is System.Text.DecoderFallbackException;} Require(failed, "Invalid plan must fail closed"); };
+        reject(new string[0]); reject(new[] {"CraftingPlannerGoals\t2"}); reject(new[] {encoded[0], encoded[1], encoded[1]});
+        foreach (string qty in new[] {"0", "21", "-1", "1.5", "", "2147483648"}) reject(new[] {encoded[0], encoded[1].Split('\t')[0] + "\t" + qty});
+        foreach (string key in new[] {"0|builder|recipe", "1||recipe", "1|owner|", "1|owner|recipe|extra"}) reject(new[] {encoded[0], Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(key)) + "\t1"});
+        reject(new[] {encoded[0], "not-base64\t1"});
+        object definition = Activator.CreateInstance(buildType); Field(definition, "id", "builder:p:скамья");
+        Field(definition, "build_type", Enum.Parse(buildType.GetField("build_type").FieldType, "Put"));
+        Type needsType = buildType.GetField("needs").FieldType; IList needs = (IList)Activator.CreateInstance(needsType);
+        object need = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(needsType.GetGenericArguments()[0]); Field(need, "id", "plank"); Field(need, "value", 3); needs.Add(need); Field(definition, "needs", needs);
+        object resolved = resolve.Invoke(null, new[] {restored[0], definition});
+        Require(resolved != null && ReferenceEquals(goalType.GetField("Definition", fields).GetValue(resolved), definition) && (bool)goalType.GetField("Repeatable", fields).GetValue(resolved), "Restore must use current host definition and repeatability");
+        Require(resolve.Invoke(null, new[] {restored[0], (object)null}) == null, "Removed host definitions must be skipped");
+        Field(definition, "one_time_craft", true); Require(resolve.Invoke(null, new[] {restored[0], definition}) == null, "One-off goals must not restore repeatable quantities");
+        Field(restored[0], "Quantity", 1); Require(resolve.Invoke(null, new[] {restored[0], definition}) != null, "One-off quantity one must restore");
+        Field(definition, "needs", null); Require(resolve.Invoke(null, new[] {restored[0], definition}) == null, "Unsupported materials must fail closed");
+        object world = Activator.CreateInstance(buildType.BaseType); Field(world, "id", "repair"); Field(world, "change_wgo", "fixed"); Field(world, "needs", needs);
+        Require(resolve.Invoke(null, new[] {restored[1], world}) != null, "Verified world-change shape must restore");
+        Field(world, "change_wgo", ""); Require(resolve.Invoke(null, new[] {restored[1], world}) == null, "Ordinary production must not enter restored plan");
+        MethodInfo committed = store.GetMethod("Committed", flags);
+        Func<string, string, bool, long, long, bool> commit = (a,b,e,x,y) => (bool)committed.Invoke(null,new object[]{a,b,e,x,y});
+        Require(commit("a","a",true,1,2) && commit("a","a",false,0,0), "Exact created/rewritten native save must permit publishing");
+        Require(!commit("a","b",true,1,2) && !commit("a","a",true,1,1) && !commit(null,null,false,0,1), "Failed, mismatched and uncaptured saves must not publish");
+        string root = Path.Combine(Path.GetTempPath(), "BuildingPlannerTests-" + Guid.NewGuid().ToString("N"));
+        MethodInfo pathMethod = store.GetMethod("SnapshotPath", flags), write = store.GetMethod("Write", flags);
+        Func<string,string,string> path = (slot,hash) => (string)pathMethod.Invoke(null,new object[]{root,Path.Combine(root,slot),hash});
+        string a1=path("slotA.dat","world1"), a2=path("slotA.dat","world2"), b1=path("slotB.dat","world1");
+        Require(a1 != a2 && a1 != b1 && a2 != b1, "Save slot and native snapshot version must both isolate plans");
+        try
+        {
+            write.Invoke(null,new object[]{a1,encoded}); write.Invoke(null,new object[]{a2,empty}); write.Invoke(null,new object[]{b1,encoded});
+            Require(read(File.ReadAllLines(a1)).Count==2 && read(File.ReadAllLines(a2)).Count==0 && read(File.ReadAllLines(b1)).Count==2, "Older world and another slot must retain their own plans");
+            write.Invoke(null,new object[]{a1,empty}); Require(read(File.ReadAllLines(a1)).Count==0 && read(File.ReadAllLines(b1)).Count==2, "Atomic overwrite must save empty plan without affecting another slot");
+            Require(Directory.GetFiles(Path.GetDirectoryName(a1),"*.tmp").Length==0, "Storage must not leave temporary payloads");
+        }
+        finally
+        {
+            foreach(string file in new[]{a1,a2,b1}) if(File.Exists(file)) File.Delete(file);
+            foreach(string directory in Directory.GetDirectories(root)) Directory.Delete(directory);
+            if(Directory.Exists(root)) Directory.Delete(root);
+        }
+        Console.WriteLine("Persistence codec, current-definition validation, save commitment and slot/version storage checks passed.");
     }
     static void CheckPinnedState(Assembly candidate)
     {

@@ -14,7 +14,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Building Planner";
-        public const string PluginVersion = "0.1.24";
+        public const string PluginVersion = "0.1.25";
 
         private Harmony _harmony;
 
@@ -26,6 +26,7 @@ namespace CraftingPlanner
             PlannerPlacement.Install();
             PlannerWorldCompletion.Install();
             PlannerInteriorCompletion.Install();
+            PlannerPersistence.Install();
             LazyInput.on_input_changed += PlannerInputHints.OnInputChanged;
             BaseGUI.on_window_opened += PlannerInputHints.OnWindowChanged;
             BaseGUI.on_window_closed += PlannerInputHints.OnWindowChanged;
@@ -37,6 +38,7 @@ namespace CraftingPlanner
             PlannerPlacement.Stop();
             PlannerWorldCompletion.Stop();
             PlannerInteriorCompletion.Stop();
+            PlannerPersistence.Stop();
             PlannerCalibration.Close();
             PlannerEditing.Reset();
             PlannerInventoryRefresh.Reset();
@@ -109,8 +111,9 @@ namespace CraftingPlanner
             ClearProjectContext();
             _currentChest = null;
             PlannerCraftOverlay.Hide();
-            PlannerHud.Refresh();
             LogLine("event=session_reset");
+            PlannerPersistence.Restore();
+            PlannerHud.Refresh();
         }
 
         internal static void OpenBuildContext(WorldGameObject builder, CraftsInventory craftsInventory)

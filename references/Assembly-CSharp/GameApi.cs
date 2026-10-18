@@ -184,12 +184,22 @@ public class CustomFlowScript : CustomScript
 public class GameSave
 {
     public void OnFinishedCraft(CraftDefinition definition) { }
+    public byte[] ToBinary() { return null; }
+    public static GameSave FromBinary(byte[] bytes) { return null; }
+}
+public class SaveSlotData { public string filename_no_extension; public GameSave linked_save; }
+public static class PlatformSpecific
+{
+    public delegate void OnCompleteDelegate();
+    public static string GetSaveFolder() { return null; }
+    private static void SaveGameDataToSlot(SaveSlotData slot, GameSave save, OnCompleteDelegate complete) { }
 }
 public class MainGame : MonoBehaviour
 {
     public static MainGame me;
     public WorldGameObject player;
     public GameSave save;
+    public SaveSlotData save_slot;
 }
 
 public class BaseGUI : MonoBehaviour
