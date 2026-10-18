@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 — candidate
+
+- Move the complete native NPC information group left when it intersects the HUD plan, including both character cards and their quest rows.
+- Preserve native card spacing/anchors, restore placement when the plan is hidden and keep the group within the available screen width. Actual rendering/transitions remain under native verification.
+
 ## 1.0.0 — 2026-10-19
 
 First release build, preserving the gameplay and presentation accepted in0.1.28.

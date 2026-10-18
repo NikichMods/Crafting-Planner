@@ -321,6 +321,17 @@ namespace CraftingPlanner
             }
             return false;
         }
+        internal bool TryNpcBounds(Transform space, out PlannerBounds bounds)
+        {
+            bounds = new PlannerBounds();
+            if (!IsAlive || !_panelGo.activeInHierarchy) return false;
+            _shell.ResetAndUpdateAnchors();
+            PlannerNpcCards.Include(_shell, space, ref bounds);
+            if (_titleBack != null) { _titleBack.ResetAndUpdateAnchors(); PlannerNpcCards.Include(_titleBack, space, ref bounds); }
+            PlannerNpcCards.Include(_footer, space, ref bounds);
+            PlannerNpcCards.Include(_footerSymbol, space, ref bounds);
+            return bounds.Valid;
+        }
         private int Measure(string text, int font = 0, bool number = false, bool quantity = false)
         {
             ApplyNativeFont(_measure, number ? NumericTemplate(quantity) : FontTemplate); _measure.fontSize = font > 0 ? font : (int)Style.Font;
@@ -497,6 +508,15 @@ namespace CraftingPlanner
         }
         internal static void Export(Camera camera) { if (_card != null) _card.Export(camera); }
         internal static bool BlocksWorldClick() { return GetView() == PlannerView.Hud && _card != null && _card.BlocksWorldClick(); }
+        internal static bool TryNpcBounds(Transform space, out PlannerBounds plan, out PlannerBounds screen)
+        {
+            plan = new PlannerBounds(); screen = new PlannerBounds();
+            GUIElements gui = GUIElements.me;
+            if (space == null || gui == null || gui.screen_size_widget == null || GetView() != PlannerView.Hud ||
+                !Planner.HasGoals || _card == null || !_card.TryNpcBounds(space, out plan)) return false;
+            PlannerNpcCards.IncludeGeometry(gui.screen_size_widget, space, ref screen);
+            return screen.Valid && screen.Right > screen.Left;
+        }
         internal static void Destroy() { if (_card != null) _card.Dispose(); _card = null; }
     }
     [HarmonyPatch(typeof(GameGUI), "SelectTab")]

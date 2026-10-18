@@ -1,6 +1,8 @@
 # Building Planner
 
-Version **1.0.0** for **Graveyard Keeper 1.407 on Windows PC**, using BepInEx 5. Plan several construction, repair, upgrade or clearing projects and collect only their missing materials from the chest you open.
+Version **1.0.1** (development candidate) for **Graveyard Keeper 1.407 on Windows PC**, using BepInEx 5. Plan several construction, repair, upgrade or clearing projects and collect only their missing materials from the chest you open.
+
+This candidate keeps both native NPC information cards together and shifts their complete group left when it overlaps the HUD plan. Native rendering and transitions are awaiting the game check; the fixed1.0.0 build remains unchanged.
 
 ## Install
 

@@ -22,6 +22,7 @@ class CardTests
                 return null;
             };
             Assembly candidate = Assembly.LoadFrom(Path.GetFullPath(args[0]));
+            CheckNpcCards(candidate);
             Type layout = candidate.GetType("CraftingPlanner.PlannerLayout", true);
             MethodInfo fade = layout.GetMethod("BackingAlpha", BindingFlags.Static | BindingFlags.NonPublic);
             Func<float, float, float> value = delegate(float x, float y) { return (float)fade.Invoke(null, new object[] {x, y, 240f, 200f, 24f, 13f}); };
@@ -187,6 +188,40 @@ class CardTests
         }
         catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
     }
+    static void CheckNpcCards(Assembly candidate)
+    {
+        const BindingFlags flags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic;
+        Type bounds = candidate.GetType("CraftingPlanner.PlannerBounds", true);
+        Type layout = candidate.GetType("CraftingPlanner.PlannerNpcLayout", true);
+        Func<float,float,float,float,object> rect = (l,b,r,t) => Activator.CreateInstance(bounds,flags,null,new object[] {l,b,r,t},null);
+        object empty = Activator.CreateInstance(bounds), plan = rect(700,100,1000,500);
+        object primary = rect(800,200,980,400), additional = rect(780,-10,1030,90);
+        MethodInfo offset = layout.GetMethod("Offset",flags);
+        Func<object,object,object,float,float> shift = (p,a,b,left) => (float)offset.Invoke(null,new object[] {p,a,b,left,false});
+        Require(shift(plan,primary,empty,0) == -288, "One NPC must clear the plan by8 root UI units");
+        Require(shift(plan,primary,additional,0) == -338, "Both cards must share one translation using their complete right edge");
+        Require(shift(plan,empty,primary,0) == -288, "Additional-only NPC must be handled");
+        Require(shift(plan,rect(800,600,980,700),additional,0) == 0, "Empty vertical space between two cards must not cause false intersection");
+        Require(shift(plan,rect(500,200,700,400),empty,0) == 0, "Touching edges must not cause an unnecessary shift");
+        Require(shift(empty,primary,additional,0) == 0 && shift(plan,empty,empty,0) == 0, "Absent plan/cards must preserve native placement");
+        Require(shift(rect(550,100,1000,500),primary,additional,0) == -488, "Longer translated plan names must expand clearance without moving the plan");
+        object[] limited = {rect(150,100,450,500),rect(100,200,400,400),empty,0f,false};
+        Require((float)offset.Invoke(null,limited) == -92 && (bool)limited[4], "Insufficient space must respect native screen bounds and explicitly report the limited case");
+        Type state = candidate.GetType("CraftingPlanner.PlannerNpcTranslation",true);
+        object tracker = Activator.CreateInstance(state,true);
+        MethodInfo place = state.GetMethod("Place",flags), clear = state.GetMethod("Clear",flags), forget = state.GetMethod("Forget",flags);
+        Func<float,float,float> apply = (current,value) => (float)place.Invoke(tracker,new object[] {current,value});
+        float x = apply(0,-288);
+        for(int i=0;i<100;i++) x = apply(x,-288);
+        Require(x == -288, "Repeated mesh frames must not accumulate displacement");
+        Require(apply(x,-338) == -338 && (float)clear.Invoke(tracker,new object[] {-338f}) == 0, "Two-card/width changes and hiding must restore the native baseline");
+        Require(apply(25,-288) == -263 && (float)clear.Invoke(tracker,new object[] {-263f}) == 25, "Nonzero native baselines must be retained");
+        apply(25,-288);
+        Require((float)clear.Invoke(tracker,new object[] {77f}) == 77, "A fresh external position must not have an old offset subtracted");
+        apply(0,-288); forget.Invoke(tracker,null);
+        Require((float)clear.Invoke(tracker,new object[] {-288f}) == -288, "Rebinding must forget ownership from the old native group");
+        Console.WriteLine("PASS: one/two/additional NPC geometry, true overlap, native screen bound, width changes, no drift, restoration and external position preservation. Native prefab/fade/quest presentation requires game acceptance.");
+    }
     static void CheckNoCalibration(Assembly candidate)
     {
         const BindingFlags methods = BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
@@ -204,6 +239,13 @@ class CardTests
     }
     static void CheckAbsentRows(Assembly candidate)
     {
+        var npcPrefix = candidate.GetType("CraftingPlanner.PlannerNpcRenderPatch",true).GetMethod("Prefix",BindingFlags.Static|BindingFlags.NonPublic);
+        Type panelType = npcPrefix.GetParameters()[0].ParameterType;
+        var nativeDraw = panelType.GetMethod("UpdateSelf",BindingFlags.Instance|BindingFlags.NonPublic,null,Type.EmptyTypes,null);
+        Require(nativeDraw != null && nativeDraw.ReturnType == typeof(void), "NPC offset must bind the verified native pre-mesh consumer");
+        Require(panelType.GetField("widgets",BindingFlags.Instance|BindingFlags.Public) != null, "Native live panel widget list must exist");
+        // Invocation needs Unity's ECall runtime even for an early-return argument.
+        Console.WriteLine("PASS: native NPC pre-mesh target/list signatures verified without invoking Unity outside the host.");
         var patch = candidate.GetType("CraftingPlanner.PlannerRowRedrawPatch", true);
         var prefix = patch.GetMethod("Prefix", BindingFlags.Static | BindingFlags.NonPublic);
         prefix.Invoke(null, new object[] {null});

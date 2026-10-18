@@ -28,6 +28,7 @@ public class UIRect : MonoBehaviour
 
 public class UIPanel : UIRect
 {
+    public System.Collections.Generic.List<UIWidget> widgets = new System.Collections.Generic.List<UIWidget>();
     public int depth { get; set; }
     public float width { get { return 0f; } }
     public float height { get { return 0f; } }

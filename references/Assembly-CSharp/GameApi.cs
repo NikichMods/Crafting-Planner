@@ -279,6 +279,7 @@ public class GameSettings
 
 public class GUIElements : MonoBehaviour
 {
+    public RelationGUI relation, relation_additional;
     public GameGUI game_gui;
     public UIWidget screen_size_widget;
     public static GUIElements me { get { return null; } }
@@ -287,6 +288,11 @@ public class GUIElements : MonoBehaviour
     public ChestGUI chest;
 }
 public class GameGUI : BaseGUI { }
+public class RelationGUI : MonoBehaviour
+{
+    public UIWidget back;
+    public Transform anchor_zone_name, anchor_zone_info, anchor_no_zone, additional_point;
+}
 
 public class ComponentsManager { public BaseCharacterComponent character { get { return null; } } }
 public class BaseCharacterComponent { public bool control_enabled { get; set; } }
