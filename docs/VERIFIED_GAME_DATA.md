@@ -11,6 +11,8 @@ Initial historical static reference: public `Kupie/GYK_DECOMP` at commit `6abf79
 
 ## Recipe model
 
+See [PLAN_PERSISTENCE.md](PLAN_PERSISTENCE.md) for the verified-static1.407 binary save writer/decoder/session-start path used by0.1.25. SaveSlotData identifies the native slot; the load closure assigns MainGame.save_slot before OnGameLoaded installs its exact GameSave, and OnGameStartedPlaying follows restoration. Native SaveGameDataToSlot catches write failures internally: callback/normal return alone is not a disk-commit receipt. Mod-owned versioned sidecars leave native payloads unchanged. Production native acceptance remains pending; private exact-assembly inspection inputs are planner-save-*.txt and persistence-load-order.txt. Reusable lifecycle findings should be promoted to shared research with the native return; no generic native mod-data container was verified.
+
 **Verified static**
 
 `CraftDefinition` owns the common recipe data required by the planner:

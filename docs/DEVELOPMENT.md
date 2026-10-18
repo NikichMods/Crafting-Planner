@@ -8,21 +8,23 @@ Building Planner keeps stable technical identity CraftingPlanner. Visual baselin
 
 F2 format10 retains60 individually resettable sliders. The user accepts0.1.19 independent settings,20/19 arrow behavior and visuals. TEST_LOG.md owns the bounded acceptance and log identity; no further visual tuning is requested. Ordinary HUD across all11 languages is user-reported from0.1.11; gamepad/all11-language functional acceptance remains open. This is not stable-release acceptance.
 
-Installed dev/0.1.24 adds automatic home furniture/interior goal removal after correlated native Apply, exact-script termination and normal decision-handler return. Preview/Cancel/rotation retain the quantity1 goal. Prior placement/world/yard/light semantics and accepted visuals remain unchanged. Both native-reference modes, clean CI, exact downloaded-DLL state/native-absent-row checks and57+39 authored dispatch checks pass; representative0.1.24 cupboard Cancel retention/Apply once-only removal/control preservation now passes. Existing0.1.20/21/22/23 bounded native acceptance remains owned by TEST_LOG.md. F8 InteriorResourceSetup0.1.0 has been backed up/removed after acceptance return; passive observer and older sidecars remain absent. Max Buttons stays deferred, dedicated lamp2->1 replay declined.
+Prior dev/0.1.24 adds automatic home furniture/interior goal removal after correlated native Apply, exact-script termination and normal decision-handler return. Preview/Cancel/rotation retain the quantity1 goal. Prior placement/world/yard/light semantics and accepted visuals remain unchanged. Both native-reference modes, clean CI, exact downloaded-DLL state/native-absent-row checks and57+39 authored dispatch checks pass; representative0.1.24 cupboard Cancel retention/Apply once-only removal/control preservation now passes. Existing0.1.20/21/22/23 bounded native acceptance remains owned by TEST_LOG.md. F8 InteriorResourceSetup0.1.0 has been backed up/removed after acceptance return; passive observer and older sidecars remain absent. Max Buttons stays deferred, dedicated lamp2->1 replay declined.
+
+Installed0.1.25 now adds per-save/version goal persistence under [PLAN_PERSISTENCE.md](PLAN_PERSISTENCE.md). Native world-save commitment captures keys/quantities; binary decode plus existing session start restores fresh definitions and quantities. Empty plans, another slot and distinct older native snapshots are isolated. Native acceptance is pending; the0.1.24 interior return above remains prior functional evidence.
 
 ## Exact installed artifact
 
 | Identity | Value |
 | --- | --- |
-| Development branch | `dev/0.1.24` |
-| Frozen runtime source | `09f4febf8588fb18a7c9aada3fff5f836ab8787a` |
-| Version | 0.1.24 / assembly0.1.24.0 |
-| CI run / artifact | `39116068017` / `12132217648` |
-| DLL SHA256 | `d38cafe37f7ab810e655b1c71cd00042b533ea6a74243e203766ed9ac2094330` |
-| ZIP SHA256 | `fa723e3583f28a3a02df866a8e29a9571735c7bcd1c4e8a779567c3a08d86e27` |
+| Development branch | `dev/0.1.25` |
+| Frozen runtime source | `90c5bae9fc5474a0f9d867fc152dd5a98a61861f` |
+| Version | 0.1.25 / assembly0.1.25.0 |
+| CI run / artifact | `39118320369` / `12133380936` |
+| DLL SHA256 | `0922e8d7c27699cbe8483c2ee6c158034c105916df256070011609c49f31b1e2` |
+| ZIP SHA256 | `cc1e505bc5c02f168af4f0432af3439b25143f6fcbb3bcc42912fbafc8125f81` |
 | Calibration | enabled; F2 format 10, 60 individually resettable sliders |
 
-Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.24/`; previous payloads and installation receipts remain private under `.local/`. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
+Exact CI bytes are retained under ignored `artifacts/CraftingPlanner-0.1.25/`; previous payloads and installation receipts remain private under `.local/`.0.1.24 backup is `.local/installation-backups/pre-0.1.25/`; installation receipt is `.local/evidence/pre-0.1.25/installation.json`, installed2026-10-18T10:14:23Z with host closed and no extra planner payloads. Numbered artifacts are immutable. Later documentation commits do not change this frozen runtime identity. The0.1.19 acceptance snapshot is recorded in TEST_LOG.md; its hash is023e04bcdf165d7f9c69f78b2f336ae1ac9a9bd8460660766a456b772f5cb51a.
 
 Both native-reference configurations, clean hosted build, state/geometry/font/calibration/localization/invalidation/energy-layout checks, exact-DLL tests and package boundaries passed. Accepted cases and limits are owned by [TEST_LOG.md](TEST_LOG.md). The live acceptance snapshot is `.local/evidence/accept-0.1.16-visual/LogOutput.log`, SHA256 `96ae57df373be5e2137e26f9e87678ddac37a51ecdccccde85c7a66570c5316d`: it loads 0.1.16 with no planner exception/disable found. It is a partial running-session snapshot, not a completed shutdown log.
 

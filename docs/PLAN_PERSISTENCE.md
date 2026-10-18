@@ -1,6 +1,6 @@
 # Per-save plan persistence — 0.1.25
 
-Status: READY for implementation; native candidate acceptance pending. User adopts persistence on 2026-10-18.
+Status: READY gate implemented in installed0.1.25; native candidate acceptance pending. User adopts persistence on 2026-10-18. Exact artifact/build/install identity is owned by DEVELOPMENT.md and TEST_LOG.md.
 
 ## Outcome and mechanism
 
@@ -18,3 +18,13 @@ A global file fails slot isolation. A single latest file per slot can apply newe
 6. Evidence/acceptance: exact 1.407 signatures and IL inspected privately in planner-save-*.txt and persistence-load-order.txt. Pure codec/storage/isolation/failure/definition tests plus native-reference/clean CI checks precede installation. User exercises native save/reload/restart/two-slot isolation/removal after installation; static tests are not runtime acceptance.
 
 No research sidecar is necessary: static inspection establishes the owners and final writer; the candidate directly exposes the remaining save/load property without synthetic world changes.
+
+## Native return checklist
+
+1. In save A pin two distinguishable projects, with a repeatable quantity3 (a one-off quantity1 can be the second). Use the game's ordinary save, then reload A. Verify both quantities/material totals.
+2. Fully exit/restart the game, load A and verify the same plan.
+3. Load save B: expect its independent plan (empty before its first planner save). Add a different goal/quantity, save B, then load A and B again: each must recover its own plan.
+4. Remove a goal, save/reload: it must stay removed. Save/reload an entirely empty plan too. A completed goal must likewise stay removed after saving; any readily available previously accepted completion path suffices.
+5. Optional direct control: after a successful save make an unsaved plan edit, reload that same native world state and expect the saved plan, not the unsaved edit.
+
+Collect the native log before a restart replaces it. Ready marker is `plan_persistence state=ready`; save/restore records include short slot/snapshot hashes; `plan_restored_goal` records exact keys/quantities. No test helper or resources are needed for pinning alone. A user report of successful checks still requires matching candidate loader/installed identity and log review; no new acceptance is asserted here.
