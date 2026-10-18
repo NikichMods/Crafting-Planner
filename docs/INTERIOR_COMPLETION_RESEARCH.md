@@ -1,6 +1,6 @@
 # Home interior callback completion research
 
-Date:2026-10-18. Historical research below establishes the callback boundary. The user subsequently authorized implementation/build/install; installed0.1.24 now implements correlated Apply removal, pending candidate native acceptance. TEST_LOG.md/DEVELOPMENT.md own exact identity. Prior0.1.23 passive instructions remain historical. Existing placement/world/yard/light acceptance and declined dedicated lamp2->1 replay remain unchanged. Max Buttons stays deferred.
+Date:2026-10-18. Historical research below establishes the callback boundary. The user subsequently authorized implementation/build/install; installed0.1.24 now implements correlated Apply removal, with representative cupboard Cancel/Apply/control preservation verified in its return. TEST_LOG.md/DEVELOPMENT.md own exact identity. Prior0.1.23 passive instructions remain historical. Existing placement/world/yard/light acceptance and declined dedicated lamp2->1 replay remain unchanged. Max Buttons stays deferred.
 
 ## Question and evidence method
 
@@ -67,3 +67,6 @@ Both native-reference modes pass. Compiled tests cover actual router/five-family
 
 
 0.1.24 exact CI candidate is now installed with host closed2026-10-18T09:40:37Z. Source09f4febf8588fb18a7c9aada3fff5f836ab8787a, CI39116068017, DLLd38cafe37f7ab810e655b1c71cd00042b533ea6a74243e203766ed9ac2094330. Both native modes, clean hosted build, exact-DLL existing/new state/native-null-row checks,57 prior authored dispatch and39 callback dispatch checks pass. Separate balance check verifies all39 actual positive/plain needs, no multiquality/needs_from_wgo and keeper owner/flags. Native removal remains pending. Existing F8 resource helper restored temporarily; passive observer absent. Next pass expects preview/cancel retention and exactly one Apply removal with control preserved; passive research goal-retention expectation is superseded. Immutable helper/core/install identities in TEST_LOG.md. No main/stable promotion.
+
+
+0.1.24 production return2026-10-18: snapshot9dabdc36f7b7f089f2ac1b7f8781c2fd4b4bf24f0146a28c99a09cb238884b5e verifies cupboard_2 preview/Cancel retains the original pinned1 goal, next Apply removes it exactly once via family=interior quantity0/UID3444 after normal script termination; two carpet controls remain. No intervening re-pin/manual decrement/reset or tracker exception/disable. TEST_LOG.md owns exact artifact/line/synthetic grant bounds. Temporary F8 helper removed after evidence capture, core unchanged. Representative production goal-removal gate is now verified; not all39 variants/full release acceptance. No need to restore research probes or replay the same path.
