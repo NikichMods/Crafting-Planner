@@ -51,6 +51,8 @@ namespace CraftingPlanner
     {
         private static UIPanel _panel;
         private static Transform _group;
+        private static RelationGUI _primary, _additional;
+        private static UIWidget[] _anchors;
         private static readonly PlannerNpcTranslation Translation = new PlannerNpcTranslation();
         private static bool _failed, _shifted, _limited;
         private static int _visible;
@@ -68,13 +70,21 @@ namespace CraftingPlanner
                 bounds.Include(local.x, local.y);
             }
         }
-        private static void Restore()
+        private static void RestoreOffset()
         {
             if (_group != null)
             {
                 Vector3 position = _group.localPosition;
-                position.x = Translation.Clear(position.x); _group.localPosition = position;
+                float native = Translation.Clear(position.x);
+                bool moved = Math.Abs(native - position.x) > .001f;
+                position.x = native; _group.localPosition = position;
+                if (moved && _anchors != null)
+                    foreach (UIWidget anchor in _anchors) if (anchor != null) anchor.ResetAndUpdateAnchors();
             }
+        }
+        private static void Restore()
+        {
+            RestoreOffset();
             if (_shifted) Planner.LogLine("event=npc_cards state=native reason=restore");
             _shifted = _limited = false; _visible = 0;
         }
@@ -82,7 +92,33 @@ namespace CraftingPlanner
         {
             try { Restore(); }
             catch (Exception ex) { _failed = true; Planner.LogLine("event=npc_cards state=restore_failed error=" + ex); }
-            _panel = null; _group = null; Translation.Forget();
+            _panel = null; _group = null; _primary = _additional = null; _anchors = null; Translation.Forget();
+        }
+        internal static float BeforeNativeUpdate(RelationGUI card)
+        {
+            if (_failed || _group == null || (!ReferenceEquals(card, _primary) && !ReferenceEquals(card, _additional))) return float.NaN;
+            try
+            {
+                float offset = Translation.Owned(_group.localPosition.x);
+                RestoreOffset();
+                return offset;
+            }
+            catch (Exception ex) { Disable(ex); return float.NaN; }
+        }
+        internal static void AfterNativeUpdate(RelationGUI card, float offset)
+        {
+            if (float.IsNaN(offset) || _failed || _group == null || (!ReferenceEquals(card, _primary) && !ReferenceEquals(card, _additional))) return;
+            try
+            {
+                Vector3 position = _group.localPosition;
+                position.x = Translation.Place(position.x, offset); _group.localPosition = position;
+            }
+            catch (Exception ex) { Disable(ex); }
+        }
+        private static void Disable(Exception ex)
+        {
+            _failed = true; Reset();
+            Planner.LogLine("event=npc_cards state=disabled_for_process error=" + ex);
         }
         internal static void Prepare(UIPanel panel)
         {
@@ -97,11 +133,16 @@ namespace CraftingPlanner
                 if (_panel != panel) Reset();
                 RelationGUI first = gui.relation, second = gui.relation_additional;
                 if (second.transform.parent != group || group.parent == null || panel.clipping != UIDrawCall.Clipping.None ||
-                    !Anchors(first, group) || !Anchors(second, group) || second.additional_point == null || second.additional_point.parent != group)
+                    !Anchors(first, group) || !Anchors(second, group) || second.additional_point == null || second.additional_point.parent != group ||
+                    first.anchor_zone_name != second.anchor_zone_name || first.anchor_zone_info != second.anchor_zone_info || first.anchor_no_zone != second.anchor_no_zone)
                     throw new InvalidOperationException("Unsupported native relation panel/anchor hierarchy");
                 if (_panel == null)
                 {
                     _panel = panel; _group = group;
+                    _primary = first; _additional = second;
+                    _anchors = new[] {first.anchor_zone_name.GetComponent<UIWidget>(), first.anchor_zone_info.GetComponent<UIWidget>(),
+                        first.anchor_no_zone.GetComponent<UIWidget>(), second.additional_point.GetComponent<UIWidget>()};
+                    foreach (UIWidget anchor in _anchors) if (anchor == null) throw new InvalidOperationException("Native relation anchor widget missing");
                     Planner.LogLine("event=npc_cards state=ready scope=two_native_cards");
                 }
                 PlannerBounds plan, screen;
@@ -130,9 +171,7 @@ namespace CraftingPlanner
             }
             catch (Exception ex)
             {
-                _failed = true;
-                try { Reset(); } catch (Exception restore) { Planner.LogLine("event=npc_cards state=restore_failed error=" + restore); }
-                Planner.LogLine("event=npc_cards state=disabled_for_process error=" + ex);
+                Disable(ex);
             }
         }
         private static bool Visible(RelationGUI card)
@@ -145,4 +184,11 @@ namespace CraftingPlanner
     [HarmonyPatch(typeof(UIPanel), "UpdateSelf")]
     internal static class PlannerNpcRenderPatch
     { private static void Prefix(UIPanel __instance) { PlannerNpcCards.Prepare(__instance); } }
+    [HarmonyPatch(typeof(RelationGUI), "Update")]
+    internal static class PlannerNpcNativePositionPatch
+    {
+        private static void Prefix(RelationGUI __instance, out float __state) { __state = PlannerNpcCards.BeforeNativeUpdate(__instance); }
+        private static Exception Finalizer(RelationGUI __instance, float __state, Exception __exception)
+        { PlannerNpcCards.AfterNativeUpdate(__instance, __state); return __exception; }
+    }
 }

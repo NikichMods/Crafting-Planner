@@ -214,6 +214,15 @@ class CardTests
         float x = apply(0,-288);
         for(int i=0;i<100;i++) x = apply(x,-288);
         Require(x == -288, "Repeated mesh frames must not accumulate displacement");
+        MethodInfo owned = state.GetMethod("Owned",flags);
+        for(int i=0;i<100;i++) for(int card=0;card<2;card++)
+        {
+            float prior = (float)owned.Invoke(tracker,new object[] {x});
+            x = (float)clear.Invoke(tracker,new object[] {x});
+            Require(x == 0, "Both native card updates must read an untranslated baseline");
+            x = apply(x,prior);
+            Require(x == -288, "Visual offset must be restored immediately after each native card update without double shift");
+        }
         Require(apply(x,-338) == -338 && (float)clear.Invoke(tracker,new object[] {-338f}) == 0, "Two-card/width changes and hiding must restore the native baseline");
         Require(apply(25,-288) == -263 && (float)clear.Invoke(tracker,new object[] {-263f}) == 25, "Nonzero native baselines must be retained");
         apply(25,-288);
@@ -244,6 +253,11 @@ class CardTests
         var nativeDraw = panelType.GetMethod("UpdateSelf",BindingFlags.Instance|BindingFlags.NonPublic,null,Type.EmptyTypes,null);
         Require(nativeDraw != null && nativeDraw.ReturnType == typeof(void), "NPC offset must bind the verified native pre-mesh consumer");
         Require(panelType.GetField("widgets",BindingFlags.Instance|BindingFlags.Public) != null, "Native live panel widget list must exist");
+        var positionPatch = candidate.GetType("CraftingPlanner.PlannerNpcNativePositionPatch",true);
+        Type relation = positionPatch.GetMethod("Prefix",BindingFlags.Static|BindingFlags.NonPublic).GetParameters()[0].ParameterType;
+        Require(relation.GetMethod("Update",BindingFlags.Instance|BindingFlags.Public,null,Type.EmptyTypes,null) != null, "Native relation baseline phase must exist");
+        byte[] finalizer = positionPatch.GetMethod("Finalizer",BindingFlags.Static|BindingFlags.NonPublic).GetMethodBody().GetILAsByteArray();
+        Require(finalizer.Length >= 2 && finalizer[finalizer.Length-2] == 0x04 && finalizer[finalizer.Length-1] == 0x2a, "NPC finalizer must return the original exception argument unchanged");
         // Invocation needs Unity's ECall runtime even for an early-return argument.
         Console.WriteLine("PASS: native NPC pre-mesh target/list signatures verified without invoking Unity outside the host.");
         var patch = candidate.GetType("CraftingPlanner.PlannerRowRedrawPatch", true);
