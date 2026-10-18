@@ -73,7 +73,7 @@ A world-level action that takes materials without opening the storage is not P0.
 
 ## Persistence
 
-P0 goals are session-local. Per-save persistence is an explicit desired follow-up (reaffirmed 2026-10-15): the same save must recover its own pinned goals and quantities after exiting and restarting the game. It remains outside the current UI implementation; do not implement one global cross-save goal list or infer permission to change save data in this pass.
+Current0.1.24 goals are session-local. On2026-10-18 the user makes per-save persistence an active required follow-up before release, superseding its earlier deferral: saving/loading the same game must recover its own pinned goals and quantities, including a full process restart. Keep different saves isolated and align the restored plan with the loaded saved world rather than unsaved later goal changes. Persist only stable goal identity/quantity; resolve current native definitions and derive materials. This is an adopted requirement, not an implemented feature or permission for a global cross-save list. Storage/save-lifecycle implementation and native acceptance remain open.
 
 ## UI
 
@@ -88,7 +88,6 @@ A generic BepInEx/IMGUI text/debug overlay is suitable for research only, not th
 
 ## Deferred
 
-- per-save persistence;
 - Quick Stack reserve/surplus integration;
 - dependency expansion/intermediate raw-material planning;
 - multiple/nearby storage collection;
@@ -320,3 +319,10 @@ The user adopts quantity1–20 for each of the three lighting choices on empty r
 ### Home interior completion adoption —2026-10-18
 
 The user requests automatic removal of pinned domestic furniture/interior goals after native Apply; preview/Cancel/rotation must preserve them. Keep quantity1, same-ID valid applies and the native material/refund/world mechanisms. Returned7-attempt research supports the39 authored five-script callback family.0.1.24 implements a correlated original-goal/definition/save/script receipt with normal decision return and script termination, independently from early craft finish. Exact candidate native removal/cancellation acceptance remains required. INTERIOR_COMPLETION_RESEARCH.md owns the READY gate; no generalization to arbitrary scripts or repeatable production. Installed0.1.24 now implements this adopted policy; its cupboard return verifies Cancel retention and once-only Apply removal with control goals retained. TEST_LOG.md owns exact identity and bounded acceptance.
+
+
+### Per-save persistence priority —2026-10-18
+
+After cupboard acceptance the user explicitly requests preserving added goals across saving/loading and asks whether it exists. Source inspection confirms0.1.24 ResetSession clears Goals on OnGameStartedPlaying, with no restore/store path. Per-save persistence becomes the next functional work item ahead of the remaining inventory/compatibility/release pass; earlier dated deferrals are historical. Required outcome is per-save goal/quantity recovery, empty-plan/deletion/completion recovery and isolation on switching saves. Saving native game state should capture the corresponding plan; loading an older native save must not apply a later plan indiscriminately. No new logistics, recursive crafting, visuals or quantity scope.
+
+Initial static inspection finds public MainGame.save/save_slot, SaveSlotData.filename_no_extension/linked_save, native PlatformSpecific.SaveGameDataToSlot -> PrepareForSave -> ToBinary -> .new/backup rotations, and FromBinary/OnGameStartedPlaying restoration. Native disk-write exceptions are caught internally, so a normal save-method return alone is insufficient proof of successful disk commitment. A separate mod-owned snapshot tied to verified native save identity/version is the current least-invasive storage candidate; native save payload mutation is not adopted. Research inputs remain private .local/planner-save-*.txt. No persistence source/build/probe/install or runtime acceptance is performed in this status/priority review; exact storage/identity/failure/readiness gate must precede implementation.

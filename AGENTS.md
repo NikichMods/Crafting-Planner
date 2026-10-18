@@ -53,7 +53,6 @@ Automatic reduction after verified successful placement/material commitment is r
 ### Not P0
 
 Do not pull these into the first production scope automatically:
-- save persistence (explicitly deferred after product review; session-only goals are accepted for P0);
 - Quick Stack reserve protection;
 - dependency expansion/base-material planning;
 - nearby/multi-storage collection;
@@ -238,3 +237,6 @@ Current0.1.24 supersedes the research-only handoff: installed production now rem
 
 
 0.1.24 cupboard return is now verified: Cancel retains the original1 goal, subsequent Apply removes it once after the script, both control carpet goals remain. TEST_LOG.md/INTERIOR_COMPLETION_RESEARCH.md own bounded acceptance (not39 production native passes/full release). Exact F8 resource helper was backed up/removed with host closed; core unchanged. Earlier pending/temporary-helper statements are historical. Do not repeat the closed callback gate; release/localization/gamepad/capacity/compatibility acceptance remains separate, Max Buttons deferred to that pass and dedicated lamp replay declined.
+
+
+Per-save persistence is now an active required pre-release follow-up (user2026-10-18), superseding earlier deferral statements. Installed0.1.24 remains session-only. PRODUCT_SCOPE.md owns goal/quantity recovery across save/load/restart, save isolation and native-snapshot alignment; DEVELOPMENT.md owns current priority/research. Do not claim persistence already implemented or use one global cross-save plan. No implementation/storage mechanism has passed its production gate yet; this precedes remaining inventory/compatibility/release work.
