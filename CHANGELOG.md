@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 — candidate
+
+- Correct location preservation for a scaled HUD, including the configured Show Me Moar HUD scale. Convert location and additional NPC anchor displacement between their actual coordinate spaces.
+- Keep the independent Planner banner at the original native banner geometry when HUD scale changes. Native verification remains pending;1.0.2 was rejected because its unit-scale guard disabled the feature.
+
 ## 1.0.2 — candidate
 
 - Preserve the original location heading and complete status/quality display to the left of Planner; keep Planner title and counters fixed.

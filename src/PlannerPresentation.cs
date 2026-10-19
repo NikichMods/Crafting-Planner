@@ -89,12 +89,7 @@ namespace CraftingPlanner
                 _titleBack = Child("planner-title-banner", _panelGo.transform).AddComponent<UI2DSprite>();
                 _titleBack.sprite2D = _nativeHeader.sprite2D; _titleBack.material = _nativeHeader.material; _titleBack.shader = _nativeHeader.shader;
                 _titleBack.color = _nativeHeader.color; _titleBack.depth = 1;
-                PlannerBounds header = new PlannerBounds(), screen = new PlannerBounds();
-                PlannerNpcCards.IncludeGeometry(_nativeHeader, _panelGo.transform, ref header);
-                PlannerNpcCards.IncludeGeometry(_anchor, _panelGo.transform, ref screen);
-                _titleBack.SetAnchor(_anchor.gameObject, 1, (int)Math.Round(header.Left - screen.Right),
-                    1, (int)Math.Round(header.Bottom - screen.Top), 1, (int)Math.Round(header.Right - screen.Right),
-                    1, (int)Math.Round(header.Top - screen.Top));
+                AnchorTitle();
                 _titleBack.updateAnchors = UIRect.AnchorUpdate.OnUpdate;
                 _title = Child("planner-title", _titleBack.transform).AddComponent<UILabel>();
             }
@@ -203,10 +198,23 @@ namespace CraftingPlanner
         private void Title()
         {
             if (_nativeHeader == null || _nativeLocation == null || _title == null) return;
+            AnchorTitle();
             _titleBack.ResetAndUpdateAnchors();
             Configure(_title, FontFor(Style.TitleCraftFont), _titleBack.width - 8, Math.Max(_titleBack.height, (int)Style.TitleFont + 4), false, false);
             _title.fontSize = (int)Style.TitleFont; _title.alignment = NGUIText.Alignment.Center; _title.pivot = UIWidget.Pivot.Center;
             _title.transform.localPosition = new Vector3(0, Style.TitleY, 0); _title.text = PlannerLocalization.Plan;
+        }
+        private void AnchorTitle()
+        {
+            if (_titleBack == null || _nativeHeader == null) return;
+            if (_nativeLocation != null) _nativeLocation.ResetAndUpdateAnchors();
+            PlannerBounds header = new PlannerBounds(), screen = new PlannerBounds();
+            PlannerNpcCards.IncludeGeometry(_nativeHeader, _panelGo.transform, ref header);
+            PlannerNpcCards.IncludeGeometry(_anchor, _panelGo.transform, ref screen);
+            header = header.Shift(-PlannerLocationCards.HeaderShift(_panelGo.transform));
+            _titleBack.SetAnchor(_anchor.gameObject, 1, (int)Math.Round(header.Left - screen.Right),
+                1, (int)Math.Round(header.Bottom - screen.Top), 1, (int)Math.Round(header.Right - screen.Right),
+                1, (int)Math.Round(header.Top - screen.Top));
         }
         private void Place()
         {
@@ -329,7 +337,7 @@ namespace CraftingPlanner
             if (!IsAlive || !_panelGo.activeInHierarchy) return false;
             _shell.ResetAndUpdateAnchors();
             PlannerNpcCards.Include(_shell, space, ref bounds);
-            if (_titleBack != null) { _titleBack.ResetAndUpdateAnchors(); PlannerNpcCards.Include(_titleBack, space, ref bounds); }
+            if (_titleBack != null) { AnchorTitle(); _titleBack.ResetAndUpdateAnchors(); PlannerNpcCards.Include(_titleBack, space, ref bounds); }
             PlannerNpcCards.Include(_footer, space, ref bounds);
             PlannerNpcCards.Include(_footerSymbol, space, ref bounds);
             return bounds.Valid;

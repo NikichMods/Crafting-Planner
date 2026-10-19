@@ -1,5 +1,15 @@
 # Native location information —1.0.2
 
+## Reopened gate —1.0.2 return /1.0.3 READY correction
+
+User reports no shift. Exact1.0.2 installed digest matches; closed-host return .local/evidence/return-1.0.2-location/LogOutput.log SHA2561325d57aff8750534b86bbd6bc9e9ddbad703f7c12596579cfa33147b213b636 binds initially, then disables before session_reset with Unsupported native location hierarchy/anchors. Screenshot retained alongside. This rejects1.0.2 native acceptance.
+
+Evidence: installed ShowMeMoar.Patches.UIPanel_Patches writes HUD.transform.localScale=(HudScale,HudScale,1) only after game_started; current startup config records HUD Scale=1.1. Exact inspected IL .local/location-showmemoar-il.txt. Our unit-HUD-scale guard therefore rejects the active configured UI. This is our overly narrow assumption; do not change another mod/config or merely remove the check while retaining mismatched units.
+
+READY before mutation: keep the adopted native anchor mechanism but measure location, Planner and screen in the location widget's actual parent-panel coordinates (native anchor-absolute units). Convert the applied horizontal delta through actual TransformPoint/InverseTransformPoint into the additional anchor's parent; subtract origin to cancel translations, including existing extra NPC offset. Accept finite positive horizontal scale, reject rotated/inverted/degenerate axis rather than assume unit scale. Quantize once per pair, preserve pair widths and independently restore each owned pair. Re-evaluate converted additional delta even when the location's logical delta is unchanged, so live scale changes do not leave stale spacing. Existing residual NPC bounds remain in their native common-parent coordinates.
+
+The owned title's one-time baseline also assumed unchanged HUD scale. Recompute original native-banner bounds in owned title space, subtract ONLY converted owned location translation, and anchor the owned banner to Screen size using those current original bounds. This preserves the original native-scale banner geometry without following its location shift; no temporary relocation/alpha ownership is needed to measure it. Update both event render and final bounds consumer. Keep native content/placeholder semantics, meshes, current goals and other mods unchanged. Tests cover1/1.1/0.75/2 scale conversion, invalid axis rejection, common world displacement within integer rounding, width preservation and all prior actual-DLL checks; host visual return is still mandatory. No diagnostic sidecar needed because local log/config/exact mod IL identify the failed assumption.
+
 ## Adopted outcome and READY gate
 
 User2026-10-19 adopts preserving the entire native location block to the left of the unchanged Planner, including both NPC cards without double shifting. Hide only a meaningless placeholder with no useful description; native counters/status remain game-owned. No location whitelist, copied quality calculation or new player setting.

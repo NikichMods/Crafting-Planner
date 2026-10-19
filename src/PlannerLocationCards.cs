@@ -5,6 +5,15 @@ namespace CraftingPlanner
 {
     internal static class PlannerLocationLayout
     {
+        internal static int ConvertOffset(int offset, float horizontal, float vertical)
+        {
+            if (float.IsNaN(horizontal) || float.IsInfinity(horizontal) || horizontal <= .00001f ||
+                float.IsNaN(vertical) || float.IsInfinity(vertical) || Math.Abs(vertical) > .001f)
+                throw new InvalidOperationException("Unsupported location coordinate axis");
+            double result = Math.Round(offset * (double)horizontal);
+            if (result < int.MinValue || result > int.MaxValue) throw new InvalidOperationException("Invalid location coordinate offset");
+            return (int)result;
+        }
         internal static bool IsPlaceholder(string name, string description)
         {
             if (!string.IsNullOrWhiteSpace(description)) return false;
@@ -38,16 +47,25 @@ namespace CraftingPlanner
         }
         private static void Place(int offset)
         {
-            if (_widget == null || Anchors.Offset == offset) return;
+            if (_widget == null) return;
+            Vector3 axis = Delta(_panel.transform, _additionalAnchor.transform.parent, 1);
+            int additionalOffset = PlannerLocationLayout.ConvertOffset(offset, axis.x, axis.y);
+            if (Anchors.Offset == offset && AdditionalAnchors.Offset == additionalOffset) return;
             if (!OwnsAnchors())
                 throw new InvalidOperationException("Location anchors changed externally");
             _widget.leftAnchor.absolute = Anchors.Left + offset;
             _widget.rightAnchor.absolute = Anchors.Right + offset;
-            _additionalAnchor.leftAnchor.absolute = AdditionalAnchors.Left + offset;
-            _additionalAnchor.rightAnchor.absolute = AdditionalAnchors.Right + offset;
-            Anchors.Offset = AdditionalAnchors.Offset = offset;
+            _additionalAnchor.leftAnchor.absolute = AdditionalAnchors.Left + additionalOffset;
+            _additionalAnchor.rightAnchor.absolute = AdditionalAnchors.Right + additionalOffset;
+            Anchors.Offset = offset; AdditionalAnchors.Offset = additionalOffset;
             _widget.ResetAndUpdateAnchors(); _additionalAnchor.ResetAndUpdateAnchors(); Revision++;
         }
+        private static Vector3 Delta(Transform source, Transform target, float offset)
+        { return target.InverseTransformPoint(source.TransformPoint(new Vector3(offset, 0, 0))) -
+            target.InverseTransformPoint(source.TransformPoint(Vector3.zero)); }
+        internal static float HeaderShift(Transform space)
+        { return _widget != null && Anchors.Owns(_widget.leftAnchor.absolute, _widget.rightAnchor.absolute) ?
+            Delta(_panel.transform, space, Anchors.Offset).x : 0; }
         private static bool OwnsAnchors()
         { return _widget != null && _additionalAnchor != null && Anchors.Owns(_widget.leftAnchor.absolute, _widget.rightAnchor.absolute) &&
             AdditionalAnchors.Owns(_additionalAnchor.leftAnchor.absolute, _additionalAnchor.rightAnchor.absolute); }
@@ -109,22 +127,22 @@ namespace CraftingPlanner
                         gui.relation == null || additional.transform.parent != gui.relation.transform.parent ||
                         !gui.hud.zone_descr.transform.IsChildOf(widget.transform) ||
                         widget.leftAnchor.target != gui.screen_size_widget.transform || widget.rightAnchor.target != gui.screen_size_widget.transform ||
-                        widget.leftAnchor.relative != 1 || widget.rightAnchor.relative != 1 ||
-                        widget.transform.localScale != Vector3.one || panel.transform.localScale != Vector3.one || gui.hud.transform.localScale != Vector3.one)
+                        widget.leftAnchor.relative != 1 || widget.rightAnchor.relative != 1)
                         throw new InvalidOperationException("Unsupported native location hierarchy/anchors");
                     _widget = widget; _panel = panel; _additionalAnchor = additional;
                     Anchors.Bind(widget.leftAnchor.absolute, widget.rightAnchor.absolute);
                     AdditionalAnchors.Bind(additional.leftAnchor.absolute, additional.rightAnchor.absolute);
-                    Planner.LogLine("event=location_cards state=ready");
+                    Planner.LogLine("event=location_cards state=ready coordinates=native_anchor_parent");
                 }
                 PlannerBounds plan, screen;
                 if (!OwnsAnchors())
                     throw new InvalidOperationException("Location anchors changed externally");
-                if (!PlannerPresentation.TryNpcBounds(_panel.transform.parent, out plan, out screen)) { Restore(); return; }
+                if (!PlannerPresentation.TryNpcBounds(_panel.transform, out plan, out screen)) { Restore(); return; }
                 bool placeholder = PlannerLocationLayout.IsPlaceholder(gui.hud.zone_name.text, gui.hud.zone_descr.text);
                 bool oldHidden = _hidden;
                 Alpha(placeholder);
                 int previous = Anchors.Offset;
+                int previousAdditional = AdditionalAnchors.Offset;
                 bool limited = false;
                 int offset = 0;
                 if (!placeholder)
@@ -132,14 +150,14 @@ namespace CraftingPlanner
                     _widget.ResetAndUpdateAnchors();
                     PlannerBounds bounds = new PlannerBounds();
                     foreach (UIWidget part in _panel.widgets)
-                        if (part != null && part.transform.IsChildOf(_widget.transform)) PlannerNpcCards.Include(part, _panel.transform.parent, ref bounds);
+                        if (part != null && part.transform.IsChildOf(_widget.transform)) PlannerNpcCards.Include(part, _panel.transform, ref bounds);
                     bounds = bounds.Shift(-Anchors.Offset);
                     offset = (int)Math.Ceiling(PlannerNpcLayout.Offset(plan, bounds, new PlannerBounds(), screen.Left, out limited));
                 }
                 Place(offset);
-                if (previous != offset || oldHidden != placeholder || limited != _limited)
+                if (previous != offset || previousAdditional != AdditionalAnchors.Offset || oldHidden != placeholder || limited != _limited)
                     Planner.LogLine("event=location_cards state=" + (placeholder ? "placeholder_hidden" : offset < 0 ? "shifted" : "native") +
-                        " offset_ui=" + offset + " screen_limited=" + limited);
+                        " offset_ui=" + offset + " additional_offset_ui=" + AdditionalAnchors.Offset + " screen_limited=" + limited);
                 _limited = limited;
             }
             catch (Exception ex)

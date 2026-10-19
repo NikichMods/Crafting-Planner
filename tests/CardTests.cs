@@ -237,6 +237,24 @@ class CardTests
         Require(hidden("...","") && hidden(" \u2026 ","\t") && hidden(null,null), "Only empty or exact no-zone placeholders with no description may be hidden");
         Require(!hidden("...","Quality: -2") && !hidden("", "(skull) 20"), "Native useful information must remain even without a meaningful title");
         Require(!hidden("Old Graveyard", "") && !hidden("Road...", "") && !hidden("....", ""), "Named and unrecognized locations must not be hidden by substring guesses");
+        MethodInfo convert = candidate.GetType("CraftingPlanner.PlannerLocationLayout",true).GetMethod("ConvertOffset",flags);
+        foreach(float ratio in new[] {.75f,1f,1.1f,2f})
+        {
+            int delta = (int)convert.Invoke(null,new object[] {-205,ratio,0f});
+            Require(Math.Abs(delta - -205 * ratio) <= .501f, "Normal and additional anchor movement must agree in world units at non-unit HUD scale");
+            Require((int)convert.Invoke(null,new object[] {0,ratio,0f}) == 0, "Restoration must not retain converted displacement");
+        }
+        foreach(float bad in new[] {0f,-1f,float.NaN,float.PositiveInfinity})
+        {
+            bool rejected = false;
+            try { convert.Invoke(null,new object[] {-205,bad,0f}); }
+            catch(TargetInvocationException ex) { rejected = ex.InnerException is InvalidOperationException; }
+            Require(rejected, "Degenerate, inverted and non-finite coordinate axes must fail closed");
+        }
+        bool rotated = false;
+        try { convert.Invoke(null,new object[] {-205,1f,.1f}); }
+        catch(TargetInvocationException ex) { rotated = ex.InnerException is InvalidOperationException; }
+        Require(rotated, "Rotated axes must not be silently treated as horizontal translation");
         Type anchorState = candidate.GetType("CraftingPlanner.PlannerLocationAnchors",true);
         object anchors = Activator.CreateInstance(anchorState,true);
         anchorState.GetMethod("Bind",flags).Invoke(anchors,new object[] {-189,-11});
