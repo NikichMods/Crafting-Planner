@@ -10,7 +10,7 @@ Keep accepted0.1.19 construction rows: ordinary materials X/Y29/0, native-cost r
 
 Accepted0.1.28 shared-card names grow left only as needed for the longest native-measured word; counters stay fixed and native UILabel wraps/heights rows. Preserve all11 language fonts/live refresh and chest continuity. User accepts long plans below the viewport; no scrolling/clipping/paging/total-goal cap is adopted.
 
-Adopted1.0.1 candidate: when either native NPC information card overlaps the HUD plan, move their shared group left, preserving both cards, quests and mutual arrangement. Restore native position when clearance is unnecessary; Planner remains fixed. Bound movement at the screen edge; do not silently hide/shrink content when the screen cannot accommodate both blocks. NPC_CARD_AVOIDANCE.md owns the implementation gate and pending native acceptance.
+Adopted1.0.1 candidate: when either native NPC information card overlaps the HUD plan, move their shared group left, preserving both cards, quests and mutual arrangement. Restore native position when clearance is unnecessary; Planner remains fixed. Bound movement at the screen edge; do not silently hide/shrink content when the screen cannot accommodate both blocks. NPC_CARD_AVOIDANCE.md owns the implementation gate: single-card overlap resolution is accepted; simultaneous two-card native acceptance remains pending.
 
 ## Product model
 

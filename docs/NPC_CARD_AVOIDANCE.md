@@ -1,6 +1,6 @@
 # NPC cards versus Planner —1.0.1
 
-Current gate: revised two-phase mechanism below is READY; the first common-parent-only artifact was not handed/installed. Native visual acceptance is still pending.
+Current gate: revised two-phase mechanism below is READY; the first common-parent-only artifact was not handed/installed. Single-card native overlap resolution is accepted; simultaneous two-card native acceptance remains pending.
 
 ## Adopted outcome and verified mechanism
 
@@ -35,3 +35,9 @@ Frozen source3959b594c1bc41f7669e93de41352a27de79d962, successful CI39177763484/
 Exact CI DLL installed2026-10-18T23:46:35Z with host closed; installed digest verified, previous1.0.0 backed up outside plugins. Receipt .local/evidence/pre-1.0.1/installation.json. No helper/save/config/other-mod changes; no main/tag/publication.
 
 Pending targeted check: reported Inquisitor with visible plan; approach/leave/reapproach and wait for fades without drift; quest rows remain intact; menus/empty plan restore ordinary position; a long-name language does not move Planner counters. Exercise both cards when an ordinary quest-state update displays the additional notification (GameSave.SetTaskState path), not merely two nearby NPCs. If such a moment is unavailable, keep the two-card native gate explicitly pending. Report clipping or screen-limited geometry rather than infer universal fitting.
+
+## Native return —single-card overlap accepted
+
+User2026-10-19 confirms the card moves and no longer overlaps Planner; two simultaneous cards were not encountered. Exact installed1.0.1 digest matches the handoff. Closed-host log snapshot .local/evidence/return-1.0.1-npc/LogOutput.log SHA25610ab88371357a710fa51689d1e1550075d795eda8a92270be9cd777c4dcf0f82 loads1.0.1, binds NPC hooks/common group and all completion/persistence trackers. It records13 shifted transitions (all visible_mask=1, offset_ui=-205.5, screen_limited=False) and13 native/restore transitions, including restoration immediately after removing the plan goal. No NPC error/disable/restore failure or Planner error marker occurs. Transition offsets show no accumulated displacement; continuous visual smoothness and clearance are bounded by user observation, not inferred from sparse logging. Additional-only/two-card masks2/3 are absent; screen-limited and language geometry are not separately accepted by this return.
+
+Three NullReferenceExceptions have CraftItemGUI.Redraw -> MaxButtonsRedux.SetAmount/SetMaximumAmount/gamepad-input stacks, matching the deferred compatibility symptom; no new ownership investigation or exception suppression. Other native world/pathfinding/sprite errors exist; this is not an error-free whole-game session. No new build/install/tag/main/publication is made. Retain the remaining two-card check for a naturally occurring quest notification.

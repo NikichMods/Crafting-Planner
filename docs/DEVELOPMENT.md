@@ -1,6 +1,6 @@
 # Development and recovery
 
-Updated:2026-10-19. Current installed candidate is **1.0.1**, adding coordinated NPC-card avoidance; native visual acceptance is pending. Frozen1.0.0 remains the prepared release baseline. Historical candidate details and bounded native results are owned by TEST_LOG.md; dated pending instructions there describe their original stage.
+Updated:2026-10-19. Current installed candidate is **1.0.1**, adding coordinated NPC-card avoidance. Single-card overlap resolution is user-accepted and log-corroborated; simultaneous two-card native acceptance is pending. Frozen1.0.0 remains the prepared release baseline. Historical candidate details and bounded native results are owned by TEST_LOG.md; dated pending instructions there describe their original stage.
 
 ## Current installed candidate —1.0.1
 
@@ -14,7 +14,7 @@ User adopts conditional leftward movement of both native NPC information cards a
 | DLL SHA256 | 4253a1ae60caf1045bb8cdd5dceaa2e44c0ec12a95f4fe51667858e03c8e7dc8 |
 | Player ZIP SHA256 | 2fa587f7324f61f183a46ee14878a10404b0b5a26be32d872964452ff2766698 |
 | Installed UTC | 2026-10-18T23:46:35Z |
-| Acceptance | compiled checks passed; native visual return pending |
+| Acceptance | single-card overlap accepted; simultaneous two-card native check pending |
 
 Exact CI payload is under artifacts/CraftingPlanner-1.0.1/. Installation receipt .local/evidence/pre-1.0.1/installation.json; previous1.0.0 backed up/hash-verified outside plugins at .local/installation-backups/pre-1.0.1/. Installed hash matches. No save/config/other-mod changes. Subsequent documentation commits do not rebuild handed bytes; no1.0.1 tag, stable promotion or publication.
 
