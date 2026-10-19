@@ -1,8 +1,24 @@
 # Development and recovery
 
-Updated:2026-10-19. Current installed candidate is **1.0.3**, correcting1.0.2's rejected unit-HUD-scale assumption. Cemetery name/quality preservation with fixed Planner is user-accepted; scaled shifts, native restores and placeholder hiding are log-corroborated. Simultaneous two-card native acceptance remains open. Frozen1.0.0 remains the prepared release baseline. TEST_LOG.md owns bounded native results; dated pending instructions describe their original stage.
+Updated:2026-10-19. Current installed candidate is **1.0.4**, following native cinematic HUD alpha/active visibility; native hide/return acceptance is pending.1.0.3 cemetery name/quality preservation with fixed Planner is accepted within recorded bounds. Simultaneous two-card native acceptance remains open. Frozen1.0.0 remains the prepared release baseline. TEST_LOG.md owns bounded native results; dated pending instructions describe their original stage.
 
-## Current installed candidate —1.0.3
+## Current installed candidate —1.0.4
+
+CUTSCENE_HUD_VISIBILITY.md owns adopted outcome/READY evidence: GUIElements.ChangeHUDAlpha changes native panel alpha without deactivating HUD. Gameplay Planner now mirrors native alpha at the owned pre-mesh consumer; an existing LateUpdate view comparison permits hide and automatic fade-up return with row refresh only on view changes. Native build/chest/inventory contexts remain independent; goals/quantities and accepted location geometry are unchanged.
+
+| Identity | Value |
+| --- | --- |
+| Branch / frozen runtime source | dev/1.0.4 / 080ff539c0e2b439d7525b2eff4ecf4b008bd3b0 |
+| Version / calibration | 1.0.4 / excluded |
+| Successful CI / artifact | 39182271145 / 12156378908 |
+| DLL SHA256 | 9e725f777bd0db439ec56ec8d4fb84f843b29d3bf3e40a6343d493b436d80ec5 |
+| Player ZIP SHA256 | 9914d710c4d6c9344eb7468d6a3fb8a984856ff260be1ee151a492c3d6d6f152 |
+| Installed UTC | 2026-10-19T00:48:36Z |
+| Acceptance | compilation/actual-DLL checks passed; native cinematic return pending |
+
+Exact files artifacts/CraftingPlanner-1.0.4/; receipt .local/evidence/pre-1.0.4/installation.json. Closed-host install, prior1.0.3 backup outside plugins and installed version/hash verified. Both native-reference modes and downloaded actual CI DLL alpha/fade/menu/previous policy/state/persistence/no-F2/native-row/57+39 dispatch tests pass; ZIP digest matches. No helper/save/config/other-mod change or tag/main/publication. Subsequent documentation does not rebuild handed bytes. Next check is a native cutscene's full hide and automatic return with identical plan, then brief ordinary menu/location continuity.
+
+## Previous candidate —1.0.3
 
 LOCATION_CARD_PRESERVATION.md owns the failed1.0.2 return and reopened READY correction. Configured Show Me Moar HUD scale1.1 invalidated our unit-scale guard; exact installed mod IL establishes its HUD writer.1.0.3 measures location displacement in its native anchor parent and converts it into the additional NPC anchor's coordinates, preserving world spacing. Independent Planner title bounds subtract only owned location translation while tracking original native HUD scale. No config/other-mod change.
 
