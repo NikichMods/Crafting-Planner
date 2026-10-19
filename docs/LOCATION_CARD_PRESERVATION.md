@@ -1,5 +1,7 @@
 # Native location information —1.0.2
 
+Current candidate1.0.3: source19abc7c7ac48a4e7005a197e08450bef016aedee, successful CI39180722216/artifact12156415236, DLL SHA256213b6aa40273c1ae761da852f9f83047214aa2a508b0bf1acf1b5332f1929c23, player ZIPebd70946262a35acd06424f33aba127dec9a1a48d732dbb755fd11c4bb70bbe5. Installed exact bytes with closed host2026-10-19T00:27:24Z; receipt .local/evidence/pre-1.0.3/installation.json, prior1.0.2 preserved outside loading. Both native builds and actual CI DLL regressions/expanded scale checks pass. Native rendering remains pending; no helper/config/save/other-mod changes or publication. The earlier1.0.2 handoff below is historical and was rejected by its return.
+
 ## Reopened gate —1.0.2 return /1.0.3 READY correction
 
 User reports no shift. Exact1.0.2 installed digest matches; closed-host return .local/evidence/return-1.0.2-location/LogOutput.log SHA2561325d57aff8750534b86bbd6bc9e9ddbad703f7c12596579cfa33147b213b636 binds initially, then disables before session_reset with Unsupported native location hierarchy/anchors. Screenshot retained alongside. This rejects1.0.2 native acceptance.

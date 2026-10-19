@@ -1,8 +1,24 @@
 # Development and recovery
 
-Updated:2026-10-19. Current installed candidate is **1.0.2**, preserving complete native location information beside Planner and coordinating both NPC anchor families. Native verification of this change is pending. Single-card1.0.1 overlap resolution was accepted; simultaneous two-card native acceptance remains open. Frozen1.0.0 remains the prepared release baseline. TEST_LOG.md owns bounded native results; dated pending instructions describe their original stage.
+Updated:2026-10-19. Current installed candidate is **1.0.3**, correcting1.0.2's rejected unit-HUD-scale assumption. Native verification is pending. Single-card1.0.1 overlap resolution was accepted; simultaneous two-card native acceptance remains open. Frozen1.0.0 remains the prepared release baseline. TEST_LOG.md owns bounded native results; dated pending instructions describe their original stage.
 
-## Current installed candidate —1.0.2
+## Current installed candidate —1.0.3
+
+LOCATION_CARD_PRESERVATION.md owns the failed1.0.2 return and reopened READY correction. Configured Show Me Moar HUD scale1.1 invalidated our unit-scale guard; exact installed mod IL establishes its HUD writer.1.0.3 measures location displacement in its native anchor parent and converts it into the additional NPC anchor's coordinates, preserving world spacing. Independent Planner title bounds subtract only owned location translation while tracking original native HUD scale. No config/other-mod change.
+
+| Identity | Value |
+| --- | --- |
+| Branch / frozen runtime source | dev/1.0.3 / 19abc7c7ac48a4e7005a197e08450bef016aedee |
+| Version / calibration | 1.0.3 / excluded |
+| Successful CI / artifact | 39180722216 / 12156415236 |
+| DLL SHA256 | 213b6aa40273c1ae761da852f9f83047214aa2a508b0bf1acf1b5332f1929c23 |
+| Player ZIP SHA256 | ebd70946262a35acd06424f33aba127dec9a1a48d732dbb755fd11c4bb70bbe5 |
+| Installed UTC | 2026-10-19T00:27:24Z |
+| Acceptance | compile/actual-DLL checks passed; native rendering pending |
+
+Exact files artifacts/CraftingPlanner-1.0.3/; receipt .local/evidence/pre-1.0.3/installation.json. Closed-host install verified version/hash; previous1.0.2 backed up outside plugins under .local/installation-backups/pre-1.0.3/. Both native-reference modes compile; actual clean CI DLL passes expanded1/1.1/0.75/2 scale/axis validation and existing policy/state/persistence/native-row/no-F2/57+39 dispatch tests. Player ZIP digest matches. No helper/save/config/other-mod change, new tag/main promotion/publication. Subsequent docs do not rebuild handed bytes. First native check: same cemetery and unchanged Planner position, then placeholder/NPC/restoration cases from the owning document.
+
+## Previous candidate —1.0.2 (native return rejected)
 
 LOCATION_CARD_PRESERVATION.md owns adopted behavior, READY evidence, exact native no-zone placeholder and additional-anchor correction. Native location name/status/quality is preserved left of fixed Planner; meaningless placeholder is hidden only without description. Both normal and additional NPC anchor families follow the same location delta once, then existing group clearance handles only remaining overlap. No helper/gameplay/save change.
 
