@@ -1,10 +1,12 @@
 # Building Planner
 
-Version **1.0.3** (development candidate) for **Graveyard Keeper 1.407 on Windows PC**, using BepInEx 5. Plan several construction, repair, upgrade or clearing projects and collect only their missing materials from the chest you open.
+Version **1.0.4** (development candidate) for **Graveyard Keeper 1.407 on Windows PC**, using BepInEx 5. Plan several construction, repair, upgrade or clearing projects and collect only their missing materials from the chest you open.
 
 This candidate preserves the complete native location name/status block to the left of the HUD plan, including cemetery quality. Empty no-zone placeholders are hidden only without additional information. Both NPC cards retain native placement relative to the location, with extra overlap clearance when needed. Native verification is pending; the fixed1.0.0 build remains unchanged.
 
 ## Install
+
+The HUD plan follows the native HUD visibility and fade during cutscenes, returning automatically afterwards. Construction/storage menu presentation keeps its own native context. This candidate's cinematic timeline still requires a game check.
 
 1. Install BepInEx 5 for the game. The tested environment uses BepInEx 5.4.23.5.
 2. Close the game. Extract the package into the game directory so the plugin is at `BepInEx/plugins/CraftingPlanner.dll`.

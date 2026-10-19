@@ -23,6 +23,7 @@ class CardTests
             };
             Assembly candidate = Assembly.LoadFrom(Path.GetFullPath(args[0]));
             CheckNpcCards(candidate);
+            CheckVisibility(candidate);
             Type layout = candidate.GetType("CraftingPlanner.PlannerLayout", true);
             MethodInfo fade = layout.GetMethod("BackingAlpha", BindingFlags.Static | BindingFlags.NonPublic);
             Func<float, float, float> value = delegate(float x, float y) { return (float)fade.Invoke(null, new object[] {x, y, 240f, 200f, 24f, 13f}); };
@@ -187,6 +188,17 @@ class CardTests
             return 0;
         }
         catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
+    }
+    static void CheckVisibility(Assembly candidate)
+    {
+        MethodInfo alpha = candidate.GetType("CraftingPlanner.PlannerVisibility",true).GetMethod("Alpha",BindingFlags.Static|BindingFlags.NonPublic);
+        Func<bool,bool,float,float> visible = (hud,active,native) => (float)alpha.Invoke(null,new object[] {hud,active,native});
+        Require(visible(true,true,1) == 1 && visible(true,true,.25f) == .25f && visible(true,true,0) == 0, "Gameplay Planner must mirror native full, partial and cinematic-hidden alpha");
+        Require(visible(true,false,1) == 0 && visible(true,false,.5f) == 0, "Disabled native HUD must hide Planner even with retained alpha");
+        Require(visible(false,false,0) == 1 && visible(false,true,.2f) == 1, "Chest/build/inventory Planner must retain their own visible menu context");
+        foreach(float frame in new[] {1f,.8f,.2f,0f,0f,.2f,.8f,1f}) Require(visible(true,true,frame) == frame, "Fade-out and fade-up must follow actual native state without a sticky cinematic flag");
+        Require(visible(true,true,float.NaN) == 0 && visible(true,true,-1) == 0 && visible(true,true,2) == 1, "Invalid/out-of-range alpha must remain bounded");
+        Console.WriteLine("PASS: native HUD visibility, cinematic alpha/fade return and independent menu visibility policy. Native timeline remains a game check.");
     }
     static void CheckNpcCards(Assembly candidate)
     {

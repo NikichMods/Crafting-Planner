@@ -221,7 +221,7 @@ namespace CraftingPlanner
     }
     // Exact native 1.407 final mesh consumer; all other panels return without modification.
     internal static class PlannerNpcRenderPatch
-    { private static void Prefix(UIPanel __instance) { PlannerLocationCards.Prepare(__instance); PlannerNpcCards.Prepare(__instance); } }
+    { private static void Prefix(UIPanel __instance) { PlannerPresentation.BeforeDraw(__instance); PlannerLocationCards.Prepare(__instance); PlannerNpcCards.Prepare(__instance); } }
     internal static class PlannerNpcNativePositionPatch
     {
         private static void Prefix(RelationGUI __instance, out float __state) { __state = PlannerNpcCards.BeforeNativeUpdate(__instance); }

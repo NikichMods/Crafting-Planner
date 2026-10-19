@@ -9,6 +9,16 @@ namespace CraftingPlanner
 {
     internal enum PlannerView { Hidden, Hud, Build, Chest, Inventory }
 
+    internal static class PlannerVisibility
+    {
+        internal static float Alpha(bool gameplay, bool hudActive, float nativeAlpha)
+        {
+            if (!gameplay) return 1;
+            if (!hudActive || float.IsNaN(nativeAlpha)) return 0;
+            return Math.Max(0, Math.Min(1, nativeAlpha));
+        }
+    }
+
     internal sealed class PlannerCard : IDisposable
     {
         private readonly GameObject _panelGo;
@@ -57,6 +67,12 @@ namespace CraftingPlanner
         private bool _iconWarning;
         private PlannerView _view;
         internal bool IsAlive { get { return _panelGo != null; } }
+        internal void SyncVisibility(UIPanel consumer = null)
+        {
+            if (!IsAlive || (consumer != null && consumer != _panel)) return;
+            float alpha = PlannerPresentation.VisibilityAlpha(_view);
+            if (_panel.alpha != alpha) _panel.alpha = alpha;
+        }
         private PlannerStyle Style { get { return PlannerStyle.Current; } }
         internal PlannerCard(UIWidget anchor, UILabel fontTemplate, UI2DSprite iconTemplate)
         {
@@ -482,8 +498,33 @@ namespace CraftingPlanner
                 if (top == gui.game_gui && InventoryTab != null && Convert.ToInt32(InventoryTab.GetValue(top)) == 0) return PlannerView.Inventory;
                 return PlannerView.Hidden;
             }
-            return gui.hud != null && gui.hud.gameObject.activeInHierarchy ? PlannerView.Hud : PlannerView.Hidden;
+            return VisibilityAlpha(PlannerView.Hud) > .001f ? PlannerView.Hud : PlannerView.Hidden;
         }
+        internal static float VisibilityAlpha(PlannerView view)
+        {
+            GUIElements gui = GUIElements.me;
+            HUD hud = gui != null ? gui.hud : null;
+            bool active = hud != null && hud.gameObject.activeInHierarchy && hud.panel != null && hud.panel.enabled && hud.panel.gameObject.activeInHierarchy;
+            return PlannerVisibility.Alpha(view == PlannerView.Hud, active, active ? hud.panel.alpha : 0);
+        }
+        internal static void TickVisibility()
+        {
+            if (_failed) return;
+            try
+            {
+                if (GetView() != _lastView) Refresh();
+                if (_card != null) _card.SyncVisibility();
+            }
+            catch (Exception ex) { VisibilityFailed(ex); }
+        }
+        internal static void BeforeDraw(UIPanel panel)
+        {
+            if (_failed) return;
+            try { if (_card != null) _card.SyncVisibility(panel); }
+            catch (Exception ex) { VisibilityFailed(ex); }
+        }
+        private static void VisibilityFailed(Exception ex)
+        { _failed = true; Destroy(); Planner.LogLine("event=card_visibility state=disabled_for_session error=" + ex); }
         internal static UIPanel HostPanel(PlannerView view)
         {
             GUIElements gui = GUIElements.me;

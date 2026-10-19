@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.4 — candidate
+
+- Follow the native HUD alpha and active state during cutscenes; automatically restore the plan when native gameplay HUD returns, preserving goals and quantities.
+- Keep construction, chest and inventory Planner visibility independent of the hidden gameplay HUD. Native cutscene verification is pending.
+
 ## 1.0.3 — candidate
 
 - Correct location preservation for a scaled HUD, including the configured Show Me Moar HUD scale. Convert location and additional NPC anchor displacement between their actual coordinate spaces.
