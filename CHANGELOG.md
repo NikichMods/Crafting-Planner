@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2 — candidate
+
+- Preserve the original location heading and complete status/quality display to the left of Planner; keep Planner title and counters fixed.
+- Hide only an empty no-zone placeholder without useful description. Retain native information for all locations, without a location whitelist.
+- Coordinate the relocated location with both NPC cards, applying only remaining overlap clearance and restoring native placement without a visible HUD plan. Native rendering remains under verification.
+
 ## 1.0.1 — candidate
 
 - Move the complete native NPC information group left when it intersects the HUD plan, including both character cards and their quest rows.

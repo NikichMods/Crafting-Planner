@@ -1,6 +1,8 @@
 # Building Planner — UI implementation
 
-## Native location information —2026-10-19, proposed correction
+## Native location information —2026-10-19, adopted1.0.2 candidate
+
+The subsequent user request adopts complete native location preservation to the left, unchanged Planner placement and coordination of both NPC cards; it authorizes a new build/install. LOCATION_CARD_PRESERVATION.md owns the READY gate, exact no-zone placeholder evidence and additional-anchor correction. The proposal research below describes discovery; implementation/native acceptance remain separate.
 
 User reports that replacing Old Graveyard's native heading also loses its meaningful quality display, and proposes preserving Planner while moving native location information left. Preserve the complete native name/description block for every location, including unknown DLC information; do not recreate a cemetery-only quality counter or maintain a location whitelist. This section records investigation/proposed mechanism, not an installed change or completed production gate.
 

@@ -1,8 +1,8 @@
 # Building Planner
 
-Version **1.0.1** (development candidate) for **Graveyard Keeper 1.407 on Windows PC**, using BepInEx 5. Plan several construction, repair, upgrade or clearing projects and collect only their missing materials from the chest you open.
+Version **1.0.2** (development candidate) for **Graveyard Keeper 1.407 on Windows PC**, using BepInEx 5. Plan several construction, repair, upgrade or clearing projects and collect only their missing materials from the chest you open.
 
-This candidate keeps both native NPC information cards together and shifts their complete group left when it overlaps the HUD plan. Native rendering and transitions are awaiting the game check; the fixed1.0.0 build remains unchanged.
+This candidate preserves the complete native location name/status block to the left of the HUD plan, including cemetery quality. Empty no-zone placeholders are hidden only without additional information. Both NPC cards retain native placement relative to the location, with extra overlap clearance when needed. Native verification is pending; the fixed1.0.0 build remains unchanged.
 
 ## Install
 

@@ -21,8 +21,6 @@ namespace CraftingPlanner
         private readonly UI2DSprite _nativeHeader, _titleBack;
         private readonly UIWidget _nativeLocation;
         private readonly UILabel _title;
-        private float _nativeHeaderAlpha;
-        private bool _ownsHeader;
         private Texture2D _backTexture;
         private int _backWidth, _backHeight, _bodyTop;
         private float _backRadius, _backFeather;
@@ -84,11 +82,19 @@ namespace CraftingPlanner
             _nativeHeader = fontTemplate.transform.parent.GetComponent<UI2DSprite>();
             if (_nativeHeader != null)
             {
+                PlannerLocationCards.Restore();
                 _nativeLocation = _nativeHeader.transform.parent.GetComponent<UIWidget>();
+                if (_nativeLocation != null) _nativeLocation.ResetAndUpdateAnchors();
+                _nativeHeader.ResetAndUpdateAnchors();
                 _titleBack = Child("planner-title-banner", _panelGo.transform).AddComponent<UI2DSprite>();
                 _titleBack.sprite2D = _nativeHeader.sprite2D; _titleBack.material = _nativeHeader.material; _titleBack.shader = _nativeHeader.shader;
                 _titleBack.color = _nativeHeader.color; _titleBack.depth = 1;
-                _titleBack.SetAnchor(_nativeHeader.gameObject, 0, 0, 0, 0, 1, 0, 1, 0);
+                PlannerBounds header = new PlannerBounds(), screen = new PlannerBounds();
+                PlannerNpcCards.IncludeGeometry(_nativeHeader, _panelGo.transform, ref header);
+                PlannerNpcCards.IncludeGeometry(_anchor, _panelGo.transform, ref screen);
+                _titleBack.SetAnchor(_anchor.gameObject, 1, (int)Math.Round(header.Left - screen.Right),
+                    1, (int)Math.Round(header.Bottom - screen.Top), 1, (int)Math.Round(header.Right - screen.Right),
+                    1, (int)Math.Round(header.Top - screen.Top));
                 _titleBack.updateAnchors = UIRect.AnchorUpdate.OnUpdate;
                 _title = Child("planner-title", _titleBack.transform).AddComponent<UILabel>();
             }
@@ -197,10 +203,6 @@ namespace CraftingPlanner
         private void Title()
         {
             if (_nativeHeader == null || _nativeLocation == null || _title == null) return;
-            if (!_ownsHeader) { _nativeHeaderAlpha = _nativeLocation.alpha; _ownsHeader = true; }
-            _nativeLocation.alpha = 0;
-            _nativeLocation.ResetAndUpdateAnchors();
-            _nativeHeader.ResetAndUpdateAnchors();
             _titleBack.ResetAndUpdateAnchors();
             Configure(_title, FontFor(Style.TitleCraftFont), _titleBack.width - 8, Math.Max(_titleBack.height, (int)Style.TitleFont + 4), false, false);
             _title.fontSize = (int)Style.TitleFont; _title.alignment = NGUIText.Alignment.Center; _title.pivot = UIWidget.Pivot.Center;
@@ -444,7 +446,7 @@ namespace CraftingPlanner
             Vector3 a = camera.WorldToScreenPoint(corners[0]), b = camera.WorldToScreenPoint(corners[2]);
             return string.Format(CultureInfo.InvariantCulture, "{0:0.#},{1:0.#},{2:0.#},{3:0.#}", a.x, a.y, b.x, b.y);
         }
-        private void RestoreHeader() { if (_ownsHeader && _nativeLocation != null) _nativeLocation.alpha = _nativeHeaderAlpha; _ownsHeader = false; }
+        private void RestoreHeader() { PlannerLocationCards.Restore(); }
         internal void Hide() { RestoreHeader(); if (_panelGo != null) _panelGo.SetActive(false); }
         public void Dispose() { RestoreHeader(); if (_panelGo != null) { _panelGo.SetActive(false); UnityEngine.Object.Destroy(_panelGo); } if (_backTexture != null) UnityEngine.Object.Destroy(_backTexture); }
         private sealed class MaterialRow
@@ -498,6 +500,7 @@ namespace CraftingPlanner
                 }
                 PlannerView view = GetView();
                 _card.Render(view);
+                PlannerLocationCards.Refresh();
                 if (view != _lastView)
                 {
                     Planner.LogLine("event=card_view view=" + view + " visible=" + (view != PlannerView.Hidden && (Planner.HasGoals || view == PlannerView.Build)));

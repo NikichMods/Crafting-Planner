@@ -201,6 +201,9 @@ class CardTests
         Require(shift(plan,primary,empty,0) == -288, "One NPC must clear the plan by8 root UI units");
         Require(shift(plan,primary,additional,0) == -338, "Both cards must share one translation using their complete right edge");
         Require(shift(plan,empty,primary,0) == -288, "Additional-only NPC must be handled");
+        Require(shift(plan,rect(480,200,660,400),empty,0) == 0, "NPC following the relocated native location must not receive a second full displacement");
+        Require(shift(plan,rect(480,200,660,400),rect(299,200,479,400),0) == 0, "Both relocated native anchors must preserve their mutual spacing without an extra group displacement");
+        Require(shift(plan,rect(480,200,660,400),primary,0) == -288, "Screen-anchored second card must still clear the plan when the normal card already follows the location");
         Require(shift(plan,rect(800,600,980,700),additional,0) == 0, "Empty vertical space between two cards must not cause false intersection");
         Require(shift(plan,rect(500,200,700,400),empty,0) == 0, "Touching edges must not cause an unnecessary shift");
         Require(shift(empty,primary,additional,0) == 0 && shift(plan,empty,empty,0) == 0, "Absent plan/cards must preserve native placement");
@@ -229,6 +232,18 @@ class CardTests
         Require((float)clear.Invoke(tracker,new object[] {77f}) == 77, "A fresh external position must not have an old offset subtracted");
         apply(0,-288); forget.Invoke(tracker,null);
         Require((float)clear.Invoke(tracker,new object[] {-288f}) == -288, "Rebinding must forget ownership from the old native group");
+        MethodInfo placeholder = candidate.GetType("CraftingPlanner.PlannerLocationLayout",true).GetMethod("IsPlaceholder",flags);
+        Func<string,string,bool> hidden = (name,description) => (bool)placeholder.Invoke(null,new object[] {name,description});
+        Require(hidden("...","") && hidden(" \u2026 ","\t") && hidden(null,null), "Only empty or exact no-zone placeholders with no description may be hidden");
+        Require(!hidden("...","Quality: -2") && !hidden("", "(skull) 20"), "Native useful information must remain even without a meaningful title");
+        Require(!hidden("Old Graveyard", "") && !hidden("Road...", "") && !hidden("....", ""), "Named and unrecognized locations must not be hidden by substring guesses");
+        Type anchorState = candidate.GetType("CraftingPlanner.PlannerLocationAnchors",true);
+        object anchors = Activator.CreateInstance(anchorState,true);
+        anchorState.GetMethod("Bind",flags).Invoke(anchors,new object[] {-189,-11});
+        anchorState.GetField("Offset",flags).SetValue(anchors,-205);
+        MethodInfo owns = anchorState.GetMethod("Owns",flags);
+        Require((bool)owns.Invoke(anchors,new object[] {-394,-216}), "Equal horizontal anchor edits must retain their original native width");
+        Require(!(bool)owns.Invoke(anchors,new object[] {-393,-216}), "External anchor changes must not be overwritten on restoration");
         Console.WriteLine("PASS: one/two/additional NPC geometry, true overlap, native screen bound, width changes, no drift, restoration and external position preservation. Native prefab/fade/quest presentation requires game acceptance.");
     }
     static void CheckNoCalibration(Assembly candidate)

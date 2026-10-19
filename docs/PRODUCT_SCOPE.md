@@ -14,6 +14,8 @@ Adopted1.0.1 candidate: when either native NPC information card overlaps the HUD
 
 ## Product model
 
+Adopted1.0.2 candidate preserves the complete native location name/status block left of the unchanged HUD Planner, including cemetery quality and other native descriptions without a location whitelist. Hide only an exact empty/no-zone placeholder with no description. Both native NPC anchor families follow the location delta once; any extra group clearance uses remaining actual overlap. LOCATION_CARD_PRESERVATION.md owns READY evidence and pending native verification. No status calculation/content is copied into Planner.
+
 Building Planner is a functional replacement/superset for the Recipe Pin idea, but its P0 focus is **projects**, not arbitrary production recipes.
 
 Player loop:

@@ -15,7 +15,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Building Planner";
-        public const string PluginVersion = "1.0.1";
+        public const string PluginVersion = "1.0.2";
 
         private Harmony _harmony;
 
@@ -38,6 +38,7 @@ namespace CraftingPlanner
         private void OnDestroy()
         {
             PlannerNpcCards.Stop();
+            PlannerLocationCards.Reset();
             PlannerPlacement.Stop();
             PlannerWorldCompletion.Stop();
             PlannerInteriorCompletion.Stop();
@@ -113,6 +114,7 @@ namespace CraftingPlanner
             PlannerEditing.Reset();
             PlannerRowControls.RestoreAll();
             PlannerNpcCards.Reset();
+            PlannerLocationCards.Reset();
             Goals.Clear();
             ClearProjectContext();
             _currentChest = null;

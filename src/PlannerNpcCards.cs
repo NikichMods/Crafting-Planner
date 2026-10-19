@@ -57,6 +57,7 @@ namespace CraftingPlanner
         private static readonly PlannerNpcTranslation Translation = new PlannerNpcTranslation();
         private static bool _failed, _shifted, _limited;
         private static int _visible;
+        private static int _primaryLocationRevision = -1, _additionalLocationRevision = -1;
         internal static void Install()
         {
             try
@@ -122,11 +123,21 @@ namespace CraftingPlanner
         }
         internal static float BeforeNativeUpdate(RelationGUI card)
         {
+            GUIElements gui = GUIElements.me;
+            if (gui == null || (!ReferenceEquals(card, gui.relation) && !ReferenceEquals(card, gui.relation_additional))) return float.NaN;
+            PlannerLocationCards.Refresh();
             if (_failed || _group == null || (!ReferenceEquals(card, _primary) && !ReferenceEquals(card, _additional))) return float.NaN;
             try
             {
                 float offset = Translation.Owned(_group.localPosition.x);
-                if (Math.Abs(offset) <= .001f) return float.NaN;
+                int revision = PlannerLocationCards.Revision;
+                bool changed = ReferenceEquals(card, _primary) ? _primaryLocationRevision != revision : _additionalLocationRevision != revision;
+                if (ReferenceEquals(card, _primary)) _primaryLocationRevision = revision; else _additionalLocationRevision = revision;
+                if (Math.Abs(offset) <= .001f)
+                {
+                    if (changed && _anchors != null) foreach (UIWidget anchor in _anchors) if (anchor != null) anchor.ResetAndUpdateAnchors();
+                    return float.NaN;
+                }
                 RestoreOffset();
                 return offset;
             }
@@ -210,7 +221,7 @@ namespace CraftingPlanner
     }
     // Exact native 1.407 final mesh consumer; all other panels return without modification.
     internal static class PlannerNpcRenderPatch
-    { private static void Prefix(UIPanel __instance) { PlannerNpcCards.Prepare(__instance); } }
+    { private static void Prefix(UIPanel __instance) { PlannerLocationCards.Prepare(__instance); PlannerNpcCards.Prepare(__instance); } }
     internal static class PlannerNpcNativePositionPatch
     {
         private static void Prefix(RelationGUI __instance, out float __state) { __state = PlannerNpcCards.BeforeNativeUpdate(__instance); }
