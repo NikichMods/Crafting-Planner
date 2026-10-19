@@ -1,5 +1,11 @@
 # Native location information —1.0.2
 
+## Current native acceptance —1.0.3
+
+User2026-10-19 confirms cemetery name and quality move left while Planner remains fixed. Closed-host return .local/evidence/return-1.0.3-location/LogOutput.log SHA25643adb908f2288a53af6c8f91013b7dea2ad63d365a65fd2d9fee7e76c7006dfd loads exact1.0.3; installed DLL213b6aa40273c1ae761da852f9f83047214aa2a508b0bf1acf1b5332f1929c23 matches the handoff. Feature binds after gameplay begins and remains enabled:30 shifted transitions all offset_ui=-200/additional_offset_ui=-220/screen_limited=False,23 native restores and7 placeholder_hidden transitions with zero offsets. Menu/chest and final main-menu restoration are traced. Zero Exception, Planner error/disable or screen_limited=True markers; unrelated Unity world-data errors remain, so this is not a whole-game error-free claim.
+
+Accept the reported cemetery information visibility and fixed Planner, plus logged scaled-coordinate conversion/restoration/placeholder handling. Description values/content are owned by the game; no independent quality-change or all-location/all-language claim. NPC observations use visible_mask=1; several brief residual shifts return to0 after HUD/menu transitions. Sparse transition logs do not prove every animation frame or NPC visual spacing. Masks2/3 are absent, so additional-only/two-card native visual acceptance remains pending. No new build/install/stable promotion/publication follows this return.
+
 Current candidate1.0.3: source19abc7c7ac48a4e7005a197e08450bef016aedee, successful CI39180722216/artifact12156415236, DLL SHA256213b6aa40273c1ae761da852f9f83047214aa2a508b0bf1acf1b5332f1929c23, player ZIPebd70946262a35acd06424f33aba127dec9a1a48d732dbb755fd11c4bb70bbe5. Installed exact bytes with closed host2026-10-19T00:27:24Z; receipt .local/evidence/pre-1.0.3/installation.json, prior1.0.2 preserved outside loading. Both native builds and actual CI DLL regressions/expanded scale checks pass. Native rendering remains pending; no helper/config/save/other-mod changes or publication. The earlier1.0.2 handoff below is historical and was rejected by its return.
 
 ## Reopened gate —1.0.2 return /1.0.3 READY correction
