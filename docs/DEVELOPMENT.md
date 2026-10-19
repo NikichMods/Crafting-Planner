@@ -1,8 +1,24 @@
 # Development and recovery
 
-Updated:2026-10-19. Current installed candidate is **1.0.1**, adding coordinated NPC-card avoidance. Single-card overlap resolution is user-accepted and log-corroborated; simultaneous two-card native acceptance is pending. Frozen1.0.0 remains the prepared release baseline. Historical candidate details and bounded native results are owned by TEST_LOG.md; dated pending instructions there describe their original stage.
+Updated:2026-10-19. Current installed candidate is **1.0.2**, preserving complete native location information beside Planner and coordinating both NPC anchor families. Native verification of this change is pending. Single-card1.0.1 overlap resolution was accepted; simultaneous two-card native acceptance remains open. Frozen1.0.0 remains the prepared release baseline. TEST_LOG.md owns bounded native results; dated pending instructions describe their original stage.
 
-## Current installed candidate —1.0.1
+## Current installed candidate —1.0.2
+
+LOCATION_CARD_PRESERVATION.md owns adopted behavior, READY evidence, exact native no-zone placeholder and additional-anchor correction. Native location name/status/quality is preserved left of fixed Planner; meaningless placeholder is hidden only without description. Both normal and additional NPC anchor families follow the same location delta once, then existing group clearance handles only remaining overlap. No helper/gameplay/save change.
+
+| Identity | Value |
+| --- | --- |
+| Branch / frozen runtime source | dev/1.0.2 / d5b064211aa7949a5e6f04e5a4e53a0a1a9d2025 |
+| Version / calibration | 1.0.2 / excluded |
+| Successful CI / artifact | 39180160670 / 12156200900 |
+| DLL SHA256 | e804cdde37b29a4966c82413d4b9c70a9e0295f039758963f7e9225f70bea6a4 |
+| Player ZIP SHA256 | b158e8eafe779d19fc6e463e91bb018b1e50634a61bcaa6b8ee4ed753bd156b1 |
+| Installed UTC | 2026-10-19T00:19:56Z |
+| Acceptance | compiled checks passed; native visual/transition return pending |
+
+Exact CI files: artifacts/CraftingPlanner-1.0.2/. Receipt .local/evidence/pre-1.0.2/installation.json; previous1.0.1 backed up/hash-verified outside plugins at .local/installation-backups/pre-1.0.2/. Host closed, installed hash/version match. Both native-reference modes compile; actual CI DLL passes expanded placeholder/anchor/NPC policy and prior state/persistence/no-F2/native-row/57+39 dispatch tests. Player ZIP has only the six allowed files, digest verified. No save/config/other-mod/helper change or tag/main/publication; handed source/bytes are immutable, subsequent docs do not rebuild them.
+
+## Previous candidate —1.0.1
 
 User adopts conditional leftward movement of both native NPC information cards as one group while Planner stays fixed. NPC_CARD_AVOIDANCE.md owns the verified anchors, revised READY gate, independent feature hooks and screen-width limitation. No helper or gameplay change.
 
