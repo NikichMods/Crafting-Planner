@@ -1,6 +1,6 @@
 # Development and recovery
 
-Updated:2026-10-19. Current installed candidate is **1.0.4**, following native cinematic HUD alpha/active visibility; native hide/return acceptance is pending.1.0.3 cemetery name/quality preservation with fixed Planner is accepted within recorded bounds. Simultaneous two-card native acceptance remains open. Frozen1.0.0 remains the prepared release baseline. TEST_LOG.md owns bounded native results; dated pending instructions describe their original stage.
+Updated:2026-10-19. Current installed candidate is **1.0.4**. Representative cinematic HUD hide/automatic return with unchanged plan and chest/build continuity is user-accepted and log-corroborated.1.0.3 cemetery name/quality preservation remains accepted within recorded bounds. Simultaneous two-card native acceptance remains open. Frozen1.0.0 remains the prepared release baseline. TEST_LOG.md owns bounded native results; dated pending instructions describe their original stage.
 
 ## Current installed candidate —1.0.4
 
@@ -14,9 +14,9 @@ CUTSCENE_HUD_VISIBILITY.md owns adopted outcome/READY evidence: GUIElements.Chan
 | DLL SHA256 | 9e725f777bd0db439ec56ec8d4fb84f843b29d3bf3e40a6343d493b436d80ec5 |
 | Player ZIP SHA256 | 9914d710c4d6c9344eb7468d6a3fb8a984856ff260be1ee151a492c3d6d6f152 |
 | Installed UTC | 2026-10-19T00:48:36Z |
-| Acceptance | compilation/actual-DLL checks passed; native cinematic return pending |
+| Acceptance | representative cinematic hide/return and chest/build continuity accepted |
 
-Exact files artifacts/CraftingPlanner-1.0.4/; receipt .local/evidence/pre-1.0.4/installation.json. Closed-host install, prior1.0.3 backup outside plugins and installed version/hash verified. Both native-reference modes and downloaded actual CI DLL alpha/fade/menu/previous policy/state/persistence/no-F2/native-row/57+39 dispatch tests pass; ZIP digest matches. No helper/save/config/other-mod change or tag/main/publication. Subsequent documentation does not rebuild handed bytes. Next check is a native cutscene's full hide and automatic return with identical plan, then brief ordinary menu/location continuity.
+Exact files artifacts/CraftingPlanner-1.0.4/; receipt .local/evidence/pre-1.0.4/installation.json. Closed-host install, prior1.0.3 backup outside plugins and installed version/hash verified. Both native-reference modes and downloaded actual CI DLL alpha/fade/menu/previous policy/state/persistence/no-F2/native-row/57+39 dispatch tests pass; ZIP digest matches. No helper/save/config/other-mod change or tag/main/publication. Subsequent documentation does not rebuild handed bytes. Representative native prayer/bishop hide/automatic same-plan return and chest/build continuity are accepted in CUTSCENE_HUD_VISIBILITY.md; broader script coverage is not inferred.
 
 ## Previous candidate —1.0.3
 

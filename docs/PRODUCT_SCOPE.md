@@ -14,6 +14,8 @@ Adopted1.0.1 candidate: when either native NPC information card overlaps the HUD
 
 ## Product model
 
+1.0.4 native return accepts representative prayer/bishop cinematic HUD hide/automatic return with original goals/quantities and chest/build continuity. CUTSCENE_HUD_VISIBILITY.md owns the exact trace and bounds; no all-script animation guarantee or new publication is implied.
+
 Adopted1.0.4 candidate follows the native gameplay HUD active state and panel alpha, including cinematic fade/hide/automatic return, without changing goals/quantities. Chest/build/inventory presentation retains its own existing native menu context. CUTSCENE_HUD_VISIBILITY.md owns READY evidence and pending native acceptance; dialogue/control locks alone are not cinematic visibility signals.
 
 1.0.3 native return accepts cemetery name/quality left of fixed Planner under the configured HUD scale; log corroborates converted displacement, native restoration and empty-placeholder hiding. Additional-only/simultaneous two-card visual coverage remains pending. LOCATION_CARD_PRESERVATION.md and TEST_LOG.md own precise bounds; do not generalize to every location/language/quality update.

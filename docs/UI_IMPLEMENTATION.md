@@ -2,7 +2,7 @@
 
 ## Cinematic native HUD visibility —2026-10-19, adopted1.0.4 candidate
 
-User reports Planner remains during the bishop church cutscene. Native GUIElements.ChangeHUDAlpha fades hud.panel.alpha without deactivating the HUD GameObject, which the existing active-only GetView misses. CUTSCENE_HUD_VISIBILITY.md owns the READY gate and log/native IL.1.0.4 mirrors alpha on the owned gameplay panel at the pre-mesh consumer and compares native view state in the existing LateUpdate; rows refresh only on view transitions, so alpha-driven return works after owned hiding without inventory/world polling. Existing menu contexts remain independently visible. Native cutscene acceptance is pending;1.0.3 location acceptance stays bounded and unchanged.
+User reports Planner remains during the bishop church cutscene. Native GUIElements.ChangeHUDAlpha fades hud.panel.alpha without deactivating the HUD GameObject, which the existing active-only GetView misses. CUTSCENE_HUD_VISIBILITY.md owns the READY gate and log/native IL.1.0.4 mirrors alpha on the owned gameplay panel at the pre-mesh consumer and compares native view state in the existing LateUpdate; rows refresh only on view transitions, so alpha-driven return works after owned hiding without inventory/world polling. Existing menu contexts remain independently visible. Representative prayer/bishop native cutscene hide/automatic return and chest/build continuity are accepted under CUTSCENE_HUD_VISIBILITY.md;1.0.3 location acceptance stays bounded and unchanged.
 
 ## Native location information —2026-10-19, adopted1.0.2 candidate
 

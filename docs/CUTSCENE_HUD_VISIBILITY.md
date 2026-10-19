@@ -1,5 +1,13 @@
 # Native cinematic HUD visibility —1.0.4
 
+## Native return accepted —2026-10-19
+
+User confirms hide/return with the cinematic HUD, unchanged goals/quantities and correct chest/build presentation. Closed-host return .local/evidence/return-1.0.4-cinematic/LogOutput.log SHA256e0494669805542b5b4989160337f919c4676fbcd6097d3124d63f7cad176e1d2 loads exact1.0.4; installed DLL9e725f777bd0db439ec56ec8d4fb84f843b29d3bf3e40a6343d493b436d80ec5 matches frozen source080ff539c0e2b439d7525b2eff4ecf4b008bd3b0/CI39182271145.
+
+Native pray/bishop_3_10..21 sequence: ChangeHUDAlpha show=False at line843 -> owned Hidden at847; a repeated native hide and an intermediate TechUnlockDialogGUI HUD.Hide/Open do not produce premature owned HUD return. Native show=True at889 -> owned Hud visible=True at891. Location restoration/reapplication follows these states.7 Chest and4 Build visible entries are recorded afterwards. Four goals restore before the scene and4 save at session end; exact quantity preservation is user-confirmed, not a fabricated per-frame inventory snapshot. Zero Exception or Planner error/disable markers; unrelated native world-data errors, including missing church_big_quality_obj, remain and are not attributed to Planner.
+
+Accept representative native cinematic hide/automatic return, same plan and ordinary chest/build continuity. This does not claim all FlowCanvas scripts or exhaustive fade/frame timing. No new binary/helper/install/tag/main promotion/publication follows. Two-card NPC native visual gate remains separate and pending.
+
 ## Adopted outcome and READY gate
 
 User2026-10-19 reports visible Planner during the church/bishop cutscene while ordinary HUD is hidden, and requires hide/restore with native HUD. No goal deletion or new player toggle. Screenshot/log preserved in .local/evidence/cutscene-1.0.3/; log SHA25643adb908f2288a53af6c8f91013b7dea2ad63d365a65fd2d9fee7e76c7006dfd is the previously captured complete1.0.3 session. It records Set player disabled affect_cinematic=True then ChangeHUDAlpha show=False before bishop_3_1..9, and show=True after. No exact screenshot frame timing is inferred.
