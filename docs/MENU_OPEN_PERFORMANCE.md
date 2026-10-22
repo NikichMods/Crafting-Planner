@@ -2,6 +2,12 @@
 
 ## Unchanged opening delay —passive timing gate
 
+### Adopted matched comparison gate —2026-10-22
+
+User requests same-menu timing without Planner to establish its total incremental delay. READY research change: new immutable MenuOpeningProbe0.1.1 observes only the same five verified native seams (OpenAsBuild, SwitchTab, ProceedOpen, row Redraw, UITable.Reposition), with no Planner dependency, assembly lookup or Planner/font instrumentation. Reuse the fixed stack, original-exception finalizer, two-frame tail,24-sample cap and failure containment already natively exercised by0.1.0. No production change or synthetic opening/state. Fewer hooks reduce observer overhead; compare both conditions using the SAME0.1.1 bytes rather than treating the old differently instrumented0.1.0 as a matched control. Root durations are the primary outcome, nested metrics remain nonadditive. Other mods remain constant; this is not a clean vanilla baseline or an exact universal causal duration.
+
+Closed-host phase B: snapshot log, verify exact1.0.5 backup outside loading, temporarily remove only canonical Planner DLL, install verified new observer. Goals/config/save files remain intact. Same save/language/display/input, home first open plus three repeats and a few tabs, yard control. On return preserve log, restore exact1.0.5 and use identical observer for phase A, then remove observer after return. Separate cold and warmed samples; assess run-to-run variation before claiming precise added milliseconds. This follow-up control is necessary because the previous probe measured nested buckets, not isolated total Planner impact. No automatic host restart or save/progression edits.
+
 ### Native return and observer removal —2026-10-22
 
 User exercised home openings, tabs and yard, then closed the game. Snapshot .local/evidence/return-menu-probe-0.1.0/LogOutput.log SHA256875caf6e56fb7822a1e1b3d47c4039a33639175466d2b527037aa28a40969aa9 loads exact Planner1.0.5 and observer0.1.0; ready marker, ten complete samples, all overlap=False/exceptions=0, no observer disable or Exception markers. No timing acceptance beyond this one configured session is inferred.
