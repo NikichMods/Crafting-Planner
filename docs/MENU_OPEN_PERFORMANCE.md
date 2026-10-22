@@ -1,5 +1,9 @@
 # Home construction menu opening —2026-10-22 investigation
 
+## Decision —optimization deferred by user
+
+After the matched comparison, user declines further Planner optimization: the approximately258 ms baseline remains without Planner and the observed typical50–60 ms increment does not justify changing accepted row/layout behavior. Keep exact1.0.5 and existing geometry; observer is already removed. This closes the current performance workstream without claiming zero Planner cost, a resolved underlying delay or pure vanilla fault ownership. No further probe, optimization or user replay is requested. Reopen only on a new user request or materially different reported defect; row-layout investigation below is a possible future direction, not active work.
+
 ## Unchanged opening delay —passive timing gate
 
 ### Matched comparison complete; observer removed —2026-10-22

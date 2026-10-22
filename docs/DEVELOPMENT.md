@@ -4,6 +4,8 @@ Updated:2026-10-22. **Planner1.0.5 remains installed; matched menu timing compar
 
 ## Current runtime —Planner1.0.5, observer removed
 
+User declines further optimization after matched results; current performance workstream is closed/deferred, not a solved-delay claim. Keep exact1.0.5 and accepted layout. No pending timing replay or implementation; MENU_OPEN_PERFORMANCE.md owns the decision and reopen boundary.
+
 Phase A snapshot .local/evidence/menu-matched-with-planner-0.1.1/LogOutput.log digest896ee924af76db376128cc8b556c0b594ace62058ff9888e3393951061b7ca0c loads exact core/observer with twelve clean samples. MENU_OPEN_PERFORMANCE.md owns matched timing table, unexplained381 ms sample and interpretation limits. Same-observer three-repeat median316.713 versus257.902 ms, difference58.811 ms (+22.8%); first difference58.970 ms, yard12.713 ms. Extra home316.936 ms supports typical warmed result. Observer removed2026-10-22T05:03:41.520428Z, backup outside loading and absence verified; receipt removal.json plus comparison.json in phase A directory. Core digestb9e212909d8d7511336bc2592d1b89e7b4f4b9179e67220031dd7ff309a74d9b unchanged. No new optimization/build is implied; row setup/layout is the bounded next investigation, not another automatic user replay.
 
 Historical phase A preparation:
