@@ -1,8 +1,24 @@
 # Development and recovery
 
-Updated:2026-10-19. Current installed candidate is **1.0.4**. Representative cinematic HUD hide/automatic return with unchanged plan and chest/build continuity is user-accepted and log-corroborated.1.0.3 cemetery name/quality preservation remains accepted within recorded bounds. Simultaneous two-card native acceptance remains open. Frozen1.0.0 remains the prepared release baseline. TEST_LOG.md owns bounded native results; dated pending instructions describe their original stage.
+Updated:2026-10-22. Current installed candidate is **1.0.5**, removing statically proven menu work/allocation without profiling. Native menu behavior/perceived opening speed remain pending.1.0.4 cinematic hide/return and1.0.3 cemetery information remain accepted within recorded bounds; simultaneous two-card native acceptance remains open. Frozen1.0.0 remains the prepared release baseline. TEST_LOG.md owns bounded native results; dated pending instructions describe their original stage.
 
-## Current installed candidate —1.0.4
+## Current installed candidate —1.0.5
+
+MENU_OPEN_PERFORMANCE.md owns user authorization, per-change READY gates and the rejected font-removal assumption. Focus/blur still assigns the same target and updates hints; it rebuilds the pinned card only when overlay visibility changes. Quantity lookup constructs its key once; row font loops reuse the existing equivalent label list. Keep both GJL font passes and all native layout/reposition callbacks. No profiler/helper, cache/timing claim, mechanics or accepted geometry change.
+
+| Identity | Value |
+| --- | --- |
+| Branch / frozen runtime source | dev/1.0.5 / 7d8869ed38881d82969e05bec6d71770fc7e312c |
+| Version / calibration | 1.0.5 / excluded |
+| Successful CI / artifact | 39720446854 / 12400753369 |
+| DLL SHA256 | b9e212909d8d7511336bc2592d1b89e7b4f4b9179e67220031dd7ff309a74d9b |
+| Player ZIP SHA256 | 01ae8c27673cba454a6c54b72ded7f565fd478811d8d3c4b8aaf682ab708e806 |
+| Installed UTC | 2026-10-22T04:07:34Z |
+| Acceptance | native-reference/actual-DLL checks pass; native menu return pending |
+
+Files artifacts/CraftingPlanner-1.0.5/; receipt .local/evidence/pre-1.0.5/installation.json. Host closed; prior1.0.4 backup outside loading at .local/installation-backups/pre-1.0.5/, installed hash/version verified. Both native-reference modes and downloaded CI DLL existing policy/state/persistence/completion/visibility/native-row/no-F2/57+39 dispatch regressions pass; ZIP digest matches. These do not prove live Focus/hint/font interaction or measured speedup. No helper/save/config/other-mod changes, tag/main promotion/publication. Native check: home open/reopen/tabs/focus/counters/hints, one other ordinary/supported menu, material update and unchanged layout.
+
+## Previous candidate —1.0.4
 
 CUTSCENE_HUD_VISIBILITY.md owns adopted outcome/READY evidence: GUIElements.ChangeHUDAlpha changes native panel alpha without deactivating HUD. Gameplay Planner now mirrors native alpha at the owned pre-mesh consumer; an existing LateUpdate view comparison permits hide and automatic fade-up return with row refresh only on view changes. Native build/chest/inventory contexts remain independent; goals/quantities and accepted location geometry are unchanged.
 
