@@ -15,7 +15,7 @@ namespace CraftingPlanner
     {
         public const string PluginGuid = "nikich.gyk.craftingplanner";
         public const string PluginName = "Building Planner";
-        public const string PluginVersion = "1.0.4";
+        public const string PluginVersion = "1.0.5";
 
         private Harmony _harmony;
 
@@ -177,17 +177,25 @@ namespace CraftingPlanner
 
         internal static void Focus(CraftDefinition definition)
         {
+            bool wasVisible = ShouldShowCraftOverlay;
             _focusedProject = IsSupportedProject(definition) ? definition : null;
-            PlannerCraftOverlay.Refresh();
+            RefreshFocus(wasVisible);
         }
 
         internal static void Blur(CraftDefinition definition)
         {
             if (_focusedProject == definition)
             {
+                bool wasVisible = ShouldShowCraftOverlay;
                 _focusedProject = null;
-                PlannerCraftOverlay.Refresh();
+                RefreshFocus(wasVisible);
             }
+        }
+
+        private static void RefreshFocus(bool wasVisible)
+        {
+            if (wasVisible != ShouldShowCraftOverlay) PlannerCraftOverlay.Refresh();
+            else PlannerBuildTips.Refresh();
         }
 
         internal static bool ShouldShowCraftOverlay
@@ -215,8 +223,10 @@ namespace CraftingPlanner
 
         internal static int QuantityFor(CraftDefinition definition)
         {
-            var goal = Goals.FirstOrDefault(x => x.Key == BuildGoalKey(definition));
-            return goal != null ? goal.Quantity : 0;
+            if (Goals.Count == 0) return 0;
+            string key = BuildGoalKey(definition);
+            foreach (ProjectGoal goal in Goals) if (goal.Key == key) return goal.Quantity;
+            return 0;
         }
         internal static ProjectGoal FindPlacement(ObjectCraftDefinition definition, string builder)
         { return PlannerGoalState.FindPlacement(Goals, definition, builder); }

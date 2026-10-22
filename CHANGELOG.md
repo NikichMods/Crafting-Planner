@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.5 — candidate
+
+- Reuse the existing row-label list instead of allocating a temporary counter/arrow array, and create quantity lookup keys once per lookup.
+- Refresh focus-dependent menu hints without rebuilding the pinned plan when its visibility is unchanged; preserve native layout callbacks and material/goal update events.
+- These remove proven redundant work; opening-time speedup has not been measured. Native menu verification is pending.
+
 ## 1.0.4 — candidate
 
 - Follow the native HUD alpha and active state during cutscenes; automatically restore the plan when native gameplay HUD returns, preserving goals and quantities.

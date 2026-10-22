@@ -146,7 +146,7 @@ namespace CraftingPlanner
                 _ingredients.ResetAndUpdateAnchors(); _row.label_name.ResetAndUpdateAnchors();
                 int quantity = Planner.QuantityFor(_row.current_craft);
                 foreach (UILabel label in _texts) PlannerCard.ApplyNativeFont(label, _row.label_name);
-                foreach (UILabel label in new[] { _quantity, _minus, _plus })
+                foreach (UILabel label in _texts)
                 {
                     PlannerCard.ApplyNativeFont(label, style.MenuHudFont ? GUIElements.me.hud.zone_name : _row.label_name);
                     label.fontSize = (int)style.MenuFont; label.effectStyle = style.MenuOutline ? UILabel.Effect.Outline : UILabel.Effect.Shadow;
