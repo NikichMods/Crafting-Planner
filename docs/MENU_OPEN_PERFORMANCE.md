@@ -2,6 +2,25 @@
 
 ## Unchanged opening delay —passive timing gate
 
+### Matched comparison complete; observer removed —2026-10-22
+
+Phase A log .local/evidence/menu-matched-with-planner-0.1.1/LogOutput.log SHA256896ee924af76db376128cc8b556c0b594ace62058ff9888e3393951061b7ca0c loads exact Planner1.0.5 and same observer0.1.1/ready. Twelve complete samples, all overlap=False/exceptions=0, no Exception/disabled markers. Both conditions use identical observer724162ba2ebc0308c5a32e87e24770b388ef047361f555a739acd5b3c9fbb280 and home65/yard13 native counts. Phase B log identity below is preserved. Primary comparison is matched samples1–10; extra home/tab samples11/12 are supporting observations, not silently substituted results.
+
+| Operation | Without Planner ms | With Planner ms | Observed difference ms |
+| --- | --- | --- | --- |
+| First home opening | 415.937 | 474.907 | +58.970 |
+| Home repeat1 | 257.902 | 316.713 | +58.811 |
+| Home repeat2 | 256.179 | 381.305 | +125.126 |
+| Home repeat3 | 258.313 | 307.227 | +48.914 |
+| Median of three home repeats | 257.902 | 316.713 | +58.811 (22.8% over baseline) |
+| Yard opening | 87.541 | 100.254 | +12.713 |
+
+Same-sequence five tab differences+3.994/+4.740/+3.147/+3.297/+4.773 ms. Additional home316.936 and tab20.423 ms corroborate typical warmed opening near317 ms but do not explain the381.305 ms sample. Retain that sample; no GC/JIT/background attribution is established. Repeated opening with Planner has66 row Redraw calls and185 table Reposition calls versus66/19 without; around90–92 ms total inclusive row Redraw on typical Planner repeats versus44–46 ms without. Nested table/native metrics must not be summed. These are measured multiplicities, not proof that historical geometry callbacks are unnecessary.
+
+Bounded conclusion: Planner adds a measurable typical opening cost around50–60 ms in these sessions, with paired median difference58.811 ms. A substantial approximately258 ms baseline remains without Planner (but with other mods). This supports investigating owned row setup/layout as a targeted improvement, not blaming all latency on Planner or claiming a universal exact59 ms budget. One sequential B/A comparison cannot isolate session noise, and identical probe overhead still scales with additional native calls; no no-overhead/clean-vanilla claim. Old0.1.0 is not used for the final delta. No additional native repetitions are required merely to restate this bounded conclusion.
+
+Observer removed2026-10-22T05:03:41.520428Z after process-closed/exact-hash checks; backup outside loading and canonical absence verified. Exact core1.0.5 remains installed, SHA256b9e212909d8d7511336bc2592d1b89e7b4f4b9179e67220031dd7ff309a74d9b. Removal receipt and parsed comparison.json in phase A evidence directory. No code/build/config/save/other-mod changes. Remaining optimization is not implemented/accepted by this timing return; preserve critical native layout guarantees before any change. Historical preparation/pending language below describes earlier stages only.
+
 ### Adopted matched comparison gate —2026-10-22
 
 Phase B return captured: .local/evidence/menu-baseline-without-planner-0.1.1/LogOutput.log SHA256265541bb11107c42b4e60763269b770ddc865095da2acf9a76d000e2f2669418. Loader has observer0.1.1/ready and no production Building Planner load. Ten complete samples, all overlap=False/exceptions=0, no Exception/observer-disabled markers. Native home count65: first415.937 ms; repeats257.902/256.179/258.313 ms (median257.902). Five tabs19.015/17.938/9.020/12.124/13.855 ms; yard count13 at87.541 ms. Home repeat row Redraw66 calls; table layout19 calls versus prior differently instrumented Planner session185. This is measured work multiplicity, not proof that every extra layout is redundant. No exact Planner delta may be claimed until matched0.1.1 phase A; prior0.1.0 remains differently instrumented.
