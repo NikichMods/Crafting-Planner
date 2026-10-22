@@ -2,6 +2,23 @@
 
 ## Unchanged opening delay —passive timing gate
 
+### Native return and observer removal —2026-10-22
+
+User exercised home openings, tabs and yard, then closed the game. Snapshot .local/evidence/return-menu-probe-0.1.0/LogOutput.log SHA256875caf6e56fb7822a1e1b3d47c4039a33639175466d2b527037aa28a40969aa9 loads exact Planner1.0.5 and observer0.1.0; ready marker, ten complete samples, all overlap=False/exceptions=0, no observer disable or Exception markers. No timing acceptance beyond this one configured session is inferred.
+
+| Observed operation | Root method ms | Selected scoped metrics |
+| --- | --- | --- |
+| Home first open,65 projects | 456.499 | native_open328.245; planner_row515 calls/58.182 inclusive ms |
+| Home repeats, samples2–4 | 300.435 /304.125 /294.752 | native_open290.483–299.919; native_open self_traced179.504–185.401; native_row_redraw66 calls; planner_row438 calls/55.034–56.257 inclusive ms |
+| Home five tab switches | 20.884 /22.730 /11.277 /14.783 /18.191 | planner_row101–160 calls/3.412–6.715 inclusive ms |
+| Yard,13 projects | 96.054 | native_open93.164; native_row_redraw15 calls; planner_row156 calls/15.263 inclusive ms |
+
+Home-repeat aggregate planner_refresh4 calls/4.166–4.260 ms includes card3.774–3.850 ms; GetPlayerHave12 calls/0.012–0.014 ms. Global scoped font checks3105 calls/1.278–1.334 ms, ingredient alignment166 calls/4.608–4.666 ms. Therefore carried-material counting and font-check time do not explain the observed hundreds of milliseconds here. Repeated row work is real and measurable, but call counts include reentrant/hidden early exits;438 is NOT438 complete expensive layouts. Inclusive metrics overlap (including recursive calls), cover the two-frame tail and cannot be summed/subtracted from root as independent budgets. Observation window328–341 ms on repeats includes frame scheduling, not pure CPU work.
+
+Conclusion: the principal remaining measured bucket is the host ProceedOpen path outside the other instrumented children, not pinned-card/material aggregation. Exact prior IL shows ProceedOpen initializes CommonOpen, traverses the entire craft list, builds rows/tabs, updates anchors and selects a tab. This supports opening-wide population/layout as the next investigation target, but does not isolate its slow internal call or prove pure vanilla ownership: other mods and observer overhead remain inside patched native timings. First-open excess has no proven JIT/cache attribution. Do not claim Planner-free baseline or predict a removable55 ms speedup. Next useful static step is locate the cost inside CommonOpen/row creation and verify any owned per-row setup before another narrowly justified measurement or change; do not blindly drop historically required layout callbacks.
+
+Observer removed at2026-10-22T04:41:26.342349Z after closed-process/hash checks, backed up outside loading in the evidence directory. Canonical MenuOpeningProbe.dll absent; core1.0.5 SHA256b9e212909d8d7511336bc2592d1b89e7b4f4b9179e67220031dd7ff309a74d9b unchanged. Receipt removal.json. No production source/build/config/save/other-mod change. The installation/checklist below is historical, not current pending work.
+
 User reports no perceptible opening-delay improvement on1.0.5. Return log .local/evidence/return-1.0.5-menu/LogOutput.log SHA2569ff9a10dd77fd659297c68a161b5d7021d5e52435bb69582e3c06a6af680bd88 loads exact1.0.5; installed digest matches. It records keeper_room_builddesk count65 on three openings and mf_wood_builddesk count13 as a smaller control, with no timing data. This does not reject the removed redundancy as a code cleanup, but rejects a claim of perceptible delay resolution. Do not infer unrelated functional acceptance or keep deleting layout calls.
 
 Reopened solution/method checkpoint: another speculative layout optimization is not justified; a temporary no-Planner subjective A/B can test necessity but cannot partition actual menu/owned layout costs and requires an extra restart with Planner unavailable. Select one passive, nonpersistent sidecar timing the actual opening/tab path with current1.0.5 unchanged. No synthetic menu/data/state, replacement algorithm, cache emulation or resource grants. Static evidence cannot supply elapsed times; this is why runtime instrumentation is now needed after the bounded cleanup failed to resolve the symptom.
