@@ -1,10 +1,14 @@
 # Development and recovery
 
-Updated:2026-10-22. Current installed candidate is **1.0.5**, removing statically proven menu work/allocation without profiling. Native menu behavior/perceived opening speed remain pending.1.0.4 cinematic hide/return and1.0.3 cemetery information remain accepted within recorded bounds; simultaneous two-card native acceptance remains open. Frozen1.0.0 remains the prepared release baseline. TEST_LOG.md owns bounded native results; dated pending instructions describe their original stage.
+Updated:2026-10-22. Current installed candidate is **1.0.5**. User reports unchanged opening delay; passive MenuOpeningProbe0.1.0 is installed beside the unchanged production DLL, awaiting one native session. This is not measured performance acceptance.1.0.4 cinematic hide/return and1.0.3 cemetery information remain accepted within recorded bounds; simultaneous two-card native acceptance remains open. Frozen1.0.0 remains the prepared release baseline. TEST_LOG.md owns bounded native results; dated pending instructions describe their original stage.
+
+## Temporary menu timing observer —installed, native return pending
+
+Active branch research/menu-opening-profile; observer frozen source bcfc4e400235fec6907cf6b8f193e5b8d087f8c4, MenuOpeningProbe0.1.0 DLL SHA25660011d9a8c4c548738a364d93def57c92bf9612e88cb663b283d067ac605066c. Installed as BepInEx/plugins/MenuOpeningProbe.dll after explicit user closure and process check at2026-10-22T04:28:39.7792035Z. Receipt .local/evidence/pre-menu-probe-0.1.0/installation.json; artifact artifacts/MenuOpeningProbe-0.1.0/. Planner1.0.5 digest below is verified unchanged. No save/config/other-mod changes. MENU_OPEN_PERFORMANCE.md owns instrumentation limits and the native checklist. Startup binding and timings remain unobserved. Read the next log, then remove only this temporary observer with the host closed; do not rebuild handed bytes or restore earlier helpers.
 
 ## Current installed candidate —1.0.5
 
-MENU_OPEN_PERFORMANCE.md owns user authorization, per-change READY gates and the rejected font-removal assumption. Focus/blur still assigns the same target and updates hints; it rebuilds the pinned card only when overlay visibility changes. Quantity lookup constructs its key once; row font loops reuse the existing equivalent label list. Keep both GJL font passes and all native layout/reposition callbacks. No profiler/helper, cache/timing claim, mechanics or accepted geometry change.
+MENU_OPEN_PERFORMANCE.md owns user authorization, per-change READY gates and the rejected font-removal assumption. Focus/blur still assigns the same target and updates hints; it rebuilds the pinned card only when overlay visibility changes. Quantity lookup constructs its key once; row font loops reuse the existing equivalent label list. Keep both GJL font passes and all native layout/reposition callbacks. The production cleanup adds no profiler/helper, cache/timing claim, mechanics or accepted geometry change; the separate temporary observer above was installed afterwards.
 
 | Identity | Value |
 | --- | --- |

@@ -10,6 +10,10 @@ READY research gate: exact native CraftGUI.OpenAsBuild and SwitchTab are root bo
 
 One session: home first-open/reopen, a few tab switches and the small yard menu, pausing about one second between actions. Read results and remove this sidecar on return, preserving exact production DLL. Probe compiled/installed identity and native timing acceptance are separate.
 
+Installed observer0.1.0 after explicit user closure and process check at2026-10-22T04:28:39.7792035Z. Frozen source bcfc4e400235fec6907cf6b8f193e5b8d087f8c4, DLL SHA25660011d9a8c4c548738a364d93def57c92bf9612e88cb663b283d067ac605066c; canonical installed filename MenuOpeningProbe.dll. Planner1.0.5 digest b9e212909d8d7511336bc2592d1b89e7b4f4b9179e67220031dd7ff309a74d9b verified unchanged before/after. Receipt .local/evidence/pre-menu-probe-0.1.0/installation.json. Deterministic repeated local exact-native compilation with warnings as errors passes; finalizer IL returns the original exception. No native startup/hook binding or timing result yet. No save/config/other-mod mutation or production version/publication change.
+
+Native checklist: load the same save; open the home construction menu, pause about one second, close and repeat twice. Open again and switch three or four tabs with a one-second pause each. Open the smaller yard construction menu once, pause, close. Exit the game and report completion. Read ready/disabled markers and scoped sample summaries before attribution; remove the observer afterwards with the host closed.
+
 ## Adopted bounded cleanup —1.0.5 READY before mutation
 
 User adopts removing statically proven redundant work without first timing it, provided history/accepted constraints are preserved. No speedup estimate or attribution of the original opening delay follows. Keep ingredient/table/row anchor restoration, explicit native Reposition and list/open/on-enable callbacks: UI_IMPLEMENTATION.md and commit7749d70 established them after real layout regressions. The per-row guard handles recursion, not final native geometry; blanket coalescing/removal is not proved necessary or safe here.
